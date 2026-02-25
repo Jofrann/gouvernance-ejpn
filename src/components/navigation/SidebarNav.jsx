@@ -12,103 +12,104 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// Niveau I — Responsable Général des FIJ (Le Trône)
+// Niveau II — 3 postes : Directrice d'Exécution | Responsable de Suivi | Analyste Stratégique
+// Niveau III — 4 Pôles d'Exécution
+
 const NAVIGATION = {
   trone: {
-    label: "Le Trône",
+    label: "Niveau I — Direction",
     icon: Crown,
-    color: "text-amber-600",
-    bgColor: "bg-amber-50",
+    color: "text-amber-700",
     items: [
-      { label: "Radar Global", page: "TroneRadar", icon: BarChart3 },
-      { label: "Bureau de Validation", page: "TroneValidation", icon: FileCheck },
+      { label: "Tableau de Bord", page: "TroneRadar", icon: BarChart3 },
+      { label: "Validation & Décisions", page: "TroneValidation", icon: FileCheck },
       { label: "Archives & Décrets", page: "TroneArchives", icon: Archive },
     ],
   },
   gouvernance: {
-    label: "Gouvernance",
+    label: "Niveau II — Gouvernance",
     icon: Shield,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
+    color: "text-blue-700",
     groups: {
       gouvernance_direction: {
-        label: "Direction d'Exécution",
+        label: "Poste 2 — Directrice d'Exécution",
         icon: Target,
         items: [
-          { label: "Master Plan (OKR)", page: "GouvMasterPlan", icon: Target },
-          { label: "Allocation", page: "GouvAllocation", icon: Users },
-          { label: "Roadmap", page: "GouvRoadmap", icon: MapPin },
+          { label: "Appropriation & OKR", page: "GouvMasterPlan", icon: Target },
+          { label: "Planification Opérationnelle", page: "GouvAllocation", icon: Users },
+          { label: "Roadmap & Transmission", page: "GouvRoadmap", icon: MapPin },
         ],
       },
       gouvernance_suivi: {
-        label: "Suivi",
+        label: "Poste 3 — Responsable de Suivi",
         icon: Eye,
         items: [
-          { label: "Anomalies", page: "GouvAnomalies", icon: AlertTriangle },
-          { label: "Données Brutes", page: "GouvDonnees", icon: Database },
+          { label: "Collecte & Tri des Résultats", page: "GouvAnomalies", icon: AlertTriangle },
+          { label: "Données Brutes (Pôles)", page: "GouvDonnees", icon: Database },
           { label: "Générateur de Bilan", page: "GouvBilan", icon: FileText },
         ],
       },
       gouvernance_strategie: {
-        label: "Stratégie",
+        label: "Poste 4 — Analyste Stratégique",
         icon: FlaskConical,
         items: [
-          { label: "Matrice Campus", page: "GouvMatrice", icon: GitCompare },
-          { label: "Modélisation", page: "GouvModelisation", icon: FlaskConical },
-          { label: "Rédaction Finale", page: "GouvRedaction", icon: PenTool },
+          { label: "Évaluation vs Vision", page: "GouvMatrice", icon: GitCompare },
+          { label: "Scénarios d'Ajustement", page: "GouvModelisation", icon: FlaskConical },
+          { label: "Recommandations → Niveau I", page: "GouvRedaction", icon: PenTool },
         ],
       },
     },
   },
   execution: {
-    label: "Exécution",
+    label: "Niveau III — Exécution",
     icon: Briefcase,
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-50",
+    color: "text-emerald-700",
     poles: {
       familles_impact: {
-        label: "Familles d'Impact",
+        label: "Pôle Familles d'Impact",
         icon: Home,
         roles: ["pilote_fi", "copilote_fi", "responsable_fi"],
         items: [
-          { label: "Dashboard FI", page: "FIDashboard", icon: Heart, roles: ["pilote_fi", "copilote_fi", "responsable_fi"] },
-          { label: "Clinique du Jeudi", page: "FIClinique", icon: ClipboardList, roles: ["pilote_fi", "copilote_fi"] },
-          { label: "Dossiers Âmes", page: "FIDossiers", icon: FolderOpen, roles: ["pilote_fi", "copilote_fi", "responsable_fi"] },
-          { label: "Transferts", page: "FITransferts", icon: ArrowRightLeft, roles: ["pilote_fi", "copilote_fi"] },
-          { label: "Tour de Contrôle", page: "FITourControle", icon: Eye, roles: ["responsable_fi"] },
+          { label: "Mes Maisons", page: "FIDashboard", icon: Heart, roles: ["pilote_fi", "copilote_fi", "responsable_fi"] },
+          { label: "Suivi Hebdo (Jeudi)", page: "FIClinique", icon: ClipboardList, roles: ["pilote_fi", "copilote_fi"] },
+          { label: "Membres & Dossiers", page: "FIDossiers", icon: FolderOpen, roles: ["pilote_fi", "copilote_fi", "responsable_fi"] },
+          { label: "Demandes de Transfert", page: "FITransferts", icon: ArrowRightLeft, roles: ["pilote_fi", "copilote_fi"] },
+          { label: "Supervision Pilotes", page: "FITourControle", icon: Eye, roles: ["responsable_fi"] },
         ],
       },
       formation: {
-        label: "Formation",
+        label: "Pôle Formation",
         icon: GraduationCap,
-        roles: ["etudiant", "responsable_formation"],
+        roles: ["etudiant", "pilote_fi", "copilote_fi", "responsable_formation"],
         items: [
-          { label: "Salle d'Étude", page: "FormationSalle", icon: BookOpen, roles: ["etudiant"] },
-          { label: "Laboratoire", page: "FormationLabo", icon: Upload, roles: ["etudiant"] },
-          { label: "Bulletin", page: "FormationBulletin", icon: Award, roles: ["etudiant", "responsable_formation"] },
-          { label: "Correction Board", page: "FormationCorrection", icon: CheckSquare, roles: ["responsable_formation"] },
-          { label: "Assiduité", page: "FormationAssiduite", icon: UserCheck, roles: ["responsable_formation"] },
+          { label: "Direction du Mois", page: "FormationSalle", icon: BookOpen, roles: ["etudiant", "pilote_fi", "copilote_fi"] },
+          { label: "Dépôt du Livrable", page: "FormationLabo", icon: Upload, roles: ["etudiant", "pilote_fi", "copilote_fi"] },
+          { label: "Mon Portfolio", page: "FormationBulletin", icon: Award, roles: ["etudiant", "pilote_fi", "copilote_fi", "responsable_formation"] },
+          { label: "Correction des Livrables", page: "FormationCorrection", icon: CheckSquare, roles: ["responsable_formation"] },
+          { label: "Tableau d'Assiduité", page: "FormationAssiduite", icon: UserCheck, roles: ["responsable_formation"] },
         ],
       },
       evangelisation: {
-        label: "Évangélisation",
+        label: "Pôle Évangélisation",
         icon: Globe,
         roles: ["agent_terrain", "agent_virtuel", "responsable_evangelisation"],
         items: [
-          { label: "Radar Ops", page: "EvangelisationRadar", icon: Calendar, roles: ["agent_terrain", "agent_virtuel", "responsable_evangelisation"] },
-          { label: "Zone Debrief", page: "EvangelisationDebrief", icon: MessageSquare, roles: ["agent_terrain", "agent_virtuel"] },
-          { label: "Heatmap", page: "EvangelisationHeatmap", icon: Flame, roles: ["responsable_evangelisation"] },
+          { label: "Agenda & Actions", page: "EvangelisationRadar", icon: Calendar, roles: ["agent_terrain", "agent_virtuel", "responsable_evangelisation"] },
+          { label: "Debrief Post-Action", page: "EvangelisationDebrief", icon: MessageSquare, roles: ["agent_terrain", "agent_virtuel", "responsable_evangelisation"] },
+          { label: "Impact & Rendement", page: "EvangelisationHeatmap", icon: Flame, roles: ["responsable_evangelisation"] },
           { label: "ROI Tracker", page: "EvangelisationROI", icon: Calculator, roles: ["responsable_evangelisation"] },
         ],
       },
       communication: {
-        label: "Communication",
+        label: "Pôle Communication",
         icon: Megaphone,
         roles: ["producteur", "createur", "responsable_communication"],
         items: [
-          { label: "Kanban Studio", page: "CommunicationKanban", icon: Kanban, roles: ["producteur", "createur", "responsable_communication"] },
-          { label: "Bibliothèque", page: "CommunicationBibliotheque", icon: Library, roles: ["producteur", "createur", "responsable_communication"] },
-          { label: "Funnel Analytics", page: "CommunicationFunnel", icon: BarChart2, roles: ["responsable_communication"] },
-          { label: "Directives Board", page: "CommunicationDirectives", icon: Briefcase, roles: ["responsable_communication"] },
+          { label: "Studio de Production", page: "CommunicationKanban", icon: Kanban, roles: ["producteur", "createur", "responsable_communication"] },
+          { label: "Bibliothèque d'Assets", page: "CommunicationBibliotheque", icon: Library, roles: ["producteur", "createur", "responsable_communication"] },
+          { label: "Tunnels & Analytics", page: "CommunicationFunnel", icon: BarChart2, roles: ["responsable_communication"] },
+          { label: "Directions Stratégiques", page: "CommunicationDirectives", icon: Briefcase, roles: ["responsable_communication"] },
         ],
       },
     },
@@ -188,8 +189,8 @@ export default function SidebarNav({ userRole, userNiveau, userPole, currentPage
             <Crown className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-zinc-900 tracking-tight">Gouvernance</h1>
-            <p className="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">EJPN Platform</p>
+            <h1 className="text-sm font-bold text-zinc-900 tracking-tight">O.S.P — EJPN</h1>
+            <p className="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">Plateforme de Gouvernance</p>
           </div>
         </div>
       </div>
@@ -210,18 +211,18 @@ export default function SidebarNav({ userRole, userNiveau, userPole, currentPage
           <span>Vue d'ensemble</span>
         </Link>
 
-        {/* Trône */}
+        {/* Niveau I */}
         {isTrone && (
-          <NavSection label="Le Trône" icon={Crown} color="text-amber-600" defaultOpen={effectiveNiveau === "trone"}>
+          <NavSection label="Niveau I — Direction" icon={Crown} color="text-amber-700" defaultOpen={effectiveNiveau === "trone"}>
             {NAVIGATION.trone.items.map((item) => (
               <NavItem key={item.page} {...item} active={currentPage === item.page} />
             ))}
           </NavSection>
         )}
 
-        {/* Gouvernance */}
+        {/* Niveau II */}
         {isGouvernance && (
-          <NavSection label="Gouvernance" icon={Shield} color="text-blue-600" defaultOpen={effectiveNiveau === "gouvernance"}>
+          <NavSection label="Niveau II — Gouvernance" icon={Shield} color="text-blue-700" defaultOpen={effectiveNiveau === "gouvernance"}>
             {Object.entries(NAVIGATION.gouvernance.groups).map(([key, group]) =>
               canSeeGovGroup(key) ? (
                 <NavSection key={key} label={group.label} icon={group.icon} defaultOpen={isAdmin || effectiveRole === key}>
@@ -234,9 +235,9 @@ export default function SidebarNav({ userRole, userNiveau, userPole, currentPage
           </NavSection>
         )}
 
-        {/* Exécution */}
+        {/* Niveau III */}
         {isExecution && (
-          <NavSection label="Exécution" icon={Briefcase} color="text-emerald-600" defaultOpen={effectiveNiveau === "execution"}>
+          <NavSection label="Niveau III — Exécution" icon={Briefcase} color="text-emerald-700" defaultOpen={effectiveNiveau === "execution"}>
             {Object.entries(NAVIGATION.execution.poles).map(([key, pole]) =>
               canSeePole(key) ? (
                 <NavSection key={key} label={pole.label} icon={pole.icon}>
