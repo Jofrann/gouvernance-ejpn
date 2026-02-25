@@ -48,7 +48,6 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Home from './pages/Home';
-import FIClinique from './pages/FIClinique';
 import GouvAnomalies from './pages/GouvAnomalies';
 import TroneRadar from './pages/TroneRadar';
 import TroneValidation from './pages/TroneValidation';
@@ -62,9 +61,7 @@ import GouvMatrice from './pages/GouvMatrice';
 import GouvModelisation from './pages/GouvModelisation';
 import GouvRedaction from './pages/GouvRedaction';
 import FIDashboard from './pages/FIDashboard';
-import FIDossiers from './pages/FIDossiers';
 import FITransferts from './pages/FITransferts';
-import FITourControle from './pages/FITourControle';
 import FormationSalle from './pages/FormationSalle';
 import FormationLabo from './pages/FormationLabo';
 import FormationBulletin from './pages/FormationBulletin';
@@ -79,12 +76,14 @@ import CommunicationBibliotheque from './pages/CommunicationBibliotheque';
 import CommunicationFunnel from './pages/CommunicationFunnel';
 import CommunicationDirectives from './pages/CommunicationDirectives';
 import Parametres from './pages/Parametres';
+import FIDossiers from './pages/FIDossiers';
+import FITourControle from './pages/FITourControle';
+import FIClinique from './pages/FIClinique';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Home": Home,
-    "FIClinique": FIClinique,
     "GouvAnomalies": GouvAnomalies,
     "TroneRadar": TroneRadar,
     "TroneValidation": TroneValidation,
@@ -98,9 +97,7 @@ export const PAGES = {
     "GouvModelisation": GouvModelisation,
     "GouvRedaction": GouvRedaction,
     "FIDashboard": FIDashboard,
-    "FIDossiers": FIDossiers,
     "FITransferts": FITransferts,
-    "FITourControle": FITourControle,
     "FormationSalle": FormationSalle,
     "FormationLabo": FormationLabo,
     "FormationBulletin": FormationBulletin,
@@ -115,6 +112,9 @@ export const PAGES = {
     "CommunicationFunnel": CommunicationFunnel,
     "CommunicationDirectives": CommunicationDirectives,
     "Parametres": Parametres,
+    "FIDossiers": FIDossiers,
+    "FITourControle": FITourControle,
+    "FIClinique": FIClinique,
 }
 
 export const pagesConfig = {

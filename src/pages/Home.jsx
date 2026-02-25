@@ -68,16 +68,39 @@ export default function HomePage() {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Vue d'ensemble</h1>
-        <p className="text-sm text-zinc-500 mt-0.5">Tableau de bord de la plateforme EJPN</p>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+        <div>
+          <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-1">O.S.P — Vision 2026</p>
+          <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Mouvement des Familles d'Impact</h1>
+          <p className="text-sm text-zinc-500 mt-0.5">Structuration · Conquête · Multiplication consciente</p>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-zinc-400 border border-zinc-200 rounded-lg px-3 py-2 bg-white">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          Système actif — 3 niveaux opérationnels
+        </div>
+      </div>
+
+      {/* Vision Banner */}
+      <div className="rounded-xl border border-zinc-200 bg-zinc-900 text-white p-5">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1">Vision Fondatrice</p>
+        <p className="text-sm leading-relaxed text-zinc-200 max-w-3xl">
+          "Voir émerger un Royaume visible, organisé, puissant et fécond, porté par une jeunesse engagée, transformée et capable de se multiplier."
+        </p>
+        <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-zinc-700">
+          {[["Niveau I", "Direction Souveraine", "text-amber-400"], ["Niveau II", "Gouvernance & Traduction", "text-blue-400"], ["Niveau III", "Exécution & Terrain", "text-emerald-400"]].map(([n, l, c]) => (
+            <div key={n}>
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${c}`}>{n}</p>
+              <p className="text-xs text-zinc-300">{l}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Membres" value={membres.length} icon={Users} trend="+12%" trendUp />
-        <StatCard title="Familles Actives" value={activeFI} icon={Home} subtitle={`${familles.length} au total`} />
-        <StatCard title="Taux Conversion" value={membres.length > 0 ? `${Math.round((membres.filter(m => m.statut_pipeline !== "passif").length / membres.length) * 100)}%` : "0%"} icon={TrendingUp} trend="+3.2%" trendUp />
+        <StatCard title="Âmes Suivies" value={membres.length} icon={Users} trend="+12%" trendUp />
+        <StatCard title="Maisons Actives" value={activeFI} icon={Home} subtitle={`${familles.length} Familles d'Impact`} />
+        <StatCard title="Pipeline Disciples" value={membres.length > 0 ? `${Math.round((membres.filter(m => m.statut_pipeline !== "passif").length / membres.length) * 100)}%` : "0%"} icon={TrendingUp} trend="+3.2%" trendUp />
         <StatCard title="OKR en cours" value={okrs.filter((o) => o.statut === "en_cours").length} icon={Target} subtitle={`${okrs.filter(o => o.statut === "atteint").length} atteints`} />
       </div>
 
@@ -85,7 +108,7 @@ export default function HomePage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="border border-zinc-200 bg-white">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-zinc-900">Pipeline de Transformation</CardTitle>
+            <CardTitle className="text-sm font-semibold text-zinc-900">Pipeline de Transformation · Passif → Reproducteur</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-64">
@@ -144,7 +167,7 @@ export default function HomePage() {
       {/* Recent OKRs */}
       <Card className="border border-zinc-200 bg-white">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold text-zinc-900">OKR en cours</CardTitle>
+          <CardTitle className="text-sm font-semibold text-zinc-900">Objectifs du Cycle en cours</CardTitle>
         </CardHeader>
         <CardContent>
           {okrs.filter((o) => o.statut === "en_cours").length === 0 ? (
