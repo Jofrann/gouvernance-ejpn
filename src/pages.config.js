@@ -50,6 +50,35 @@
 import Home from './pages/Home';
 import FIClinique from './pages/FIClinique';
 import GouvAnomalies from './pages/GouvAnomalies';
+import TroneRadar from './pages/TroneRadar';
+import TroneValidation from './pages/TroneValidation';
+import TroneArchives from './pages/TroneArchives';
+import GouvMasterPlan from './pages/GouvMasterPlan';
+import GouvAllocation from './pages/GouvAllocation';
+import GouvRoadmap from './pages/GouvRoadmap';
+import GouvDonnees from './pages/GouvDonnees';
+import GouvBilan from './pages/GouvBilan';
+import GouvMatrice from './pages/GouvMatrice';
+import GouvModelisation from './pages/GouvModelisation';
+import GouvRedaction from './pages/GouvRedaction';
+import FIDashboard from './pages/FIDashboard';
+import FIDossiers from './pages/FIDossiers';
+import FITransferts from './pages/FITransferts';
+import FITourControle from './pages/FITourControle';
+import FormationSalle from './pages/FormationSalle';
+import FormationLabo from './pages/FormationLabo';
+import FormationBulletin from './pages/FormationBulletin';
+import FormationCorrection from './pages/FormationCorrection';
+import FormationAssiduite from './pages/FormationAssiduite';
+import EvangelisationRadar from './pages/EvangelisationRadar';
+import EvangelisationDebrief from './pages/EvangelisationDebrief';
+import EvangelisationHeatmap from './pages/EvangelisationHeatmap';
+import EvangelisationROI from './pages/EvangelisationROI';
+import CommunicationKanban from './pages/CommunicationKanban';
+import CommunicationBibliotheque from './pages/CommunicationBibliotheque';
+import CommunicationFunnel from './pages/CommunicationFunnel';
+import CommunicationDirectives from './pages/CommunicationDirectives';
+import Parametres from './pages/Parametres';
 import __Layout from './Layout.jsx';
 
 
@@ -57,6 +86,35 @@ export const PAGES = {
     "Home": Home,
     "FIClinique": FIClinique,
     "GouvAnomalies": GouvAnomalies,
+    "TroneRadar": TroneRadar,
+    "TroneValidation": TroneValidation,
+    "TroneArchives": TroneArchives,
+    "GouvMasterPlan": GouvMasterPlan,
+    "GouvAllocation": GouvAllocation,
+    "GouvRoadmap": GouvRoadmap,
+    "GouvDonnees": GouvDonnees,
+    "GouvBilan": GouvBilan,
+    "GouvMatrice": GouvMatrice,
+    "GouvModelisation": GouvModelisation,
+    "GouvRedaction": GouvRedaction,
+    "FIDashboard": FIDashboard,
+    "FIDossiers": FIDossiers,
+    "FITransferts": FITransferts,
+    "FITourControle": FITourControle,
+    "FormationSalle": FormationSalle,
+    "FormationLabo": FormationLabo,
+    "FormationBulletin": FormationBulletin,
+    "FormationCorrection": FormationCorrection,
+    "FormationAssiduite": FormationAssiduite,
+    "EvangelisationRadar": EvangelisationRadar,
+    "EvangelisationDebrief": EvangelisationDebrief,
+    "EvangelisationHeatmap": EvangelisationHeatmap,
+    "EvangelisationROI": EvangelisationROI,
+    "CommunicationKanban": CommunicationKanban,
+    "CommunicationBibliotheque": CommunicationBibliotheque,
+    "CommunicationFunnel": CommunicationFunnel,
+    "CommunicationDirectives": CommunicationDirectives,
+    "Parametres": Parametres,
 }
 
 export const pagesConfig = {
