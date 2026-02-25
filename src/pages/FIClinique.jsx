@@ -9,8 +9,6 @@ import { CalendarDays, Save, Lock, AlertTriangle, CheckCircle2, Clock, ChevronLe
 import { format, startOfWeek, addWeeks, subWeeks, isAfter, isBefore, setDay, endOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import CliniqueGrid from "@/components/fi/CliniqueGrid";
-import MemberAIInsight from "@/components/fi/MemberAIInsight";
-import ReproducteurFlag, { detectPotentielReproducteur } from "@/components/fi/ReproducteurFlag";
 
 function getThursdayOfWeek(date) {
   const start = startOfWeek(date, { weekStartsOn: 1 });
@@ -110,13 +108,6 @@ export default function FICliniquePage() {
     const s = localSaisies[m.id];
     return s && s.presence !== undefined && s.note_temps !== null && s.note_temps !== undefined;
   }).length;
-
-  // All historical saisies for this FI (for AI analysis + reproducteur detection)
-  const { data: allFiSaisies = [] } = useQuery({
-    queryKey: ["all-saisies-fi", selectedFI],
-    queryFn: () => selectedFI ? base44.entities.CliniqueSaisie.filter({ famille_impact_id: selectedFI }) : Promise.resolve([]),
-    enabled: !!selectedFI,
-  });
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-5">
@@ -222,31 +213,6 @@ export default function FICliniquePage() {
           onUpdateSaisie={handleUpdateSaisie}
           locked={locked}
         />
-      )}
-
-      {/* AI Insights per member */}
-      {membres.length > 0 && allFiSaisies.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="h-px flex-1 bg-zinc-100" />
-            <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Analyses IA individuelles</span>
-            <div className="h-px flex-1 bg-zinc-100" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-            {membres.map((membre) => {
-              const isPotentielRepro = detectPotentielReproducteur(membre.id, allFiSaisies, membre.statut_pipeline);
-              return (
-                <div key={membre.id} className="p-3 rounded-lg border border-zinc-100 bg-zinc-50/50">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <p className="text-sm font-semibold text-zinc-800">{membre.nom_complet}</p>
-                    {isPotentielRepro && <ReproducteurFlag compact />}
-                  </div>
-                  <MemberAIInsight membre={membre} saisies={allFiSaisies} />
-                </div>
-              );
-            })}
-          </div>
-        </div>
       )}
 
       {/* Legend */}

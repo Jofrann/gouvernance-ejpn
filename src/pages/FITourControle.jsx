@@ -4,14 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, CheckCircle2, AlertTriangle, Eye, Users, Clock, Star } from "lucide-react";
+import { Bell, CheckCircle2, AlertTriangle, Eye, Users, Clock } from "lucide-react";
 import { format, setDay, startOfWeek, subWeeks } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
-import { detectPotentielReproducteur } from "@/components/fi/ReproducteurFlag";
-import SmartNudgePanel from "@/components/fi/SmartNudgePanel";
 
 function getThisThursday() {
   const now = new Date();
@@ -52,9 +50,8 @@ export default function FITourControlePage() {
 
       const alertCount = fiMembres.filter((m) => detectChuteLivre(m.id, allFiSaisies)).length;
       const saisieComplete = thisSaisies.length >= fiMembres.length && fiMembres.length > 0;
-      const reproCount = fiMembres.filter((m) => detectPotentielReproducteur(m.id, allFiSaisies, m.statut_pipeline)).length;
 
-      return { fi, fiMembres, thisSaisies, presenceRate, alertCount, saisieComplete, reproCount };
+      return { fi, fiMembres, thisSaisies, presenceRate, alertCount, saisieComplete };
     });
   }, [familles, membres, saisies, thisThursday, lastThursday]);
 
@@ -80,7 +77,7 @@ export default function FITourControlePage() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="border-zinc-200 bg-white">
           <CardContent className="p-4 flex items-center gap-3">
             <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-100">
@@ -114,33 +111,22 @@ export default function FITourControlePage() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-amber-200 bg-amber-50/50">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-white border border-amber-100">
-              <Star className="w-5 h-5 text-amber-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-amber-700">{fiStats.reduce((a, s) => a + s.reproCount, 0)}</p>
-              <p className="text-xs text-amber-600">Potentiels Reproducteurs</p>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* FI Rows */}
-      <div className="space-y-4">
-        {fiStats.map(({ fi, fiMembres, thisSaisies, presenceRate, alertCount, saisieComplete, reproCount }) => (
+      <div className="space-y-3">
+        {fiStats.map(({ fi, fiMembres, thisSaisies, presenceRate, alertCount, saisieComplete }) => (
           <Card key={fi.id} className={cn("border transition-all", !saisieComplete ? "border-amber-200 bg-amber-50/20" : alertCount > 0 ? "border-red-200 bg-red-50/20" : "border-zinc-200 bg-white")}>
             <CardContent className="p-4">
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <div className="p-2 rounded-lg bg-zinc-50 border border-zinc-100 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-zinc-50 border border-zinc-100">
                     <Users className="w-4 h-4 text-zinc-500" />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div>
                     <p className="text-sm font-semibold text-zinc-900">{fi.name}</p>
                     <p className="text-xs text-zinc-400">{fi.campus} · Pilote: {fi.pilote_email}</p>
-                    <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                    <div className="flex items-center gap-2 mt-1.5">
                       {saisieComplete ? (
                         <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] gap-1">
                           <CheckCircle2 className="w-3 h-3" /> Suivi complet
@@ -155,31 +141,24 @@ export default function FITourControlePage() {
                           <AlertTriangle className="w-3 h-3" /> {alertCount} alerte{alertCount > 1 ? "s" : ""}
                         </Badge>
                       )}
-                      {reproCount > 0 && (
-                        <Badge className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] gap-1">
-                          <Star className="w-3 h-3 fill-amber-500" /> {reproCount} potentiel{reproCount > 1 ? "s" : ""}
-                        </Badge>
-                      )}
                       {presenceRate !== null && (
                         <Badge variant="outline" className="text-[10px] text-zinc-500">
                           {Math.round(presenceRate * 100)}% présence
                         </Badge>
                       )}
                     </div>
-                    {/* Smart AI Nudge Panel */}
-                    <SmartNudgePanel fi={fi} membres={membres} allSaisies={saisies} />
                   </div>
                 </div>
                 {!saisieComplete && (
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-amber-300 text-amber-700 hover:bg-amber-50 gap-2 whitespace-nowrap flex-shrink-0"
+                    className="border-amber-300 text-amber-700 hover:bg-amber-50 gap-2 whitespace-nowrap"
                     onClick={() => handleNudge(fi)}
                     disabled={nudging[fi.id]}
                   >
                     <Bell className="w-3.5 h-3.5" />
-                    {nudging[fi.id] ? "Envoi..." : "Relance rapide"}
+                    {nudging[fi.id] ? "Envoi..." : "Relancer le Pilote"}
                   </Button>
                 )}
               </div>
