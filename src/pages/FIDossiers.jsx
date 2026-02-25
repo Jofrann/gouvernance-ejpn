@@ -10,6 +10,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Users, Search, Heart, TrendingDown, TrendingUp, Minus } from "lucide-react";
 import AssiduitéMatrix from "@/components/fi/AssiduitéMatrix";
 import ChuteLivreAlert, { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
+import ReproducteurFlag, { detectPotentielReproducteur } from "@/components/fi/ReproducteurFlag";
+import MemberAIInsight from "@/components/fi/MemberAIInsight";
 import { cn } from "@/lib/utils";
 
 const STATUT_COLORS = {
@@ -87,16 +89,16 @@ export default function FIDossiersPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map((membre) => {
           const alerte = detectChuteLivre(membre.id, allSaisies);
+          const isPotentielRepro = detectPotentielReproducteur(membre.id, allSaisies, membre.statut_pipeline);
           const avg = getLastAvg(membre.id);
           return (
             <Card
               key={membre.id}
-              className={cn("border cursor-pointer hover:shadow-md transition-all", alerte ? "border-red-200 bg-red-50/30" : "border-zinc-200 bg-white")}
-              onClick={() => setSelectedMembre(membre)}
+              className={cn("border hover:shadow-md transition-all", alerte ? "border-red-200 bg-red-50/30" : isPotentielRepro ? "border-amber-200 bg-amber-50/10" : "border-zinc-200 bg-white")}
             >
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2.5 cursor-pointer flex-1" onClick={() => setSelectedMembre(membre)}>
                     <div className="w-9 h-9 rounded-full bg-zinc-100 flex items-center justify-center text-sm font-bold text-zinc-600 flex-shrink-0">
                       {membre.nom_complet?.[0]?.toUpperCase()}
                     </div>
@@ -110,6 +112,7 @@ export default function FIDossiersPage() {
                       {membre.statut_pipeline}
                     </Badge>
                     {alerte && <ChuteLivreAlert />}
+                    {isPotentielRepro && <ReproducteurFlag />}
                   </div>
                 </div>
 
@@ -129,6 +132,7 @@ export default function FIDossiersPage() {
                     <span className="text-xs text-zinc-300">—</span>
                   )}
                 </div>
+                <MemberAIInsight membre={membre} saisies={allSaisies} />
               </CardContent>
             </Card>
           );
