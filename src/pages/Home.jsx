@@ -182,7 +182,8 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-5"
+          style={{ background: "rgba(255,255,255,0.025)", backdropFilter: "blur(24px) saturate(1.4)", borderRadius: "1rem", border: "1px solid rgba(255,255,255,0.07)" }}
+        className="p-5"
         >
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-1">Répartition des Statuts</p>
           <p className="text-sm font-semibold text-white mb-2">Distribution Globale</p>
