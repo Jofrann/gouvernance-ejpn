@@ -177,6 +177,8 @@ export default function MonProfilPage() {
   const qc = useQueryClient();
   const [notifs, setNotifs] = useState(DEFAULT_NOTIFS);
 
+  const currentDevice = detectDevice();
+
   const { data: user, isLoading } = useQuery({
     queryKey: ["me-profil"],
     queryFn: () => base44.auth.me(),
