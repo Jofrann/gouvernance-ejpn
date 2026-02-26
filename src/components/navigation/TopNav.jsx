@@ -43,6 +43,7 @@ const NAVIGATION = {
       { label: "Tableau de Bord", page: "TroneRadar", icon: BarChart3 },
       { label: "Validation & Décisions", page: "TroneValidation", icon: FileCheck },
       { label: "Archives & Décrets", page: "TroneArchives", icon: Archive },
+      { label: "Notre Équipe", page: "EquipeTrone", icon: Users },
     ],
   },
   gouvernance: {
