@@ -27,6 +27,11 @@ export default function FICliniquePage() {
   const [localSaisies, setLocalSaisies] = useState({});
   const [saving, setSaving] = useState(false);
   const [selectedFI, setSelectedFI] = useState(null);
+  const [liveUsers, setLiveUsers] = useState([]);
+  const [user, setUser] = useState(null);
+
+  // Load current user
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
   const locked = isLocked(currentWeek);
   const weekLabel = format(currentWeek, "EEEE d MMMM yyyy", { locale: fr });
