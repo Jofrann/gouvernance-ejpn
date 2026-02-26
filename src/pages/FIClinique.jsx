@@ -202,6 +202,20 @@ export default function FICliniquePage() {
         </div>
       )}
 
+      {/* AI Pastoral Insights — for pilote_fi */}
+      {membres.length > 0 && Object.keys(localSaisies).length > 0 && (
+        <AIPastoralInsights
+          membres={membres}
+          saisies={Object.values(localSaisies).map((s, i) => ({
+            ...s,
+            membre_id: Object.keys(localSaisies)[i],
+            famille_impact_id: selectedFI,
+            semaine: semaineStr,
+          }))}
+          fiName={familles.find((f) => f.id === selectedFI)?.name || "FI"}
+        />
+      )}
+
       {/* Data Grid */}
       {loadingSaisies ? (
         <div className="flex items-center justify-center py-20">
