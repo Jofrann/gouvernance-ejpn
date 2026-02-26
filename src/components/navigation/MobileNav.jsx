@@ -93,9 +93,8 @@ const NAVIGATION = {
         items: [
           { label: "Agenda & Actions", page: "EvangelisationRadar", icon: Calendar },
           { label: "Debrief", page: "EvangelisationDebrief", icon: MessageSquare },
-          { label: "Impact & Rendement", page: "EvangelisationHeatmap", icon: Flame },
-          { label: "ROI Tracker", page: "EvangelisationROI", icon: Calculator },
-          { label: "Notre Équipe", page: "EquipeEvangelisation", icon: Users },
+          { label: "Analyse des Résultats", page: "EvangelisationAnalyse", icon: Flame },
+          { label: "Notre Équipe", page: "Equipe", icon: Users },
         ],
       },
       communication: {
