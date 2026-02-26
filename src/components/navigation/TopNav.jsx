@@ -8,7 +8,7 @@ import {
   Eye, GraduationCap, BookOpen, Upload, Award, CheckSquare,
   UserCheck, Globe, Calendar, MessageSquare, Flame, Calculator,
   Megaphone, Kanban, Library, BarChart2, Briefcase, Shield,
-  Settings, LogOut, Search, Bell, ChevronDown, X, Command, Zap
+  Settings, LogOut, Search, Bell, ChevronDown, X, Command, Zap, User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { base44 } from "@/api/base44Client";
