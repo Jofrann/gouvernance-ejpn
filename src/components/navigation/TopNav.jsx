@@ -368,10 +368,54 @@ export default function TopNav({ user, currentPage }) {
           </button>
 
           {/* Notifications */}
-          <button className="relative p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all">
-            <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
-          </button>
+          <div ref={notifRef} className="relative">
+            <button
+              onClick={() => setShowNotifs(!showNotifs)}
+              className="relative p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all"
+            >
+              <Bell className="w-4 h-4" />
+              {notifs.some(n => !n.read) && (
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
+              )}
+            </button>
+            <AnimatePresence>
+              {showNotifs && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 4, scale: 0.97 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full right-0 mt-2 w-80 rounded-xl border border-white/10 bg-[#0f1117]/98 backdrop-blur-xl shadow-2xl z-50 overflow-hidden"
+                >
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
+                    <span className="text-xs font-semibold text-white">Notifications</span>
+                    <button
+                      onClick={() => setNotifs(n => n.map(x => ({ ...x, read: true })))}
+                      className="text-[10px] text-zinc-500 hover:text-blue-400 transition-colors"
+                    >
+                      Tout marquer lu
+                    </button>
+                  </div>
+                  <div className="divide-y divide-white/5">
+                    {notifs.map(n => (
+                      <div
+                        key={n.id}
+                        onClick={() => setNotifs(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x))}
+                        className={`flex gap-3 px-4 py-3 cursor-pointer transition-colors ${n.read ? "opacity-50" : "hover:bg-white/5"}`}
+                      >
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${n.dot} ${n.read ? "opacity-30" : ""}`} />
+                        <div>
+                          <p className="text-xs font-semibold text-white">{n.title}</p>
+                          <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{n.desc}</p>
+                          <p className="text-[10px] text-zinc-700 mt-1">{n.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Mon Profil */}
           <Link
