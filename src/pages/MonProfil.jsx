@@ -130,11 +130,28 @@ function NotifToggle({ label, description, enabled, onChange }) {
   );
 }
 
-/* ─── MOCK SESSIONS ─── */
-const MOCK_SESSIONS = [
-  { id: 1, device: "MacBook Air", location: "Paris, FR", current: true, icon: Monitor, time: "Maintenant" },
-  { id: 2, device: "iPhone 15", location: "Nantes, FR", current: false, icon: Smartphone, time: "Il y a 2j" },
-];
+/* ─── DETECT CURRENT DEVICE ─── */
+function detectDevice() {
+  const ua = navigator.userAgent;
+  let device = "Navigateur";
+  let icon = Monitor;
+
+  if (/iPhone/i.test(ua)) { device = "iPhone"; icon = Smartphone; }
+  else if (/iPad/i.test(ua)) { device = "iPad"; icon = Smartphone; }
+  else if (/Android/i.test(ua) && /Mobile/i.test(ua)) { device = "Android Mobile"; icon = Smartphone; }
+  else if (/Android/i.test(ua)) { device = "Android Tablette"; icon = Smartphone; }
+  else if (/Mac/i.test(ua)) { device = "Mac"; icon = Monitor; }
+  else if (/Windows/i.test(ua)) { device = "Windows PC"; icon = Monitor; }
+  else if (/Linux/i.test(ua)) { device = "Linux"; icon = Monitor; }
+
+  let browser = "";
+  if (/Chrome/i.test(ua) && !/Edg/i.test(ua)) browser = "Chrome";
+  else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = "Safari";
+  else if (/Firefox/i.test(ua)) browser = "Firefox";
+  else if (/Edg/i.test(ua)) browser = "Edge";
+
+  return { device: browser ? `${device} · ${browser}` : device, icon };
+}
 
 /* ─── RADAR DATA ─── */
 const RADAR_DATA = [
