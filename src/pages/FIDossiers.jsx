@@ -55,6 +55,23 @@ export default function FIDossiersPage() {
     enabled: !!selectedFI,
   });
 
+  // Real-time subscriptions: refresh dossiers and saisies when any change happens
+  useEffect(() => {
+    const unsubMembres = base44.entities.Membre.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["membres", selectedFI] });
+      queryClient.invalidateQueries({ queryKey: ["all-membres"] });
+    });
+    const unsubSaisies = base44.entities.CliniqueSaisie.subscribe((event) => {
+      if (!selectedFI || event.data?.famille_impact_id === selectedFI) {
+        queryClient.invalidateQueries({ queryKey: ["all-saisies-fi", selectedFI] });
+      }
+    });
+    const unsubInteractions = base44.entities.InteractionPastorale.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["interactions"] });
+    });
+    return () => { unsubMembres(); unsubSaisies(); unsubInteractions(); };
+  }, [selectedFI, queryClient]);
+
   const filtered = membres.filter((m) =>
     m.nom_complet?.toLowerCase().includes(search.toLowerCase())
   );
