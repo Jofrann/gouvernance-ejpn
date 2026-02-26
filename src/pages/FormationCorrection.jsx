@@ -34,6 +34,11 @@ export default function FormationCorrectionPage() {
     queryFn: () => base44.entities.FormationLivrable.list("-date_soumission", 200),
   });
 
+  const { data: ressources = [] } = useQuery({
+    queryKey: ["formation-ressources"],
+    queryFn: () => base44.entities.FormationRessource.list("-mois_cycle", 200),
+  });
+
   const filtered = livrables.filter((l) => filterStatut === "all" ? true : l.statut === filterStatut);
 
   const openLivrable = (l) => {
