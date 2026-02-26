@@ -24,6 +24,11 @@ export default function FIDossiersPage() {
   const [selectedFI, setSelectedFI] = useState(null);
   const [search, setSearch] = useState("");
   const [selectedMembre, setSelectedMembre] = useState(null);
+  const [user, setUser] = useState(null);
+
+  React.useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
   const { data: familles = [] } = useQuery({
     queryKey: ["familles"],
@@ -35,6 +40,11 @@ export default function FIDossiersPage() {
     queryKey: ["membres", selectedFI],
     queryFn: () => selectedFI ? base44.entities.Membre.filter({ famille_impact_id: selectedFI }) : Promise.resolve([]),
     enabled: !!selectedFI,
+  });
+
+  const { data: allMembres = [] } = useQuery({
+    queryKey: ["all-membres"],
+    queryFn: () => base44.entities.Membre.list("-created_date", 500),
   });
 
   const { data: allSaisies = [] } = useQuery({
