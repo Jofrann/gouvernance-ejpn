@@ -11,6 +11,7 @@ import { Users, Search, Heart, TrendingDown, TrendingUp, Minus } from "lucide-re
 import AssiduitéMatrix from "@/components/fi/AssiduitéMatrix";
 import ChuteLivreAlert, { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
 import { cn } from "@/lib/utils";
+import AIFIAssignment from "@/components/ai/AIFIAssignment";
 
 const STATUT_COLORS = {
   passif: "bg-zinc-100 text-zinc-600",

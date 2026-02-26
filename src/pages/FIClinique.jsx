@@ -9,6 +9,7 @@ import { CalendarDays, Save, Lock, AlertTriangle, CheckCircle2, Clock, ChevronLe
 import { format, startOfWeek, addWeeks, subWeeks, isAfter, isBefore, setDay, endOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import CliniqueGrid from "@/components/fi/CliniqueGrid";
+import AIPastoralInsights from "@/components/ai/AIPastoralInsights";
 
 function getThursdayOfWeek(date) {
   const start = startOfWeek(date, { weekStartsOn: 1 });
