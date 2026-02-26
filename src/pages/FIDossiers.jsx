@@ -11,6 +11,7 @@ import AssiduitéMatrix from "@/components/fi/AssiduitéMatrix";
 import ChuteLivreAlert, { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
 import { cn } from "@/lib/utils";
 import AIFIAssignment from "@/components/ai/AIFIAssignment";
+import InteractionsPastorales from "@/components/fi/InteractionsPastorales";
 import { motion } from "framer-motion";
 
 const STATUT_COLORS = {
