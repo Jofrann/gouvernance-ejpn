@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
-import { Plus, Pencil, Trash2, Home, Users } from "lucide-react";
+import { Plus, Pencil, Trash2, Home, Users, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +17,8 @@ const STATUS_COLORS = {
   fermee:   "bg-zinc-500/10 text-zinc-400 border-zinc-500/30",
 };
 
+const STATUS_LABELS = { active: "Active", en_pause: "En pause", fermee: "Fermée" };
+
 const EMPTY_FI = { name: "", campus: "", pilote_email: "", pilote_nom: "", co_pilote_email: "", co_pilote_nom: "", status: "active", objectif_membres: 12, date_ouverture: "" };
 
 export default function FIManagerPage() {
@@ -25,6 +27,9 @@ export default function FIManagerPage() {
   const [editFI, setEditFI] = useState(null);
   const [deleteFI, setDeleteFI] = useState(null);
   const [form, setForm] = useState(EMPTY_FI);
+  // Pilote: dialog to change status only
+  const [statusFI, setStatusFI] = useState(null);
+  const [newStatus, setNewStatus] = useState("");
 
   const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
   const { data: familles = [] } = useQuery({ queryKey: ["familles"], queryFn: () => base44.entities.FamilleImpact.list() });
@@ -32,13 +37,15 @@ export default function FIManagerPage() {
   const { data: users = [] } = useQuery({ queryKey: ["users"], queryFn: () => base44.entities.User.list() });
 
   const role = user?.role;
+  // Full admin/write: can create, edit all fields, delete
   const canWrite = role === "admin" || role === "responsable_fi";
+  // Pilote/copilote: can only edit status of their own FI
+  const isPilote = role === "pilote_fi" || role === "copilote_fi";
 
   // Filter FIs by role
   const mesFamilles = canWrite
     ? familles
     : familles.filter(f =>
-        f.pilote_nom === user?.full_name || f.co_pilote_nom === user?.full_name ||
         f.pilote_email === user?.email || f.co_pilote_email === user?.email
       );
 
@@ -50,7 +57,7 @@ export default function FIManagerPage() {
   });
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.FamilleImpact.update(id, data),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["familles"] }); closeForm(); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["familles"] }); closeForm(); setStatusFI(null); },
   });
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.FamilleImpact.delete(id),
@@ -61,6 +68,8 @@ export default function FIManagerPage() {
   const openEdit = (fi) => { setForm({ ...fi }); setEditFI(fi); setShowForm(true); };
   const closeForm = () => { setShowForm(false); setEditFI(null); };
 
+  const openStatusEdit = (fi) => { setStatusFI(fi); setNewStatus(fi.status); };
+
   const handleSubmit = () => {
     if (!form.name || !form.pilote_email) return;
     if (editFI) {
@@ -68,6 +77,11 @@ export default function FIManagerPage() {
     } else {
       createMutation.mutate(form);
     }
+  };
+
+  const handleStatusSubmit = () => {
+    if (!statusFI || !newStatus) return;
+    updateMutation.mutate({ id: statusFI.id, data: { status: newStatus } });
   };
 
   const handlePiloteSelect = (email) => {
@@ -87,7 +101,9 @@ export default function FIManagerPage() {
         <div>
           <p className="text-[10px] font-bold text-emerald-400/80 uppercase tracking-[0.25em] mb-1">Familles d'Impact</p>
           <h1 className="text-2xl font-black text-white tracking-tight">Gestion des Familles</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Création · Attribution des pilotes · Suivi des capacités</p>
+          <p className="text-sm text-zinc-500 mt-0.5">
+            {canWrite ? "Création · Attribution des pilotes · Suivi des capacités" : "Statut de votre Famille d'Impact"}
+          </p>
         </div>
         {canWrite && (
           <Button onClick={openCreate} className="bg-emerald-600/80 hover:bg-emerald-600 border border-emerald-500/30 text-white gap-2">
@@ -117,7 +133,7 @@ export default function FIManagerPage() {
                       <p className="text-xs text-zinc-500">{fi.campus}</p>
                     </div>
                   </div>
-                  <Badge className={cn("text-[10px] border", STATUS_COLORS[fi.status])}>{fi.status}</Badge>
+                  <Badge className={cn("text-[10px] border", STATUS_COLORS[fi.status])}>{STATUS_LABELS[fi.status] || fi.status}</Badge>
                 </div>
 
                 <div className="space-y-1 text-xs text-zinc-500">
@@ -138,16 +154,29 @@ export default function FIManagerPage() {
                   </div>
                 </div>
 
-                {canWrite && (
-                  <div className="flex gap-2 pt-1 border-t border-white/5">
-                    <Button size="sm" variant="ghost" className="flex-1 text-zinc-400 hover:text-white hover:bg-white/10 h-8" onClick={() => openEdit(fi)}>
-                      <Pencil className="w-3.5 h-3.5 mr-1.5" />Modifier
+                {/* Actions par rôle */}
+                <div className="flex gap-2 pt-1 border-t border-white/5">
+                  {canWrite && (
+                    <>
+                      <Button size="sm" variant="ghost" className="flex-1 text-zinc-400 hover:text-white hover:bg-white/10 h-8" onClick={() => openEdit(fi)}>
+                        <Pencil className="w-3.5 h-3.5 mr-1.5" />Modifier
+                      </Button>
+                      <Button size="sm" variant="ghost" className="text-red-500/60 hover:text-red-400 hover:bg-red-500/10 h-8" onClick={() => setDeleteFI(fi)}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </>
+                  )}
+                  {isPilote && (
+                    <Button size="sm" variant="ghost" className="flex-1 text-zinc-400 hover:text-white hover:bg-white/10 h-8" onClick={() => openStatusEdit(fi)}>
+                      <Pencil className="w-3.5 h-3.5 mr-1.5" />Changer le statut
                     </Button>
-                    <Button size="sm" variant="ghost" className="text-red-500/60 hover:text-red-400 hover:bg-red-500/10 h-8" onClick={() => setDeleteFI(fi)}>
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                )}
+                  )}
+                  {!canWrite && !isPilote && (
+                    <div className="flex-1 flex items-center gap-1.5 justify-center text-xs text-zinc-600">
+                      <Lock className="w-3 h-3" /> Lecture seule
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           );
@@ -156,12 +185,12 @@ export default function FIManagerPage() {
         {mesFamilles.length === 0 && (
           <div className="col-span-3 py-20 text-center">
             <Home className="w-10 h-10 text-zinc-700 mx-auto mb-3" />
-            <p className="text-sm text-zinc-500">Aucune Famille d'Impact{canWrite ? " — créez-en une !" : ""}</p>
+            <p className="text-sm text-zinc-500">Aucune Famille d'Impact{canWrite ? " — créez-en une !" : " assignée"}</p>
           </div>
         )}
       </div>
 
-      {/* Create/Edit Dialog */}
+      {/* Create/Edit Dialog (admin/responsable_fi only) */}
       <Dialog open={showForm} onOpenChange={closeForm}>
         <DialogContent className="bg-[#0f1117] border border-white/10 text-white max-w-lg">
           <DialogHeader>
@@ -226,6 +255,34 @@ export default function FIManagerPage() {
             <Button variant="ghost" onClick={closeForm} className="text-zinc-400 hover:text-white">Annuler</Button>
             <Button onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending} className="bg-emerald-600 hover:bg-emerald-500 text-white">
               {editFI ? "Enregistrer" : "Créer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Pilote: status-only edit dialog */}
+      <Dialog open={!!statusFI} onOpenChange={() => setStatusFI(null)}>
+        <DialogContent className="bg-[#0f1117] border border-white/10 text-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Statut — {statusFI?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="py-3">
+            <p className="text-xs text-zinc-400 mb-2">Modifier le statut de votre Famille d'Impact</p>
+            <Select value={newStatus} onValueChange={setNewStatus}>
+              <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="en_pause">En pause</SelectItem>
+                <SelectItem value="fermee">Fermée</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setStatusFI(null)} className="text-zinc-400 hover:text-white">Annuler</Button>
+            <Button onClick={handleStatusSubmit} disabled={updateMutation.isPending} className="bg-emerald-600 hover:bg-emerald-500 text-white">
+              Enregistrer
             </Button>
           </DialogFooter>
         </DialogContent>
