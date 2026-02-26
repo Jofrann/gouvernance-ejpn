@@ -86,6 +86,7 @@ import EquipeFI from './pages/EquipeFI';
 import EquipeFormation from './pages/EquipeFormation';
 import EquipeEvangelisation from './pages/EquipeEvangelisation';
 import EquipeCommunication from './pages/EquipeCommunication';
+import MonProfil from './pages/MonProfil';
 import __Layout from './Layout.jsx';
 
 
@@ -129,6 +130,7 @@ export const PAGES = {
     "EquipeFormation": EquipeFormation,
     "EquipeEvangelisation": EquipeEvangelisation,
     "EquipeCommunication": EquipeCommunication,
+    "MonProfil": MonProfil,
 }
 
 export const pagesConfig = {
