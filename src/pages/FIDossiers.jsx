@@ -22,12 +22,13 @@ const STATUT_COLORS = {
 };
 
 export default function FIDossiersPage() {
+  const queryClient = useQueryClient();
   const [selectedFI, setSelectedFI] = useState(null);
   const [search, setSearch] = useState("");
   const [selectedMembre, setSelectedMembre] = useState(null);
   const [user, setUser] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
