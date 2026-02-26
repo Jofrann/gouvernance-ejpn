@@ -95,6 +95,7 @@ const NAVIGATION = {
           { label: "Membres & Dossiers", page: "FIDossiers", icon: FolderOpen },
           { label: "Transferts", page: "FITransferts", icon: ArrowRightLeft },
           { label: "Supervision", page: "FITourControle", icon: Eye },
+          { label: "Gestion FI", page: "FIManager", icon: Home },
         ],
       },
       formation: {
