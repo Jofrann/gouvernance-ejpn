@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import SidebarNav from "@/components/navigation/SidebarNav";
-import TopBar from "@/components/navigation/TopBar";
-import { cn } from "@/lib/utils";
+import TopNav from "@/components/navigation/TopNav";
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -30,46 +27,32 @@ export default function Layout({ children, currentPageName }) {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#FAFAFA]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-zinc-400 font-medium">Chargement...</p>
+      <div className="h-screen flex items-center justify-center bg-[#080b12]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-12 h-12 border-2 border-blue-500/30 rounded-full" />
+            <div className="absolute inset-0 w-12 h-12 border-t-2 border-blue-500 rounded-full animate-spin" />
+          </div>
+          <p className="text-sm text-zinc-500 font-medium tracking-wider uppercase">Chargement...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex bg-[#FAFAFA] overflow-hidden">
-      {/* Sidebar */}
-      <aside className={cn(
-        "fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white border-r border-zinc-200 flex-shrink-0 transition-transform duration-200",
-        sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      )}>
-        <SidebarNav
-          userRole={user?.role}
-          userNiveau={user?.niveau}
-          userPole={user?.pole}
-          currentPage={currentPageName}
-        />
-      </aside>
-
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-30 bg-black/20 lg:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
-
-      {/* Main area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopBar
-          user={user}
-          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-          sidebarOpen={sidebarOpen}
-        />
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
+    <div className="min-h-screen bg-[#080b12]">
+      {/* Ambient background glow */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/8 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -right-40 w-80 h-80 bg-violet-600/6 rounded-full blur-3xl" />
+        <div className="absolute -bottom-20 left-1/3 w-72 h-72 bg-indigo-600/5 rounded-full blur-3xl" />
       </div>
+
+      <TopNav user={user} currentPage={currentPageName} />
+
+      <main className="relative pt-16 min-h-screen">
+        {children}
+      </main>
     </div>
   );
 }
