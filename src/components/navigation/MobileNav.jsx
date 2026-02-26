@@ -105,7 +105,7 @@ const NAVIGATION = {
           { label: "Bibliothèque", page: "CommunicationBibliotheque", icon: Library },
           { label: "Analytics", page: "CommunicationFunnel", icon: BarChart2 },
           { label: "Directives", page: "CommunicationDirectives", icon: Briefcase },
-          { label: "Notre Équipe", page: "EquipeCommunication", icon: Users },
+          { label: "Notre Équipe", page: "Equipe", icon: Users },
         ],
       },
     },
