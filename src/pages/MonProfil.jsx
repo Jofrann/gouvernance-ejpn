@@ -327,7 +327,7 @@ export default function MonProfilPage() {
               </button>
             </div>
             <div className="space-y-2">
-              {MOCK_SESSIONS.map(session => (
+              {[{ id: 1, device: currentDevice.device, location: "Session active", current: true, icon: currentDevice.icon, time: "Maintenant" }].map(session => (
                 <div key={session.id} className={cn(
                   "flex items-center gap-3 p-3 rounded-xl border transition-all",
                   session.current ? "bg-emerald-500/5 border-emerald-500/20" : "bg-white/[0.02] border-white/5"
