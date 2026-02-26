@@ -266,7 +266,10 @@ function NavButton({ label, icon: Icon, color, textColor, children, currentPage,
 
 export default function TopNav({ user, currentPage }) {
   const [showSearch, setShowSearch] = useState(false);
+  const [showNotifs, setShowNotifs] = useState(false);
+  const [notifs, setNotifs] = useState(NOTIF_SAMPLES);
   const searchRef = useRef(null);
+  const notifRef = useRef(null);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
