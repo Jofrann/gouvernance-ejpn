@@ -51,6 +51,12 @@ import CommunicationBibliotheque from './pages/CommunicationBibliotheque';
 import CommunicationDirectives from './pages/CommunicationDirectives';
 import CommunicationFunnel from './pages/CommunicationFunnel';
 import CommunicationKanban from './pages/CommunicationKanban';
+import EquipeCommunication from './pages/EquipeCommunication';
+import EquipeEvangelisation from './pages/EquipeEvangelisation';
+import EquipeFI from './pages/EquipeFI';
+import EquipeFormation from './pages/EquipeFormation';
+import EquipeGouvernance from './pages/EquipeGouvernance';
+import EquipeTrone from './pages/EquipeTrone';
 import EvangelisationDebrief from './pages/EvangelisationDebrief';
 import EvangelisationHeatmap from './pages/EvangelisationHeatmap';
 import EvangelisationROI from './pages/EvangelisationROI';
@@ -76,17 +82,11 @@ import GouvModelisation from './pages/GouvModelisation';
 import GouvRedaction from './pages/GouvRedaction';
 import GouvRoadmap from './pages/GouvRoadmap';
 import Home from './pages/Home';
+import MonProfil from './pages/MonProfil';
 import Parametres from './pages/Parametres';
 import TroneArchives from './pages/TroneArchives';
 import TroneRadar from './pages/TroneRadar';
 import TroneValidation from './pages/TroneValidation';
-import EquipeTrone from './pages/EquipeTrone';
-import EquipeGouvernance from './pages/EquipeGouvernance';
-import EquipeFI from './pages/EquipeFI';
-import EquipeFormation from './pages/EquipeFormation';
-import EquipeEvangelisation from './pages/EquipeEvangelisation';
-import EquipeCommunication from './pages/EquipeCommunication';
-import MonProfil from './pages/MonProfil';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +95,12 @@ export const PAGES = {
     "CommunicationDirectives": CommunicationDirectives,
     "CommunicationFunnel": CommunicationFunnel,
     "CommunicationKanban": CommunicationKanban,
+    "EquipeCommunication": EquipeCommunication,
+    "EquipeEvangelisation": EquipeEvangelisation,
+    "EquipeFI": EquipeFI,
+    "EquipeFormation": EquipeFormation,
+    "EquipeGouvernance": EquipeGouvernance,
+    "EquipeTrone": EquipeTrone,
     "EvangelisationDebrief": EvangelisationDebrief,
     "EvangelisationHeatmap": EvangelisationHeatmap,
     "EvangelisationROI": EvangelisationROI,
@@ -120,17 +126,11 @@ export const PAGES = {
     "GouvRedaction": GouvRedaction,
     "GouvRoadmap": GouvRoadmap,
     "Home": Home,
+    "MonProfil": MonProfil,
     "Parametres": Parametres,
     "TroneArchives": TroneArchives,
     "TroneRadar": TroneRadar,
     "TroneValidation": TroneValidation,
-    "EquipeTrone": EquipeTrone,
-    "EquipeGouvernance": EquipeGouvernance,
-    "EquipeFI": EquipeFI,
-    "EquipeFormation": EquipeFormation,
-    "EquipeEvangelisation": EquipeEvangelisation,
-    "EquipeCommunication": EquipeCommunication,
-    "MonProfil": MonProfil,
 }
 
 export const pagesConfig = {

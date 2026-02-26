@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import TopNav from "@/components/navigation/TopNav";
+import GlobalHeader from "@/components/navigation/GlobalHeader";
+import ContextualSubNav from "@/components/navigation/ContextualSubNav";
 import AnimatedBackground from "@/components/layout/AnimatedBackground";
 
 export default function Layout({ children, currentPageName }) {
@@ -11,10 +12,7 @@ export default function Layout({ children, currentPageName }) {
     const loadUser = async () => {
       try {
         const isAuth = await base44.auth.isAuthenticated();
-        if (!isAuth) {
-          base44.auth.redirectToLogin();
-          return;
-        }
+        if (!isAuth) { base44.auth.redirectToLogin(); return; }
         const me = await base44.auth.me();
         setUser(me);
       } catch {
@@ -42,29 +40,35 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
+  const userRoles = Array.isArray(user?.roles) && user.roles.length > 0
+    ? user.roles
+    : user?.role ? [user.role] : ["admin"];
+
   return (
     <div className="min-h-screen bg-[#060810] relative">
-      {/* Animated canvas background */}
       <AnimatedBackground />
 
-      {/* Static noise texture overlay */}
-      <div
-        className="fixed inset-0 pointer-events-none z-[1] opacity-[0.025]"
+      {/* Noise texture */}
+      <div className="fixed inset-0 pointer-events-none z-[1] opacity-[0.025]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "128px 128px",
+          backgroundRepeat: "repeat", backgroundSize: "128px 128px",
         }}
       />
 
       {/* Vignette */}
-      <div className="fixed inset-0 pointer-events-none z-[1]" style={{
-        background: "radial-gradient(ellipse at center, transparent 40%, rgba(6,8,16,0.6) 100%)"
-      }} />
+      <div className="fixed inset-0 pointer-events-none z-[1]"
+        style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(6,8,16,0.6) 100%)" }}
+      />
 
-      <TopNav user={user} currentPage={currentPageName} />
+      {/* Layer 1 — Global Header */}
+      <GlobalHeader user={user} currentPage={currentPageName} />
 
-      <main className="relative z-10 pt-16 min-h-screen">
+      {/* Layer 2 — Contextual Sub-Nav */}
+      <ContextualSubNav user={user} currentPage={currentPageName} userRoles={userRoles} />
+
+      {/* Content — offset by both headers (14 + 11 = 25) */}
+      <main className="relative z-10 pt-[100px] min-h-screen">
         {children}
       </main>
     </div>
