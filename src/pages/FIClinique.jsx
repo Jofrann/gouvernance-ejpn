@@ -202,16 +202,11 @@ export default function FICliniquePage() {
         </div>
       )}
 
-      {/* AI Pastoral Insights — for pilote_fi */}
-      {membres.length > 0 && Object.keys(localSaisies).length > 0 && (
+      {/* AI Pastoral Insights — for pilote_fi (uses current week's saisies) */}
+      {membres.length > 0 && saisies.length > 0 && (
         <AIPastoralInsights
           membres={membres}
-          saisies={Object.values(localSaisies).map((s, i) => ({
-            ...s,
-            membre_id: Object.keys(localSaisies)[i],
-            famille_impact_id: selectedFI,
-            semaine: semaineStr,
-          }))}
+          saisies={saisies}
           fiName={familles.find((f) => f.id === selectedFI)?.name || "FI"}
         />
       )}
