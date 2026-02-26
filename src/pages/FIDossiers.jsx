@@ -174,7 +174,17 @@ export default function FIDossiersPage() {
                 </div>
               </SheetHeader>
               <div className="py-5 space-y-5">
-                <div className="grid grid-cols-2 gap-3 text-sm">
+
+                {/* AI Assignment Tool — only for responsable_fi */}
+                {user?.role === "responsable_fi" && (
+                  <AIFIAssignment
+                    membre={selectedMembre}
+                    familles={familles}
+                    membres={allMembres}
+                  />
+                )}
+
+               <div className="grid grid-cols-2 gap-3 text-sm">
                   <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-100">
                     <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Ville</p>
                     <p className="font-medium mt-0.5">{selectedMembre.ville || "—"}</p>
