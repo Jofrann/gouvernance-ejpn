@@ -41,6 +41,19 @@ function getThursday(weeksAgo = 0) {
 }
 
 export default function DefaultDashboard({ user }) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const subs = [
+      base44.entities.Membre.subscribe(() => queryClient.invalidateQueries({ queryKey: ["membres"] })),
+      base44.entities.FamilleImpact.subscribe(() => queryClient.invalidateQueries({ queryKey: ["familles"] })),
+      base44.entities.OKR.subscribe(() => queryClient.invalidateQueries({ queryKey: ["okrs"] })),
+      base44.entities.ActionEvangelisation.subscribe(() => queryClient.invalidateQueries({ queryKey: ["actions-evang"] })),
+      base44.entities.CliniqueSaisie.subscribe(() => queryClient.invalidateQueries({ queryKey: ["saisies-all"] })),
+    ];
+    return () => subs.forEach(u => u());
+  }, [queryClient]);
+
   const { data: membres = [] } = useQuery({ queryKey: ["membres"], queryFn: () => base44.entities.Membre.list("-created_date", 500) });
   const { data: familles = [] } = useQuery({ queryKey: ["familles"], queryFn: () => base44.entities.FamilleImpact.list() });
   const { data: okrs = [] } = useQuery({ queryKey: ["okrs"], queryFn: () => base44.entities.OKR.list() });

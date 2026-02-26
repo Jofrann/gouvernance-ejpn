@@ -34,8 +34,16 @@ const GlassCard = ({ children, className = "" }) => (
 );
 
 export default function FIDashboardPage() {
+  const queryClient = useQueryClient();
   const [selectedFI, setSelectedFI] = useState(null);
   const thisThursday = getThisThursday();
+
+  useEffect(() => {
+    const unsubFamilles = base44.entities.FamilleImpact.subscribe(() => queryClient.invalidateQueries({ queryKey: ["familles"] }));
+    const unsubMembres = base44.entities.Membre.subscribe(() => { queryClient.invalidateQueries({ queryKey: ["membres", selectedFI] }); });
+    const unsubSaisies = base44.entities.CliniqueSaisie.subscribe(() => { queryClient.invalidateQueries({ queryKey: ["saisies-fi", selectedFI] }); });
+    return () => { unsubFamilles(); unsubMembres(); unsubSaisies(); };
+  }, [queryClient, selectedFI]);
 
   const { data: familles = [] } = useQuery({
     queryKey: ["familles"],

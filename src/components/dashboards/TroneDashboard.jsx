@@ -37,6 +37,22 @@ const KPICard = ({ label, value, sub, icon: Icon, color, delay, link }) => {
 };
 
 export default function TroneDashboard({ user }) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const subs = [
+      base44.entities.OKR.subscribe(() => queryClient.invalidateQueries({ queryKey: ["okrs"] })),
+      base44.entities.Decret.subscribe(() => queryClient.invalidateQueries({ queryKey: ["decrets"] })),
+      base44.entities.Recommandation.subscribe(() => queryClient.invalidateQueries({ queryKey: ["reco"] })),
+      base44.entities.Membre.subscribe(() => queryClient.invalidateQueries({ queryKey: ["membres"] })),
+      base44.entities.FamilleImpact.subscribe(() => queryClient.invalidateQueries({ queryKey: ["familles"] })),
+      base44.entities.ActionEvangelisation.subscribe(() => queryClient.invalidateQueries({ queryKey: ["actions-evang"] })),
+      base44.entities.CliniqueSaisie.subscribe(() => queryClient.invalidateQueries({ queryKey: ["saisies-all"] })),
+      base44.entities.FormationLivrable.subscribe(() => queryClient.invalidateQueries({ queryKey: ["livrables"] })),
+    ];
+    return () => subs.forEach(u => u());
+  }, [queryClient]);
+
   const { data: okrs = [] } = useQuery({ queryKey: ["okrs"], queryFn: () => base44.entities.OKR.list() });
   const { data: decrets = [] } = useQuery({ queryKey: ["decrets"], queryFn: () => base44.entities.Decret.list() });
   const { data: recommandations = [] } = useQuery({ queryKey: ["reco"], queryFn: () => base44.entities.Recommandation.list() });

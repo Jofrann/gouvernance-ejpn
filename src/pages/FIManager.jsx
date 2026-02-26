@@ -36,6 +36,13 @@ export default function FIManagerPage() {
   const { data: membres = [] } = useQuery({ queryKey: ["membres-all"], queryFn: () => base44.entities.Membre.list("-created_date", 500) });
   const { data: users = [] } = useQuery({ queryKey: ["users"], queryFn: () => base44.entities.User.list() });
 
+  // Real-time subscriptions
+  React.useEffect(() => {
+    const unsubFI = base44.entities.FamilleImpact.subscribe(() => queryClient.invalidateQueries({ queryKey: ["familles"] }));
+    const unsubM = base44.entities.Membre.subscribe(() => queryClient.invalidateQueries({ queryKey: ["membres-all"] }));
+    return () => { unsubFI(); unsubM(); };
+  }, [queryClient]);
+
   const role = user?.role;
   // Full admin/write: can create, edit all fields, delete
   const canWrite = role === "admin" || role === "responsable_fi";

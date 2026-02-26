@@ -18,8 +18,16 @@ function getThisThursday() {
 }
 
 export default function FITourControlePage() {
+  const queryClient = useQueryClient();
   const [nudging, setNudging] = useState({});
   const thisThursday = format(getThisThursday(), "yyyy-MM-dd");
+
+  useEffect(() => {
+    const unsubFamilles = base44.entities.FamilleImpact.subscribe(() => queryClient.invalidateQueries({ queryKey: ["familles"] }));
+    const unsubMembres = base44.entities.Membre.subscribe(() => queryClient.invalidateQueries({ queryKey: ["membres-all"] }));
+    const unsubSaisies = base44.entities.CliniqueSaisie.subscribe(() => queryClient.invalidateQueries({ queryKey: ["all-saisies"] }));
+    return () => { unsubFamilles(); unsubMembres(); unsubSaisies(); };
+  }, [queryClient]);
   const lastThursday = format(setDay(startOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 1 }), 4, { weekStartsOn: 1 }), "yyyy-MM-dd");
 
   const { data: familles = [] } = useQuery({

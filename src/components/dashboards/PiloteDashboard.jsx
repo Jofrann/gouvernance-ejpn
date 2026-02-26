@@ -36,6 +36,18 @@ const PIPELINE_COLORS = {
 };
 
 export default function PiloteDashboard({ user }) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const subs = [
+      base44.entities.FamilleImpact.subscribe(() => queryClient.invalidateQueries({ queryKey: ["familles"] })),
+      base44.entities.Membre.subscribe(() => queryClient.invalidateQueries({ queryKey: ["membres-fi"] })),
+      base44.entities.CliniqueSaisie.subscribe(() => queryClient.invalidateQueries({ queryKey: ["saisies-fi-dash"] })),
+      base44.entities.InteractionPastorale.subscribe(() => queryClient.invalidateQueries({ queryKey: ["interactions-fi"] })),
+    ];
+    return () => subs.forEach(u => u());
+  }, [queryClient]);
+
   const { data: familles = [] } = useQuery({ queryKey: ["familles"], queryFn: () => base44.entities.FamilleImpact.list() });
 
   const mesFamilles = familles.filter(f =>
