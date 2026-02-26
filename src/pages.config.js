@@ -80,6 +80,12 @@ import Parametres from './pages/Parametres';
 import TroneArchives from './pages/TroneArchives';
 import TroneRadar from './pages/TroneRadar';
 import TroneValidation from './pages/TroneValidation';
+import EquipeTrone from './pages/EquipeTrone';
+import EquipeGouvernance from './pages/EquipeGouvernance';
+import EquipeFI from './pages/EquipeFI';
+import EquipeFormation from './pages/EquipeFormation';
+import EquipeEvangelisation from './pages/EquipeEvangelisation';
+import EquipeCommunication from './pages/EquipeCommunication';
 import __Layout from './Layout.jsx';
 
 
@@ -117,6 +123,12 @@ export const PAGES = {
     "TroneArchives": TroneArchives,
     "TroneRadar": TroneRadar,
     "TroneValidation": TroneValidation,
+    "EquipeTrone": EquipeTrone,
+    "EquipeGouvernance": EquipeGouvernance,
+    "EquipeFI": EquipeFI,
+    "EquipeFormation": EquipeFormation,
+    "EquipeEvangelisation": EquipeEvangelisation,
+    "EquipeCommunication": EquipeCommunication,
 }
 
 export const pagesConfig = {
