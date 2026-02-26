@@ -212,8 +212,18 @@ export default function FIDossiersPage() {
                   </div>
                 </div>
 
+                {/* Journal Pastoral */}
+                <div className="rounded-xl border border-white/[0.07] p-4" style={{ background: "rgba(255,255,255,0.02)" }}>
+                  <InteractionsPastorales
+                    membre={selectedMembre}
+                    famillId={selectedFI}
+                    user={user}
+                    canWrite={["admin", "responsable_fi", "pilote_fi", "copilote_fi"].includes(user?.role)}
+                  />
+                </div>
+
                 <div>
-                  <p className="text-xs font-semibold text-zinc-300 mb-2">Historique des saisies</p>
+                  <p className="text-xs font-semibold text-zinc-300 mb-2">Historique des saisies cliniques</p>
                   <div className="space-y-1.5 max-h-64 overflow-y-auto">
                     {allSaisies
                       .filter((s) => s.membre_id === selectedMembre.id)
