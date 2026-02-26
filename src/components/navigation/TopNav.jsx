@@ -290,12 +290,28 @@ export default function TopNav({ user, currentPage }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const niveau = user?.niveau || "execution";
-  const role = user?.role || "admin";
-  const isAdmin = role === "admin";
-  const isTrone = user?.niveau === "trone" || isAdmin;
-  const isGouvernance = user?.niveau === "gouvernance" || isAdmin;
-  const isExecution = user?.niveau === "execution" || isAdmin;
+  // Support multi-rôles : tableau `roles` ou fallback sur `role` (string)
+  const userRoles = Array.isArray(user?.roles) && user.roles.length > 0
+    ? user.roles
+    : user?.role ? [user.role] : ["admin"];
+
+  const isAdmin = userRoles.includes("admin");
+
+  const TRONE_ROLES = ["trone", "admin"];
+  const GOUV_ROLES = ["gouvernance_direction", "gouvernance_suivi", "gouvernance_strategie", "admin"];
+  const EXEC_ROLES = [
+    "pilote_fi", "copilote_fi", "responsable_fi",
+    "etudiant", "responsable_formation",
+    "agent_terrain", "agent_virtuel", "responsable_evangelisation",
+    "producteur", "createur", "responsable_communication",
+    "admin"
+  ];
+
+  const isTrone = userRoles.some(r => TRONE_ROLES.includes(r));
+  const isGouvernance = userRoles.some(r => GOUV_ROLES.includes(r));
+  const isExecution = userRoles.some(r => EXEC_ROLES.includes(r));
+
+  const role = userRoles[0] || "admin";
 
   const tronePages = NAVIGATION.trone.items.map(i => i.page);
   const gouvPages = Object.values(NAVIGATION.gouvernance.groups).flatMap(g => g.items.map(i => i.page));
