@@ -59,6 +59,7 @@ const NAVIGATION = {
           { label: "Appropriation & OKR", page: "GouvMasterPlan", icon: Target },
           { label: "Planification Opérationnelle", page: "GouvAllocation", icon: Users },
           { label: "Roadmap & Transmission", page: "GouvRoadmap", icon: MapPin },
+          { label: "Notre Équipe", page: "EquipeGouvernance", icon: Users },
         ],
       },
       gouvernance_suivi: {
