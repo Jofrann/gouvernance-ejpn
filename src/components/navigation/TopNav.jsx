@@ -326,6 +326,9 @@ export default function TopNav({ user, currentPage }) {
         {/* Subtle gradient line at bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
+        {/* Mobile hamburger */}
+        <MobileNav user={user} currentPage={currentPage} userRoles={userRoles} />
+
         {/* Logo */}
         <Link to={createPageUrl("Home")} className="flex items-center gap-3 mr-4 flex-shrink-0 group">
           <div className="relative w-8 h-8">
@@ -341,10 +344,10 @@ export default function TopNav({ user, currentPage }) {
         </Link>
 
         {/* Divider */}
-        <div className="w-px h-5 bg-white/10 flex-shrink-0" />
+        <div className="w-px h-5 bg-white/10 flex-shrink-0 hidden lg:block" />
 
-        {/* Navigation */}
-        <nav className="flex items-center gap-1 flex-1">
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex items-center gap-1 flex-1">
           {/* Home */}
           <Link
             to={createPageUrl("Home")}
