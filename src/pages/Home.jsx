@@ -22,7 +22,8 @@ function StatCard({ title, value, subtitle, icon: Icon, trend, trendUp, color = 
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5, ease: "easeOut" }}
-      className={`relative rounded-2xl border ${c.border} bg-gradient-to-br ${c.bg} backdrop-blur-sm p-5 shadow-xl ${c.glow} overflow-hidden group hover:scale-[1.01] transition-transform duration-300`}
+      className={`relative rounded-2xl border ${c.border} overflow-hidden group hover:scale-[1.01] transition-all duration-300`}
+      style={{ background: "rgba(255,255,255,0.025)", backdropFilter: "blur(24px) saturate(1.4)" }}
     >
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%)" }} />
