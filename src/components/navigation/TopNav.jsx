@@ -373,6 +373,15 @@ export default function TopNav({ user, currentPage }) {
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
           </button>
 
+          {/* Mon Profil */}
+          <Link
+            to={createPageUrl("MonProfil")}
+            className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all"
+            title="Mon Profil"
+          >
+            <User className="w-4 h-4" />
+          </Link>
+
           {/* Parametres */}
           <Link
             to={createPageUrl("Parametres")}
