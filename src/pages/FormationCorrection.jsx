@@ -133,7 +133,17 @@ export default function FormationCorrectionPage() {
 
                 {selected.statut === "soumis" && (
                   <div className="space-y-3">
-                    <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Correction</p>
+                    {/* AI Pre-grader */}
+                    <AILivrableGrader
+                      livrable={selected}
+                      ressources={ressources}
+                      onApplyGrade={(preNote, preComment) => {
+                        setNote(preNote.toString());
+                        setCommentaire(preComment);
+                      }}
+                    />
+
+                    <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Correction finale</p>
                     <div>
                       <label className="text-xs text-zinc-500">Note sur 20</label>
                       <Input type="number" min="0" max="20" step="0.5" className="mt-1 bg-white border-zinc-200" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex: 15.5" />
