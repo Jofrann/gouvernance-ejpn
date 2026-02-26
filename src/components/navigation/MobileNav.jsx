@@ -84,7 +84,7 @@ const NAVIGATION = {
           { label: "Mon Portfolio", page: "FormationBulletin", icon: Award },
           { label: "Correction", page: "FormationCorrection", icon: CheckSquare },
           { label: "Assiduité", page: "FormationAssiduite", icon: UserCheck },
-          { label: "Notre Équipe", page: "EquipeFormation", icon: Users },
+          { label: "Notre Équipe", page: "Equipe", icon: Users },
         ],
       },
       evangelisation: {
