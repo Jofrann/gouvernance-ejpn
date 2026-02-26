@@ -14,6 +14,12 @@ import { cn } from "@/lib/utils";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
 
+const NOTIF_SAMPLES = [
+  { id: 1, title: "Nouveau livrable soumis", desc: "Un pilote a déposé un livrable en attente de correction.", time: "Il y a 5 min", dot: "bg-blue-400", read: false },
+  { id: 2, title: "Recommandation approuvée", desc: "Votre recommandation a été approuvée par le Trône.", time: "Il y a 1h", dot: "bg-emerald-400", read: false },
+  { id: 3, title: "Alerte Clinique", desc: "Un membre présente une chute libre sur 3 semaines.", time: "Il y a 2h", dot: "bg-red-400", read: true },
+];
+
 const ROLE_LABELS = {
   admin: "Administrateur",
   trone: "Trône",
