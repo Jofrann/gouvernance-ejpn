@@ -449,7 +449,7 @@ export default function TopNav({ user, currentPage }) {
           {/* Mon Profil */}
           <Link
             to={createPageUrl("MonProfil")}
-            className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all"
+            className="hidden lg:flex p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all"
             title="Mon Profil"
           >
             <User className="w-4 h-4" />
@@ -458,23 +458,23 @@ export default function TopNav({ user, currentPage }) {
           {/* Parametres */}
           <Link
             to={createPageUrl("Parametres")}
-            className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all"
+            className="hidden lg:flex p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all"
           >
             <Settings className="w-4 h-4" />
           </Link>
 
           {/* Divider */}
-          <div className="w-px h-5 bg-white/10" />
+          <div className="w-px h-5 bg-white/10 hidden lg:block" />
 
           {/* User */}
-          <div className="flex items-center gap-2.5">
+          <div className="hidden lg:flex items-center gap-2.5">
             <div className="relative">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shadow-lg">
                 {user?.full_name?.[0]?.toUpperCase() || "?"}
               </div>
               <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#080b12]" />
             </div>
-            <div className="hidden md:block">
+            <div>
               <p className="text-xs font-semibold text-white leading-none">{user?.full_name || "Utilisateur"}</p>
               <p className="text-[10px] text-zinc-500 mt-0.5">{ROLE_LABELS[role] || role}</p>
             </div>
@@ -483,7 +483,7 @@ export default function TopNav({ user, currentPage }) {
           {/* Logout */}
           <button
             onClick={() => base44.auth.logout()}
-            className="p-2 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
+            className="hidden lg:flex p-2 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
           >
             <LogOut className="w-3.5 h-3.5" />
           </button>
