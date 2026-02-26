@@ -67,13 +67,12 @@ const NAVIGATION = {
         label: "Familles d'Impact",
         icon: Home,
         items: [
-          { label: "Mes Maisons", page: "FIDashboard", icon: Heart },
+          { label: "Hub FI", page: "FIHub", icon: Heart },
           { label: "Suivi Hebdo", page: "FIClinique", icon: ClipboardList },
           { label: "Membres & Dossiers", page: "FIDossiers", icon: FolderOpen },
           { label: "Transferts", page: "FITransferts", icon: ArrowRightLeft },
-          { label: "Supervision", page: "FITourControle", icon: Eye },
-          { label: "Gestion FI", page: "FIManager", icon: Home },
-          { label: "Notre Équipe", page: "EquipeFI", icon: Users },
+          { label: "Tour de Contrôle", page: "FITourControle", icon: Eye },
+          { label: "Notre Équipe", page: "Equipe", icon: Users },
         ],
       },
       formation: {
