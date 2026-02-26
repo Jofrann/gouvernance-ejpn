@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarDays, Save, Lock, AlertTriangle, CheckCircle2, Clock, ChevronLeft, ChevronRight } from "lucide-react";
-import { format, startOfWeek, addWeeks, subWeeks, isAfter, isBefore, setDay, endOfDay } from "date-fns";
+import { format, startOfWeek, addWeeks, subWeeks, isAfter, setDay, endOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import CliniqueGrid from "@/components/fi/CliniqueGrid";
 import AIPastoralInsights from "@/components/ai/AIPastoralInsights";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 function getThursdayOfWeek(date) {
   const start = startOfWeek(date, { weekStartsOn: 1 });
@@ -17,8 +18,7 @@ function getThursdayOfWeek(date) {
 }
 
 function isLocked(thursdayDate) {
-  const lockTime = endOfDay(thursdayDate);
-  return isAfter(new Date(), lockTime);
+  return isAfter(new Date(), endOfDay(thursdayDate));
 }
 
 export default function FICliniquePage() {
@@ -30,6 +30,7 @@ export default function FICliniquePage() {
 
   const locked = isLocked(currentWeek);
   const weekLabel = format(currentWeek, "EEEE d MMMM yyyy", { locale: fr });
+  const semaineStr = format(currentWeek, "yyyy-MM-dd");
 
   const { data: familles = [] } = useQuery({
     queryKey: ["familles"],
@@ -37,9 +38,7 @@ export default function FICliniquePage() {
   });
 
   useEffect(() => {
-    if (familles.length > 0 && !selectedFI) {
-      setSelectedFI(familles[0].id);
-    }
+    if (familles.length > 0 && !selectedFI) setSelectedFI(familles[0].id);
   }, [familles, selectedFI]);
 
   const { data: membres = [] } = useQuery({
@@ -47,8 +46,6 @@ export default function FICliniquePage() {
     queryFn: () => selectedFI ? base44.entities.Membre.filter({ famille_impact_id: selectedFI }) : Promise.resolve([]),
     enabled: !!selectedFI,
   });
-
-  const semaineStr = format(currentWeek, "yyyy-MM-dd");
 
   const { data: saisies = [], isLoading: loadingSaisies } = useQuery({
     queryKey: ["saisies", selectedFI, semaineStr],
@@ -58,21 +55,13 @@ export default function FICliniquePage() {
 
   useEffect(() => {
     const map = {};
-    saisies.forEach((s) => {
-      map[s.membre_id] = s;
-    });
+    saisies.forEach((s) => { map[s.membre_id] = s; });
     setLocalSaisies(map);
   }, [saisies]);
 
   const handleUpdateSaisie = (membreId, field, value) => {
     if (locked) return;
-    setLocalSaisies((prev) => ({
-      ...prev,
-      [membreId]: {
-        ...prev[membreId],
-        [field]: value,
-      },
-    }));
+    setLocalSaisies((prev) => ({ ...prev, [membreId]: { ...prev[membreId], [field]: value } }));
   };
 
   const handleSave = async () => {
@@ -81,7 +70,6 @@ export default function FICliniquePage() {
     for (const membre of membres) {
       const local = localSaisies[membre.id];
       if (!local) continue;
-
       const existing = saisies.find((s) => s.membre_id === membre.id);
       const data = {
         membre_id: membre.id,
@@ -94,7 +82,6 @@ export default function FICliniquePage() {
         note_spirituel: local.note_spirituel,
         commentaire: local.commentaire || "",
       };
-
       if (existing) {
         await base44.entities.CliniqueSaisie.update(existing.id, data);
       } else {
@@ -113,132 +100,103 @@ export default function FICliniquePage() {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Clinique du Jeudi</h1>
+          <p className="text-[10px] font-bold text-blue-400/80 uppercase tracking-[0.25em] mb-1">Familles d'Impact</p>
+          <h1 className="text-2xl font-black text-white tracking-tight">Clinique du Jeudi</h1>
           <p className="text-sm text-zinc-500 mt-0.5">Saisie hebdomadaire des 4 dimensions de vie</p>
         </div>
-        <div className="flex items-center gap-2">
-          {!locked && (
-            <Button
-              onClick={handleSave}
-              disabled={saving}
-              className="bg-zinc-900 hover:bg-zinc-800 text-white gap-2"
-            >
-              <Save className="w-4 h-4" />
-              {saving ? "Enregistrement..." : "Sauvegarder"}
-            </Button>
-          )}
-        </div>
-      </div>
+        {!locked && (
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="bg-blue-600/80 hover:bg-blue-600 border border-blue-500/30 text-white gap-2 backdrop-blur-sm"
+          >
+            <Save className="w-4 h-4" />
+            {saving ? "Enregistrement..." : "Sauvegarder"}
+          </Button>
+        )}
+      </motion.div>
 
       {/* Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        {/* FI Selector */}
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
         <Select value={selectedFI || ""} onValueChange={setSelectedFI}>
-          <SelectTrigger className="w-64 bg-white border-zinc-200">
+          <SelectTrigger className="w-64 bg-white/5 border-white/10 text-white">
             <SelectValue placeholder="Sélectionner une FI" />
           </SelectTrigger>
           <SelectContent>
-            {familles.map((fi) => (
-              <SelectItem key={fi.id} value={fi.id}>
-                {fi.name}
-              </SelectItem>
-            ))}
+            {familles.map((fi) => <SelectItem key={fi.id} value={fi.id}>{fi.name}</SelectItem>)}
           </SelectContent>
         </Select>
 
-        {/* Week Navigation */}
-        <div className="flex items-center gap-1 bg-white border border-zinc-200 rounded-lg p-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}
-          >
+        <div
+          className="flex items-center gap-1 rounded-xl border border-white/[0.08] p-1"
+          style={{ background: "rgba(255,255,255,0.03)", backdropFilter: "blur(20px)" }}
+        >
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10" onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}>
             <ChevronLeft className="w-4 h-4" />
           </Button>
           <div className="flex items-center gap-2 px-3">
-            <CalendarDays className="w-4 h-4 text-zinc-400" />
-            <span className="text-sm font-medium text-zinc-700 capitalize whitespace-nowrap">{weekLabel}</span>
+            <CalendarDays className="w-4 h-4 text-zinc-500" />
+            <span className="text-sm font-medium text-zinc-300 capitalize whitespace-nowrap">{weekLabel}</span>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}
-            disabled={isAfter(addWeeks(currentWeek, 1), new Date())}
-          >
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10" onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))} disabled={isAfter(addWeeks(currentWeek, 1), new Date())}>
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
 
-        {/* Status Badges */}
         <div className="flex items-center gap-2">
           {locked ? (
-            <Badge variant="secondary" className="bg-red-50 text-red-700 border border-red-200 gap-1">
+            <Badge className="bg-red-500/10 text-red-400 border border-red-500/30 gap-1">
               <Lock className="w-3 h-3" /> Verrouillé
             </Badge>
           ) : (
-            <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border border-emerald-200 gap-1">
+            <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 gap-1">
               <CheckCircle2 className="w-3 h-3" /> Ouvert
             </Badge>
           )}
-          <Badge variant="outline" className="gap-1 text-zinc-500">
-            <Clock className="w-3 h-3" />
-            {completionCount}/{membres.length} complétés
+          <Badge className="bg-white/5 text-zinc-400 border border-white/10 gap-1">
+            <Clock className="w-3 h-3" /> {completionCount}/{membres.length} complétés
           </Badge>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Completion Warning */}
+      {/* Warning */}
       {!locked && completionCount < membres.length && membres.length > 0 && (
-        <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-50 border border-amber-200">
-          <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-          <p className="text-xs text-amber-700">
-            <span className="font-semibold">{membres.length - completionCount} membre(s)</span> n'ont pas encore été évalués cette semaine.
-            Le formulaire se verrouillera automatiquement jeudi soir.
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-500/20 bg-amber-500/5">
+          <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+          <p className="text-xs text-amber-400">
+            <span className="font-semibold">{membres.length - completionCount} membre(s)</span> n'ont pas encore été évalués cette semaine. Le formulaire se verrouillera automatiquement jeudi soir.
           </p>
-        </div>
+        </motion.div>
       )}
 
-      {/* AI Pastoral Insights — for pilote_fi (uses current week's saisies) */}
+      {/* AI Pastoral Insights */}
       {membres.length > 0 && saisies.length > 0 && (
-        <AIPastoralInsights
-          membres={membres}
-          saisies={saisies}
-          fiName={familles.find((f) => f.id === selectedFI)?.name || "FI"}
-        />
+        <AIPastoralInsights membres={membres} saisies={saisies} fiName={familles.find((f) => f.id === selectedFI)?.name || "FI"} />
       )}
 
       {/* Data Grid */}
       {loadingSaisies ? (
         <div className="flex items-center justify-center py-20">
-          <div className="w-6 h-6 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-blue-500/60 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <CliniqueGrid
-          membres={membres}
-          saisies={localSaisies}
-          onUpdateSaisie={handleUpdateSaisie}
-          locked={locked}
-        />
+        <CliniqueGrid membres={membres} saisies={localSaisies} onUpdateSaisie={handleUpdateSaisie} locked={locked} />
       )}
 
       {/* Legend */}
       <div className="flex flex-wrap gap-4 px-1">
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm bg-emerald-50 border border-emerald-200" />
-          <span className="text-xs text-zinc-500">8-10 : Excellent</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm bg-amber-50 border border-amber-200" />
-          <span className="text-xs text-zinc-500">5-7 : Moyen</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm bg-red-50 border border-red-200" />
-          <span className="text-xs text-zinc-500">0-4 : Critique</span>
-        </div>
+        {[
+          ["bg-emerald-500/20 border-emerald-500/30", "8-10 : Excellent"],
+          ["bg-amber-500/20 border-amber-500/30", "5-7 : Moyen"],
+          ["bg-red-500/20 border-red-500/30", "0-4 : Critique"],
+        ].map(([cls, label]) => (
+          <div key={label} className="flex items-center gap-1.5">
+            <div className={cn("w-3 h-3 rounded-sm border", cls)} />
+            <span className="text-xs text-zinc-500">{label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
