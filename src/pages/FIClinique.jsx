@@ -46,6 +46,17 @@ export default function FICliniquePage() {
     if (familles.length > 0 && !selectedFI) setSelectedFI(familles[0].id);
   }, [familles, selectedFI]);
 
+  // Real-time: subscribe to CliniqueSaisie changes so all pilotes see updates instantly
+  useEffect(() => {
+    if (!selectedFI) return;
+    const unsub = base44.entities.CliniqueSaisie.subscribe((event) => {
+      if (event.data?.famille_impact_id === selectedFI && event.data?.semaine === semaineStr) {
+        queryClient.invalidateQueries({ queryKey: ["saisies", selectedFI, semaineStr] });
+      }
+    });
+    return unsub;
+  }, [selectedFI, semaineStr, queryClient]);
+
   const { data: membres = [] } = useQuery({
     queryKey: ["membres", selectedFI],
     queryFn: () => selectedFI ? base44.entities.Membre.filter({ famille_impact_id: selectedFI }) : Promise.resolve([]),
