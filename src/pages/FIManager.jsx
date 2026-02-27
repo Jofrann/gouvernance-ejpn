@@ -44,11 +44,11 @@ export default function FIManagerPage() {
     return () => { unsubFI(); unsubM(); };
   }, [queryClient]);
 
-  const role = user?.role;
+  const userRoles = getUserRoles(user);
   // Full admin/write: can create, edit all fields, delete
-  const canWrite = role === "admin" || role === "responsable_fi";
+  const canWrite = userHasRole(user, ["admin", "responsable_fi"]);
   // Pilote/copilote: can only edit status of their own FI
-  const isPilote = role === "pilote_fi" || role === "copilote_fi";
+  const isPilote = userHasRole(user, ["pilote_fi", "copilote_fi"]);
 
   // Filter FIs by role
   const mesFamilles = canWrite
@@ -57,7 +57,11 @@ export default function FIManagerPage() {
         f.pilote_email === user?.email || f.co_pilote_email === user?.email
       );
 
-  const piloteUsers = users.filter(u => ["pilote_fi", "copilote_fi", "responsable_fi"].includes(u.role));
+  // Eligible pilotes: users with any FI-related role
+  const piloteUsers = users.filter(u => {
+    const roles = getUserRoles(u);
+    return roles.some(r => ["pilote_fi", "copilote_fi", "responsable_fi"].includes(r));
+  });
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.FamilleImpact.create(data),
