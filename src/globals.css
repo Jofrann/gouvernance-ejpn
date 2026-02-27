@@ -36,11 +36,26 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Prevent horizontal overflow on mobile */
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-[#060810] text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
+  }
+
+  /* Touch-friendly minimum target size */
+  button, a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Override for small inline buttons/badges */
+  .badge-dark, span[class*="rounded"] {
+    min-height: unset;
   }
 
   /* Scrollbar */
