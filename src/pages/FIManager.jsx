@@ -57,12 +57,6 @@ export default function FIManagerPage() {
         f.pilote_email === user?.email || f.co_pilote_email === user?.email
       );
 
-  // Eligible pilotes: users with any FI-related role OR admin
-  const piloteUsers = users.filter(u => {
-    const roles = getUserRoles(u);
-    return roles.some(r => ["pilote_fi", "copilote_fi", "responsable_fi", "admin"].includes(r));
-  });
-
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.FamilleImpact.create(data),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["familles"] }); closeForm(); },
