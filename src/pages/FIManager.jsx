@@ -106,6 +106,15 @@ export default function FIManagerPage() {
     setForm(f => ({ ...f, co_pilote_email: email, co_pilote_nom: u?.full_name || "" }));
   };
 
+  // Responsable FI can also add themselves as pilote/co-pilote
+  const allSelectableUsers = (() => {
+    const inList = piloteUsers.some(u => u.email === user?.email);
+    if (!inList && userHasRole(user, ["responsable_fi"]) && user) {
+      return [...piloteUsers, user];
+    }
+    return piloteUsers;
+  })();
+
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-4 md:space-y-6">
       {/* Header */}
