@@ -6,15 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Edit2, ExternalLink } from "lucide-react";
+import { Search, Plus, Trash2, Edit2, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTrackActivity } from "@/components/equipe/LiveActivityIndicator";
 import { createPageUrl } from "@/utils";
 
 const STATUS_COLORS = {
-  active: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-  en_pause: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-  fermee: "bg-red-500/20 text-red-300 border-red-500/30",
+  active: "bg-emerald-500/10 text-emerald-400 border-emerald-400/30",
+  en_pause: "bg-amber-500/10 text-amber-400 border-amber-400/30",
+  fermee: "bg-red-500/10 text-red-400 border-red-400/30",
 };
 
 export default function FIManagerPage() {
