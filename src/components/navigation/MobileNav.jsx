@@ -13,6 +13,10 @@ import {
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { base44 } from "@/api/base44Client";
+import {
+  TRONE_ROLES, GOUV_ROLES, EXEC_ROLES,
+  getAllowedExecPoles, getAllowedGouvGroups
+} from "@/components/shared/roleAccess";
 
 const NAVIGATION = {
   trone: {

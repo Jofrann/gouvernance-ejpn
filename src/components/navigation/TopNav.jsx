@@ -14,6 +14,10 @@ import { cn } from "@/lib/utils";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
 import MobileNav from "@/components/navigation/MobileNav";
+import {
+  TRONE_ROLES, GOUV_ROLES, EXEC_ROLES,
+  getAllowedExecPoles, getAllowedGouvGroups
+} from "@/components/shared/roleAccess";
 
 const NOTIF_SAMPLES = [
   { id: 1, title: "Nouveau livrable soumis", desc: "Un pilote a déposé un livrable en attente de correction.", time: "Il y a 5 min", dot: "bg-blue-400", read: false },
