@@ -95,6 +95,60 @@ export default function FIDossiersPage() {
     return () => { unsubMembres(); unsubSaisies(); unsubInteractions(); };
   }, [selectedFI, queryClient]);
 
+  const userRole = user?.role || "";
+  const canManage = CAN_MANAGE_ROLES.includes(userRole);
+
+  const openCreate = () => {
+    setEditingMembre(null);
+    setFormData({ ...EMPTY_FORM, famille_impact_id: selectedFI });
+    setShowForm(true);
+  };
+
+  const openEdit = (membre, e) => {
+    e?.stopPropagation();
+    setEditingMembre(membre);
+    setFormData({
+      nom_complet: membre.nom_complet || "",
+      telephone: membre.telephone || "",
+      email: membre.email || "",
+      ville: membre.ville || "",
+      age: membre.age || "",
+      genre: membre.genre || "",
+      statut_pipeline: membre.statut_pipeline || "passif",
+      potentiel_formation: membre.potentiel_formation || false,
+      notes: membre.notes || "",
+      famille_impact_id: membre.famille_impact_id,
+    });
+    setShowForm(true);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const payload = {
+      ...formData,
+      age: formData.age ? Number(formData.age) : null,
+      famille_impact_id: formData.famille_impact_id || selectedFI,
+    };
+    if (editingMembre) {
+      await base44.entities.Membre.update(editingMembre.id, payload);
+    } else {
+      await base44.entities.Membre.create(payload);
+    }
+    queryClient.invalidateQueries({ queryKey: ["membres", selectedFI] });
+    queryClient.invalidateQueries({ queryKey: ["all-membres"] });
+    setSaving(false);
+    setShowForm(false);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    await base44.entities.Membre.delete(deleteTarget.id);
+    queryClient.invalidateQueries({ queryKey: ["membres", selectedFI] });
+    queryClient.invalidateQueries({ queryKey: ["all-membres"] });
+    setDeleteTarget(null);
+    if (selectedMembre?.id === deleteTarget.id) setSelectedMembre(null);
+  };
+
   const filtered = membres.filter((m) =>
     m.nom_complet?.toLowerCase().includes(search.toLowerCase())
   );
