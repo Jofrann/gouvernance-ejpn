@@ -19,9 +19,26 @@ export const ROLE_EXEC_POLES = {
   admin:                   ["familles_impact", "formation", "evangelisation", "communication"],
 };
 
-export const TRONE_ROLES = ["trone", "admin"];
-export const GOUV_ROLES  = ["gouvernance_direction", "gouvernance_suivi", "gouvernance_strategie", "admin"];
+// Legacy aliases — keep for backward compat
+export const TRONE_ROLES = ["trone", "admin", "responsable_general"];
+export const GOUV_ROLES  = [
+  "gouvernance_direction", "gouvernance_suivi", "gouvernance_strategie",
+  // legacy aliases from Parametres (old role names)
+  "directrice_execution", "responsable_suivi", "analyste_strategique",
+  "admin"
+];
 export const EXEC_ROLES  = Object.keys(ROLE_EXEC_POLES);
+
+// Normalize legacy role names to canonical ones
+export function normalizeRole(role) {
+  const MAP = {
+    responsable_general:    "trone",
+    directrice_execution:   "gouvernance_direction",
+    responsable_suivi:      "gouvernance_suivi",
+    analyste_strategique:   "gouvernance_strategie",
+  };
+  return MAP[role] || role;
+}
 
 // Gouvernance sub-role visibility
 export const GOUV_GROUP_ROLES = {
