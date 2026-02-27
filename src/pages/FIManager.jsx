@@ -172,28 +172,31 @@ export default function FIManagerPage() {
                 </div>
 
                 {/* Actions par rôle */}
-                <div className="flex gap-2 pt-1 border-t border-white/5">
-                  {canWrite && (
-                    <>
-                      <Button size="sm" variant="ghost" className="flex-1 text-zinc-400 hover:text-white hover:bg-white/10 h-8" onClick={() => openEdit(fi)}>
-                        <Pencil className="w-3.5 h-3.5 mr-1.5" />Modifier
-                      </Button>
-                      <Button size="sm" variant="ghost" className="text-red-500/60 hover:text-red-400 hover:bg-red-500/10 h-8" onClick={() => setDeleteFI(fi)}>
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </>
-                  )}
-                  {isPilote && (
-                    <Button size="sm" variant="ghost" className="flex-1 text-zinc-400 hover:text-white hover:bg-white/10 h-8" onClick={() => openStatusEdit(fi)}>
-                      <Pencil className="w-3.5 h-3.5 mr-1.5" />Changer le statut
-                    </Button>
-                  )}
-                  {!canWrite && !isPilote && (
-                    <div className="flex-1 flex items-center gap-1.5 justify-center text-xs text-zinc-600">
-                      <Lock className="w-3 h-3" /> Lecture seule
+                {(() => {
+                  const isMyFI = fi.pilote_email === user?.email || fi.co_pilote_email === user?.email;
+                  const canEditThis = canWriteAll || isMyFI;
+                  return (
+                    <div className="flex gap-2 pt-1 border-t border-white/5">
+                      {canEditThis && (
+                        <>
+                          <Button size="sm" variant="ghost" className="flex-1 text-zinc-400 hover:text-white hover:bg-white/10 h-8" onClick={() => openEdit(fi)}>
+                            <Pencil className="w-3.5 h-3.5 mr-1.5" />Modifier
+                          </Button>
+                          {canWriteAll && (
+                            <Button size="sm" variant="ghost" className="text-red-500/60 hover:text-red-400 hover:bg-red-500/10 h-8" onClick={() => setDeleteFI(fi)}>
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          )}
+                        </>
+                      )}
+                      {!canEditThis && (
+                        <div className="flex-1 flex items-center gap-1.5 justify-center text-xs text-zinc-600">
+                          <Lock className="w-3 h-3" /> Lecture seule
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  );
+                })()}
               </div>
             </motion.div>
           );
