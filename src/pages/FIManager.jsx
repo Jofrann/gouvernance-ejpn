@@ -106,12 +106,10 @@ export default function FIManagerPage() {
     setForm(f => ({ ...f, co_pilote_email: email, co_pilote_nom: u?.full_name || "" }));
   };
 
-  // Responsable FI can also add themselves as pilote/co-pilote
+  // Merge current user into the selectable list if missing (edge case: no role yet)
   const allSelectableUsers = (() => {
     const inList = piloteUsers.some(u => u.email === user?.email);
-    if (!inList && userHasRole(user, ["responsable_fi"]) && user) {
-      return [...piloteUsers, user];
-    }
+    if (!inList && user) return [...piloteUsers, user];
     return piloteUsers;
   })();
 
