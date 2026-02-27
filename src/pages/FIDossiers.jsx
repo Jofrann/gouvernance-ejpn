@@ -37,12 +37,19 @@ const STATUT_COLORS = {
   reproducteur: "bg-amber-500/20 text-amber-400 border-amber-500/30",
 };
 
+const CAN_MANAGE_ROLES = ["admin", "responsable_fi", "pilote_fi", "copilote_fi"];
+
 export default function FIDossiersPage() {
   const queryClient = useQueryClient();
   const [selectedFI, setSelectedFI] = useState(null);
   const [search, setSearch] = useState("");
   const [selectedMembre, setSelectedMembre] = useState(null);
   const [user, setUser] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingMembre, setEditingMembre] = useState(null);
+  const [formData, setFormData] = useState(EMPTY_FORM);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
