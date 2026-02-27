@@ -305,6 +305,7 @@ export default function TopNav({ user, currentPage }) {
   const allowedGouvGroups = getAllowedGouvGroups(userRoles);
 
   const role = userRoles[0] || "admin";
+  const roleDisplayLabel = ROLE_LABELS[role] || ROLE_LABELS[rawRoles[0]] || role;
 
   const tronePages = NAVIGATION.trone.items.map(i => i.page);
   const gouvPages = Object.values(NAVIGATION.gouvernance.groups).flatMap(g => g.items.map(i => i.page));
