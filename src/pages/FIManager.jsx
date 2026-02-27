@@ -100,12 +100,15 @@ export default function FIManagerPage() {
     setForm(f => ({ ...f, co_pilote_email: email, co_pilote_nom: u?.full_name || "" }));
   };
 
-  // Merge current user into the selectable list if missing (edge case: no role yet)
-  const allSelectableUsers = (() => {
-    const inList = piloteUsers.some(u => u.email === user?.email);
-    if (!inList && user) return [...piloteUsers, user];
-    return piloteUsers;
-  })();
+  // Tous les utilisateurs sont sélectionnables comme pilote/co-pilote par le responsable FI ou admin
+  const allSelectableUsers = users.filter(u => {
+    if (!u.email) return false;
+    const roles = getUserRoles(u);
+    // inclure les users avec rôles FI, les admins, et l'utilisateur courant lui-même
+    return roles.some(r => ["pilote_fi", "copilote_fi", "responsable_fi", "admin"].includes(r))
+      || u.role === "admin"
+      || u.email === user?.email;
+  });
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-4 md:space-y-6">
