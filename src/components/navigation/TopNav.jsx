@@ -300,19 +300,13 @@ export default function TopNav({ user, currentPage }) {
 
   const isAdmin = userRoles.includes("admin");
 
-  const TRONE_ROLES = ["trone", "admin"];
-  const GOUV_ROLES = ["gouvernance_direction", "gouvernance_suivi", "gouvernance_strategie", "admin"];
-  const EXEC_ROLES = [
-    "pilote_fi", "copilote_fi", "responsable_fi",
-    "etudiant", "responsable_formation",
-    "agent_terrain", "agent_virtuel", "responsable_evangelisation",
-    "producteur", "createur", "responsable_communication",
-    "admin"
-  ];
-
   const isTrone = userRoles.some(r => TRONE_ROLES.includes(r));
   const isGouvernance = userRoles.some(r => GOUV_ROLES.includes(r));
   const isExecution = userRoles.some(r => EXEC_ROLES.includes(r));
+
+  // Filtered exec poles & gouv groups for this user
+  const allowedExecPoles = getAllowedExecPoles(userRoles);
+  const allowedGouvGroups = getAllowedGouvGroups(userRoles);
 
   const role = userRoles[0] || "admin";
 
