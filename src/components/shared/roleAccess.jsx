@@ -48,6 +48,25 @@ export const GOUV_GROUP_ROLES = {
 };
 
 /**
+ * Returns all roles for a user (supports multi-roles via user.roles array).
+ * Falls back to [user.role] for backward compatibility.
+ */
+export function getUserRoles(user) {
+  if (!user) return [];
+  if (Array.isArray(user.roles) && user.roles.length > 0) return user.roles;
+  return user.role ? [user.role] : [];
+}
+
+/**
+ * Check if a user has a specific role (supports multi-roles).
+ */
+export function userHasRole(user, roleOrRoles) {
+  const userRoles = getUserRoles(user);
+  const check = Array.isArray(roleOrRoles) ? roleOrRoles : [roleOrRoles];
+  return check.some(r => userRoles.includes(r));
+}
+
+/**
  * Given a user's roles array, return the list of execution pole keys they can see.
  */
 export function getAllowedExecPoles(userRoles = []) {
