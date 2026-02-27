@@ -130,53 +130,53 @@ export default function FIManagerPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map((fi, i) => (
           <motion.div key={fi.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4 space-y-4 hover:border-white/[0.14] transition-all">
+            <div className="ai-card p-5 space-y-4 hover:border-border/80 transition-all">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-white">{fi.name}</h3>
-                  <p className="text-xs text-zinc-500 mt-0.5">{fi.campus}</p>
+                  <h3 className="text-lg font-semibold text-foreground">{fi.name}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">{fi.campus}</p>
                 </div>
-                <Badge className={`text-[10px] border ${STATUS_COLORS[fi.status]}`}>
+                <Badge className={`text-xs border ${STATUS_COLORS[fi.status]}`}>
                   {fi.status}
                 </Badge>
               </div>
 
-              <div className="space-y-2 border-t border-white/[0.05] pt-3">
+              <div className="space-y-2 border-t border-border pt-3">
                 <div>
-                  <p className="text-[10px] text-zinc-600 uppercase">Pilote</p>
-                  <p className="text-sm font-semibold text-white">{fi.pilote_nom}</p>
-                  <p className="text-xs text-zinc-500">{fi.pilote_email}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase">Pilote</p>
+                  <p className="text-sm font-medium text-foreground">{fi.pilote_nom}</p>
+                  <p className="text-xs text-muted-foreground">{fi.pilote_email}</p>
                 </div>
                 {fi.co_pilote_nom && (
                   <div>
-                    <p className="text-[10px] text-zinc-600 uppercase">Co-Pilote</p>
-                    <p className="text-sm text-white">{fi.co_pilote_nom}</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase">Co-Pilote</p>
+                    <p className="text-sm text-foreground">{fi.co_pilote_nom}</p>
                   </div>
                 )}
               </div>
 
-              <div className="flex gap-2 pt-2 border-t border-white/[0.05]">
+              <div className="flex gap-2 pt-2 border-t border-border">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 gap-1.5"
+                  className="flex-1"
                   onClick={() => handleOpenForm(fi)}
                 >
-                  <Edit2 className="w-3.5 h-3.5" /> Modifier
+                  <Edit2 className="w-3.5 h-3.5" />
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 gap-1.5"
+                  className="flex-1"
                   onClick={() => window.location.href = createPageUrl("FIHub") + `?fiId=${fi.id}`}
                 >
-                  <ExternalLink className="w-3.5 h-3.5" /> Hub
+                  <ExternalLink className="w-3.5 h-3.5" />
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => deleteFIMutation.mutate(fi.id)}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                  className="text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </Button>
@@ -187,8 +187,8 @@ export default function FIManagerPage() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="py-16 text-center text-sm text-zinc-600">
-          Aucune FI trouvée
+        <div className="py-16 text-center text-sm text-muted-foreground">
+          Aucune Famille d'Impact trouvée
         </div>
       )}
 
