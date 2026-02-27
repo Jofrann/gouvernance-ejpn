@@ -178,13 +178,13 @@ export default function ParametresPage() {
 
   const handleSave = async () => {
     setSaving(true);
+    const primaryRole = (form.roles && form.roles.length > 0) ? form.roles[0] : form.role;
     if (editUser) {
-      await base44.entities.User.update(editUser.id, { role: form.role, niveau: form.niveau, pole: form.pole });
+      await base44.entities.User.update(editUser.id, { role: primaryRole, roles: form.roles || [primaryRole], niveau: form.niveau, pole: form.pole });
       toast.success("Utilisateur mis à jour");
     } else {
       if (!inviteEmail) { toast.error("Email requis"); setSaving(false); return; }
-      await base44.users.inviteUser(inviteEmail, form.role === "admin" ? "admin" : "user");
-      // Store extra fields — will be applied after first login
+      await base44.users.inviteUser(inviteEmail, primaryRole === "admin" ? "admin" : "user");
       toast.success(`Invitation envoyée à ${inviteEmail}`);
     }
     queryClient.invalidateQueries({ queryKey: ["users"] });
