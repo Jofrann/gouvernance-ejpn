@@ -188,6 +188,11 @@ export default function FIDossiersPage() {
             className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
           />
         </div>
+        {canManage && selectedFI && (
+          <Button onClick={openCreate} className="bg-blue-600 hover:bg-blue-700 text-white gap-2 flex-shrink-0">
+            <Plus className="w-4 h-4" /> Nouveau membre
+          </Button>
+        )}
       </div>
 
       {/* Cards grid */}
