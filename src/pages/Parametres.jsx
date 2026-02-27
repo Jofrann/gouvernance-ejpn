@@ -203,7 +203,19 @@ export default function ParametresPage() {
   const handleRoleChange = (value) => {
     const roleInfo = getRoleInfo(value);
     const niveauMap = { "I": "trone", "II": "gouvernance", "III": "execution" };
-    setForm({ role: value, niveau: niveauMap[roleInfo.niveau] || "execution", pole: roleInfo.pole || "" });
+    setForm(f => ({ ...f, role: value, roles: [value], niveau: niveauMap[roleInfo.niveau] || "execution", pole: roleInfo.pole || "" }));
+  };
+
+  const toggleExtraRole = (value) => {
+    setForm(f => {
+      const current = f.roles || [f.role];
+      if (current.includes(value)) {
+        const next = current.filter(r => r !== value);
+        return { ...f, roles: next.length > 0 ? next : [f.role] };
+      } else {
+        return { ...f, roles: [...current, value] };
+      }
+    });
   };
 
   // Group by niveau for display
