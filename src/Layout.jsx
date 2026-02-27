@@ -47,8 +47,7 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <div className="min-h-screen bg-[#060810] relative">
+      <div className="min-h-screen bg-[#060810] relative">
           {/* Animated canvas background */}
           <AnimatedBackground />
 
