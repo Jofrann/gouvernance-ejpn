@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import {
   Crown, Shield, Home, GraduationCap, Globe, Megaphone,
   Mail, Target, Eye, FlaskConical, BookOpen, Film, PenTool,
-  MapPin, Wifi, Users, ToggleLeft, ToggleRight
+  MapPin, Wifi, Users, ToggleLeft, ToggleRight, ChevronRight
 } from "lucide-react";
 import MemoFlashBoard from "@/components/equipe/MemoFlashBoard";
 import MemberSlideOver from "@/components/equipe/MemberSlideOver";
@@ -98,6 +98,19 @@ const POLES = [
   },
 ];
 
+// Execution poles (for "Toutes les équipes" grouped view)
+const EXEC_POLES = ["familles_impact", "formation", "evangelisation", "communication"];
+
+// Map role -> pole key
+const ROLE_TO_POLE = {
+  trone: "trone", admin: "trone",
+  directrice_execution: "gouvernance", responsable_suivi: "gouvernance", analyste_strategique: "gouvernance",
+  responsable_fi: "familles_impact", pilote_fi: "familles_impact", copilote_fi: "familles_impact",
+  responsable_formation: "formation", etudiant: "formation",
+  responsable_evangelisation: "evangelisation", agent_terrain: "evangelisation", agent_virtuel: "evangelisation",
+  responsable_communication: "communication", producteur: "communication", createur: "communication",
+};
+
 function MemberCard({ user, pole, onClick }) {
   const group = pole.groups.find(g => g.key === user.role);
   const initials = user.full_name?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "?";
@@ -126,36 +139,61 @@ function MemberCard({ user, pole, onClick }) {
   );
 }
 
+// Renders members grouped by their pole groups
+function PoleSection({ pole, users, onSelect }) {
+  const allRoleKeys = pole.groups.map(g => g.key);
+  const membres = users.filter(u => allRoleKeys.includes(u.role));
+  if (membres.length === 0) return null;
+  const PoleIcon = pole.icon;
+  return (
+    <div>
+      <div className="flex items-center gap-4 mb-4">
+        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${pole.gradient} flex items-center justify-center shadow flex-shrink-0`}>
+          <PoleIcon className="w-4 h-4 text-white" />
+        </div>
+        <div>
+          <h2 className="text-base font-bold text-white">{pole.label}</h2>
+          <p className="text-xs text-zinc-500">{pole.subtitle}</p>
+        </div>
+        <div className="ml-auto text-xs text-zinc-600">{membres.length} membre{membres.length !== 1 ? "s" : ""}</div>
+      </div>
+      <div className="space-y-6 pl-2 border-l border-white/[0.04]">
+        {pole.groups.map(group => {
+          const groupMembers = membres.filter(u => u.role === group.key);
+          if (groupMembers.length === 0) return null;
+          return (
+            <div key={group.key}>
+              <div className="flex items-center gap-2 mb-3">
+                <group.icon className="w-3.5 h-3.5 text-zinc-500" />
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{group.label}</h3>
+                <span className="text-xs text-zinc-700">({groupMembers.length})</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {groupMembers.map(u => (
+                  <MemberCard key={u.id} user={u} pole={pole} onClick={() => onSelect(u)} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function EquipePage() {
   useTrackActivity("Equipe");
-  const urlParams = new URLSearchParams(window.location.search);
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
-  // toggle: "mon_equipe" (filtered) or "tous" (all)
   const [viewMode, setViewMode] = useState("mon_equipe");
+  // For "toutes les équipes": which top-level tab (trone/gouvernance/execution)
+  const [topTab, setTopTab] = useState("trone");
+  // For execution sub-pole tab
+  const [execTab, setExecTab] = useState("familles_impact");
 
   useEffect(() => { base44.auth.me().then(setCurrentUser).catch(() => {}); }, []);
 
   const role = currentUser?.role;
-  const isPilote = role === "pilote_fi" || role === "copilote_fi";
-  const primaryPole = getPrimaryExecPole(role) || "trone";
-
-  // Default tab: URL param > primary pole for exec roles > trone
-  const initialTab = urlParams.get("pole") || primaryPole;
-  const [activeTab, setActiveTab] = useState(initialTab);
-
-  // Which tabs to show:
-  // - admin / trone see all
-  // - other roles see only relevant pole(s), but can toggle to see all
-  const isAdmin = role === "admin" || role === "trone";
-  const defaultVisiblePoles =
-    viewMode === "tous" || isAdmin
-      ? POLES.map(p => p.key)
-      : role === "pilote_fi" || role === "copilote_fi"
-        ? ["familles_impact"] // pilotes: only their FI pole tab
-        : POLES.map(p => p.key); // fallback: show all for non-exec roles
-
-  const visiblePoles = POLES.filter(p => defaultVisiblePoles.includes(p.key));
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["users-equipe"],
@@ -163,32 +201,22 @@ export default function EquipePage() {
     refetchInterval: 20000,
   });
 
-  const { data: familles = [] } = useQuery({
-    queryKey: ["familles-equipe"],
-    queryFn: () => base44.entities.FamilleImpact.list(),
-    enabled: isPilote,
-  });
+  // ── MON ÉQUIPE mode ──
+  // Show only the members of the user's own pole
+  const myPoleKey = ROLE_TO_POLE[role] || "trone";
+  const myPole = POLES.find(p => p.key === myPoleKey) || POLES[0];
+  const myPoleRoleKeys = myPole.groups.map(g => g.key);
+  const myTeamMembers = users.filter(u => myPoleRoleKeys.includes(u.role));
 
-  // Ensure activeTab is always in visiblePoles
-  const safeTab = visiblePoles.find(p => p.key === activeTab) ? activeTab : (visiblePoles[0]?.key || "familles_impact");
+  // ── TOUTES LES ÉQUIPES mode ──
+  const execPoles = POLES.filter(p => EXEC_POLES.includes(p.key));
+  const currentExecPole = execPoles.find(p => p.key === execTab) || execPoles[0];
 
-  const pole = POLES.find(p => p.key === safeTab) || POLES[0];
-  const allRoleKeys = pole.groups.map(g => g.key);
-
-  // Filter members: in "mon_equipe" mode, a pilote sees only members of their FI + management chain
-  let membres = users.filter(u => allRoleKeys.includes(u.role));
-
-  if (viewMode === "mon_equipe" && isPilote && currentUser) {
-    // Find the pilote's FI (where they are pilote or co-pilote)
-    const myFI = familles.find(
-      fi => fi.pilote_email === currentUser.email || fi.co_pilote_email === currentUser.email
-    );
-    // Roles the pilote should see in "Mon équipe": other pilotes, co-pilotes, and responsable_fi
-    const visibleRoles = ["pilote_fi", "copilote_fi", "responsable_fi"];
-    membres = users.filter(u => visibleRoles.includes(u.role));
-  }
-
-  const PoleIcon = pole.icon;
+  const TOP_TABS = [
+    { key: "trone", label: "Trône", icon: Crown },
+    { key: "gouvernance", label: "Gouvernance", icon: Shield },
+    { key: "execution", label: "Exécution", icon: Users },
+  ];
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
@@ -199,7 +227,7 @@ export default function EquipePage() {
           <h1 className="text-2xl font-black text-white tracking-tight">Notre Équipe</h1>
           <p className="text-sm text-zinc-500 mt-0.5">Membres de l'O.S.P — EJPN</p>
         </div>
-        {/* Toggle Mon équipe / Tous */}
+        {/* Toggle */}
         <button
           onClick={() => setViewMode(v => v === "mon_equipe" ? "tous" : "mon_equipe")}
           className={cn(
@@ -209,80 +237,136 @@ export default function EquipePage() {
               : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
           )}
         >
-          {viewMode === "mon_equipe"
-            ? <ToggleRight className="w-4 h-4" />
-            : <ToggleLeft className="w-4 h-4" />
-          }
+          {viewMode === "mon_equipe" ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
           {viewMode === "mon_equipe" ? "Mon équipe" : "Toutes les équipes"}
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 flex-wrap mb-8 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-        {visiblePoles.map(p => {
-          const Icon = p.icon;
-          const isActive = safeTab === p.key;
-          return (
-            <button
-              key={p.key}
-              onClick={() => setActiveTab(p.key)}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all flex-1 justify-center",
-                isActive
-                  ? "bg-white/10 text-white shadow"
-                  : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
-              )}
-            >
-              <Icon className={cn("w-3.5 h-3.5", isActive && p.accent)} />
-              <span className="hidden sm:inline">{p.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Pole header */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${pole.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}>
-          <PoleIcon className="w-5 h-5 text-white" />
-        </div>
+      {/* ── MON ÉQUIPE view ── */}
+      {viewMode === "mon_equipe" && (
         <div>
-          <h2 className="text-lg font-bold text-white">{pole.label}</h2>
-          <p className="text-xs text-zinc-500">{pole.subtitle}</p>
+          {/* Pole header */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${myPole.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}>
+              <myPole.icon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-white">{myPole.label}</h2>
+              <p className="text-xs text-zinc-500">{myPole.subtitle}</p>
+            </div>
+            <div className="ml-auto text-sm text-zinc-600">{myTeamMembers.length} membre{myTeamMembers.length !== 1 ? "s" : ""}</div>
+          </div>
+
+          <MemoFlashBoard pole={myPole.pole} user={currentUser} />
+
+          {isLoading ? (
+            <div className="text-center py-20 text-zinc-600 text-sm">Chargement...</div>
+          ) : myTeamMembers.length === 0 ? (
+            <div className="text-center py-20 text-zinc-600 text-sm">Aucun membre dans ce pôle.</div>
+          ) : (
+            <div className="space-y-8">
+              {myPole.groups.map(group => {
+                const groupMembers = myTeamMembers.filter(u => u.role === group.key);
+                if (groupMembers.length === 0) return null;
+                return (
+                  <div key={group.key}>
+                    <div className="flex items-center gap-2 mb-4">
+                      <group.icon className="w-4 h-4 text-zinc-500" />
+                      <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{group.label}</h3>
+                      <span className="text-xs text-zinc-700">({groupMembers.length})</span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {groupMembers.map(u => (
+                        <MemberCard key={u.id} user={u} pole={myPole} onClick={() => setSelectedMember(u)} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-        <div className="ml-auto text-sm text-zinc-600">{membres.length} membre{membres.length !== 1 ? "s" : ""}</div>
-      </div>
+      )}
 
-      {/* Memo flash */}
-      <MemoFlashBoard pole={pole.pole} user={currentUser} />
-
-      {/* Members */}
-      {isLoading ? (
-        <div className="text-center py-20 text-zinc-600 text-sm">Chargement...</div>
-      ) : membres.length === 0 ? (
-        <div className="text-center py-20 text-zinc-600 text-sm">Aucun membre dans ce pôle.</div>
-      ) : (
-        <div className="space-y-8">
-          {pole.groups.map(group => {
-            const groupMembers = membres.filter(u => u.role === group.key);
-            if (groupMembers.length === 0) return null;
-            return (
-              <div key={group.key}>
-                <div className="flex items-center gap-2 mb-4">
-                  <group.icon className="w-4 h-4 text-zinc-500" />
-                  <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{group.label}</h3>
-                  <span className="text-xs text-zinc-700">({groupMembers.length})</span>
-                  {viewMode === "mon_equipe" && isPilote && (
-                    <span className="text-[10px] text-blue-400 bg-blue-400/10 border border-blue-400/20 rounded-md px-2 py-0.5 ml-1">Mon équipe</span>
+      {/* ── TOUTES LES ÉQUIPES view ── */}
+      {viewMode === "tous" && (
+        <div>
+          {/* Top-level tabs: Trône / Gouvernance / Exécution */}
+          <div className="flex gap-1 flex-wrap mb-8 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+            {TOP_TABS.map(tab => {
+              const Icon = tab.icon;
+              const isActive = topTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setTopTab(tab.key)}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all flex-1 justify-center",
+                    isActive ? "bg-white/10 text-white shadow" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
                   )}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {isLoading ? (
+            <div className="text-center py-20 text-zinc-600 text-sm">Chargement...</div>
+          ) : (
+            <>
+              {/* Trône */}
+              {topTab === "trone" && (
+                <PoleSection
+                  pole={POLES.find(p => p.key === "trone")}
+                  users={users}
+                  onSelect={setSelectedMember}
+                />
+              )}
+
+              {/* Gouvernance */}
+              {topTab === "gouvernance" && (
+                <PoleSection
+                  pole={POLES.find(p => p.key === "gouvernance")}
+                  users={users}
+                  onSelect={setSelectedMember}
+                />
+              )}
+
+              {/* Exécution — sub-pole tabs */}
+              {topTab === "execution" && (
+                <div>
+                  {/* Sub-pole tabs */}
+                  <div className="flex gap-1 flex-wrap mb-8 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                    {execPoles.map(p => {
+                      const Icon = p.icon;
+                      const isActive = execTab === p.key;
+                      return (
+                        <button
+                          key={p.key}
+                          onClick={() => setExecTab(p.key)}
+                          className={cn(
+                            "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all flex-1 justify-center",
+                            isActive ? "bg-white/10 text-white shadow" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                          )}
+                        >
+                          <Icon className={cn("w-3.5 h-3.5", isActive && p.accent)} />
+                          <span className="hidden sm:inline">{p.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <PoleSection
+                    pole={currentExecPole}
+                    users={users}
+                    onSelect={setSelectedMember}
+                  />
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {groupMembers.map(u => (
-                    <MemberCard key={u.id} user={u} pole={pole} onClick={() => setSelectedMember(u)} />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+              )}
+            </>
+          )}
         </div>
       )}
 
