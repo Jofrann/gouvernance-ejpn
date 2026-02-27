@@ -143,8 +143,11 @@ function SectionTitle({ icon: Icon, label }) {
   );
 }
 
-export default function MobileNav({ user, currentPage, userRoles }) {
+export default function MobileNav({ user, currentPage, userRoles: rawUserRoles }) {
   const [open, setOpen] = React.useState(false);
+
+  // Normalize legacy role names
+  const userRoles = (rawUserRoles || []).map(normalizeRole);
 
   const isTrone = userRoles.some(r => TRONE_ROLES.includes(r));
   const isGouvernance = userRoles.some(r => GOUV_ROLES.includes(r));
