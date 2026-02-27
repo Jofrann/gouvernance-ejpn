@@ -130,11 +130,76 @@ export default function HubDashboardTab({ familleImpactId }) {
         </motion.div>
       </div>
 
+      {/* Health Evolution Chart */}
+      {healthEvolutionData.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="ai-card p-6"
+        >
+          <h3 className="font-semibold text-foreground mb-4">Évolution de la santé globale (4 dernières semaines)</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <LineChart data={healthEvolutionData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="week" stroke="rgba(255,255,255,0.3)" />
+              <YAxis stroke="rgba(255,255,255,0.3)" domain={[0, 10]} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgba(10, 10, 20, 0.8)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "8px"
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="santé"
+                stroke="#3b82f6"
+                strokeWidth={2}
+                dot={{ fill: "#3b82f6", r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </motion.div>
+      )}
+
+      {/* Member Presence Chart */}
+      {memberPresenceData.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="ai-card p-6"
+        >
+          <h3 className="font-semibold text-foreground mb-4">Présence par membre (4 dernières semaines)</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={memberPresenceData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" />
+              <YAxis stroke="rgba(255,255,255,0.3)" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgba(10, 10, 20, 0.8)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "8px"
+                }}
+              />
+              <Bar dataKey="sem1" fill="#3b82f6" stackId="a" name="Sem 1" />
+              <Bar dataKey="sem2" fill="#60a5fa" stackId="a" name="Sem 2" />
+              <Bar dataKey="sem3" fill="#93c5fd" stackId="a" name="Sem 3" />
+              <Bar dataKey="sem4" fill="#dbeafe" stackId="a" name="Sem 4" />
+            </BarChart>
+          </ResponsiveContainer>
+        </motion.div>
+      )}
+
       {/* Health Score Chart */}
       {chartData.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
           className="ai-card p-6"
         >
           <h3 className="font-semibold text-foreground mb-4">Santé des membres</h3>
