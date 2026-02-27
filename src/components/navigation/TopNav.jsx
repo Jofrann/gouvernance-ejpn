@@ -380,6 +380,18 @@ export default function TopNav({ user, currentPage }) {
               }}
             </NavButton>
           )}
+
+          {/* Mon Équipe */}
+          <Link
+            to={createPageUrl("Equipe")}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all",
+              currentPage === "Equipe" ? "bg-white/10 text-white" : "text-zinc-400 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <Users className={cn("w-4 h-4", currentPage === "Equipe" && "text-violet-400")} />
+            <span>Mon Équipe</span>
+          </Link>
         </nav>
 
         {/* Right side */}
