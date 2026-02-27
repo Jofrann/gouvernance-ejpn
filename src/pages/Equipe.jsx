@@ -4,12 +4,13 @@ import { base44 } from "@/api/base44Client";
 import {
   Crown, Shield, Home, GraduationCap, Globe, Megaphone,
   Mail, Target, Eye, FlaskConical, BookOpen, Film, PenTool,
-  MapPin, Wifi, Users
+  MapPin, Wifi, Users, ToggleLeft, ToggleRight
 } from "lucide-react";
 import MemoFlashBoard from "@/components/equipe/MemoFlashBoard";
 import MemberSlideOver from "@/components/equipe/MemberSlideOver";
 import LiveActivityIndicator, { useTrackActivity } from "@/components/equipe/LiveActivityIndicator";
 import { cn } from "@/lib/utils";
+import { getPrimaryExecPole } from "@/components/shared/roleAccess";
 
 /* ─── Pole configs ─── */
 const POLES = [

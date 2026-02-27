@@ -51,12 +51,14 @@ import CommunicationBibliotheque from './pages/CommunicationBibliotheque';
 import CommunicationDirectives from './pages/CommunicationDirectives';
 import CommunicationFunnel from './pages/CommunicationFunnel';
 import CommunicationKanban from './pages/CommunicationKanban';
+import Equipe from './pages/Equipe';
 import EquipeCommunication from './pages/EquipeCommunication';
 import EquipeEvangelisation from './pages/EquipeEvangelisation';
 import EquipeFI from './pages/EquipeFI';
 import EquipeFormation from './pages/EquipeFormation';
 import EquipeGouvernance from './pages/EquipeGouvernance';
 import EquipeTrone from './pages/EquipeTrone';
+import EvangelisationAnalyse from './pages/EvangelisationAnalyse';
 import EvangelisationDebrief from './pages/EvangelisationDebrief';
 import EvangelisationHeatmap from './pages/EvangelisationHeatmap';
 import EvangelisationROI from './pages/EvangelisationROI';
@@ -64,6 +66,7 @@ import EvangelisationRadar from './pages/EvangelisationRadar';
 import FIClinique from './pages/FIClinique';
 import FIDashboard from './pages/FIDashboard';
 import FIDossiers from './pages/FIDossiers';
+import FIHub from './pages/FIHub';
 import FIManager from './pages/FIManager';
 import FITourControle from './pages/FITourControle';
 import FITransferts from './pages/FITransferts';
@@ -87,9 +90,6 @@ import Parametres from './pages/Parametres';
 import TroneArchives from './pages/TroneArchives';
 import TroneRadar from './pages/TroneRadar';
 import TroneValidation from './pages/TroneValidation';
-import Equipe from './pages/Equipe';
-import EvangelisationAnalyse from './pages/EvangelisationAnalyse';
-import FIHub from './pages/FIHub';
 import __Layout from './Layout.jsx';
 
 
@@ -98,12 +98,14 @@ export const PAGES = {
     "CommunicationDirectives": CommunicationDirectives,
     "CommunicationFunnel": CommunicationFunnel,
     "CommunicationKanban": CommunicationKanban,
+    "Equipe": Equipe,
     "EquipeCommunication": EquipeCommunication,
     "EquipeEvangelisation": EquipeEvangelisation,
     "EquipeFI": EquipeFI,
     "EquipeFormation": EquipeFormation,
     "EquipeGouvernance": EquipeGouvernance,
     "EquipeTrone": EquipeTrone,
+    "EvangelisationAnalyse": EvangelisationAnalyse,
     "EvangelisationDebrief": EvangelisationDebrief,
     "EvangelisationHeatmap": EvangelisationHeatmap,
     "EvangelisationROI": EvangelisationROI,
@@ -111,6 +113,7 @@ export const PAGES = {
     "FIClinique": FIClinique,
     "FIDashboard": FIDashboard,
     "FIDossiers": FIDossiers,
+    "FIHub": FIHub,
     "FIManager": FIManager,
     "FITourControle": FITourControle,
     "FITransferts": FITransferts,
@@ -134,9 +137,6 @@ export const PAGES = {
     "TroneArchives": TroneArchives,
     "TroneRadar": TroneRadar,
     "TroneValidation": TroneValidation,
-    "Equipe": Equipe,
-    "EvangelisationAnalyse": EvangelisationAnalyse,
-    "FIHub": FIHub,
 }
 
 export const pagesConfig = {
