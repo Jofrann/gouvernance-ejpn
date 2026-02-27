@@ -173,7 +173,7 @@ export default function FormationSallePage() {
                       </div>
                     )}
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       {r.url && (
                         <button onClick={() => { window.open(r.url, "_blank"); if (!read && !isResponsable) markAsRead.mutate(r.id); }}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 text-xs text-zinc-300 hover:bg-white/10 transition-all">
@@ -185,6 +185,16 @@ export default function FormationSallePage() {
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-500/20 text-xs text-emerald-400 hover:bg-emerald-900/20 transition-all">
                           <CheckCircle2 className="w-3 h-3" /> Marquer lu
                         </button>
+                      )}
+                      {isResponsable && (
+                        <>
+                          <button onClick={() => openEdit(r)} className="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-white/10 text-xs text-zinc-400 hover:bg-white/10 transition-all">
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                          <button onClick={() => setDeleteTarget(r)} className="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-red-500/20 text-xs text-red-400 hover:bg-red-900/20 transition-all">
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
