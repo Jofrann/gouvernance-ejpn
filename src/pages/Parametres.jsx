@@ -54,6 +54,12 @@ const NIVEAUX = [
   { value: "execution", label: "Niveau III — Exécution" },
 ];
 
+// Map role value → niveau display key for UserRow
+const ROLE_NIVEAU_MAP = {
+  admin: "I", trone: "I",
+  gouvernance_direction: "II", gouvernance_suivi: "II", gouvernance_strategie: "II",
+};
+
 const NIVEAU_ICONS = { I: Crown, II: Shield, III: Briefcase };
 const NIVEAU_COLORS = {
   I: "text-amber-700",
