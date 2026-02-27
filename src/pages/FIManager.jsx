@@ -229,23 +229,23 @@ export default function FIManagerPage() {
             <div>
               <p className="text-xs text-zinc-400 mb-1.5">Pilote *</p>
               <Select value={form.pilote_email} onValueChange={handlePiloteSelect}>
-                <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                  <SelectValue placeholder="Sélectionner un pilote" />
-                </SelectTrigger>
-                <SelectContent>
-                  {piloteUsers.map(u => <SelectItem key={u.id} value={u.email}>{u.full_name || u.email} ({u.role})</SelectItem>)}
-                </SelectContent>
+              <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectValue placeholder="Sélectionner un pilote" />
+              </SelectTrigger>
+              <SelectContent>
+                {allSelectableUsers.map(u => <SelectItem key={u.id} value={u.email}>{u.full_name || u.email} ({getUserRoles(u).join(", ")})</SelectItem>)}
+              </SelectContent>
               </Select>
-            </div>
-            <div>
+              </div>
+              <div>
               <p className="text-xs text-zinc-400 mb-1.5">Co-Pilote</p>
               <Select value={form.co_pilote_email || ""} onValueChange={handleCoPiloteSelect}>
-                <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                  <SelectValue placeholder="Sélectionner un co-pilote (optionnel)" />
-                </SelectTrigger>
-                <SelectContent>
-                  {piloteUsers.map(u => <SelectItem key={u.id} value={u.email}>{u.full_name || u.email} ({u.role})</SelectItem>)}
-                </SelectContent>
+              <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectValue placeholder="Sélectionner un co-pilote (optionnel)" />
+              </SelectTrigger>
+              <SelectContent>
+                {allSelectableUsers.map(u => <SelectItem key={u.id} value={u.email}>{u.full_name || u.email} ({getUserRoles(u).join(", ")})</SelectItem>)}
+              </SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-3">
