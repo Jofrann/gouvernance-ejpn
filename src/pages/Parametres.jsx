@@ -296,9 +296,9 @@ export default function ParametresPage() {
               </div>
             )}
 
-            {/* Role */}
+            {/* Role principal */}
             <div>
-              <label className="text-xs font-medium text-zinc-500">Rôle *</label>
+              <label className="text-xs font-medium text-zinc-500">Rôle principal *</label>
               <Select value={form.role} onValueChange={handleRoleChange}>
                 <SelectTrigger className="mt-1 bg-white border-zinc-200"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -318,13 +318,31 @@ export default function ParametresPage() {
               </Select>
             </div>
 
-            {/* Preview badge */}
-            {form.role && (
-              <div className="flex items-center gap-2 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
-                <span className="text-xs text-zinc-500">Accès accordé :</span>
-                <Badge variant="outline" className={cn("text-[10px] border", getRoleInfo(form.role).color)}>
-                  {getRoleInfo(form.role).label}
-                </Badge>
+            {/* Rôles supplémentaires */}
+            <div>
+              <label className="text-xs font-medium text-zinc-500 mb-2 block">Rôles supplémentaires <span className="text-zinc-400 font-normal">(optionnel — multi-rôles)</span></label>
+              <div className="border border-zinc-200 rounded-lg p-3 space-y-1.5 max-h-48 overflow-y-auto">
+                {ROLES.filter(r => r.value !== form.role).map(r => {
+                  const checked = (form.roles || []).includes(r.value);
+                  return (
+                    <label key={r.value} className="flex items-center gap-2.5 cursor-pointer hover:bg-zinc-50 rounded px-1 py-0.5">
+                      <input type="checkbox" checked={checked} onChange={() => toggleExtraRole(r.value)} className="rounded border-zinc-300 accent-zinc-700 w-3.5 h-3.5" />
+                      <Badge variant="outline" className={cn("text-[10px] border pointer-events-none", r.color)}>{r.label}</Badge>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Preview badges */}
+            {(form.roles || [form.role]).length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
+                <span className="text-xs text-zinc-500">Accès accordés :</span>
+                {(form.roles || [form.role]).map(r => (
+                  <Badge key={r} variant="outline" className={cn("text-[10px] border", getRoleInfo(r).color)}>
+                    {getRoleInfo(r).label}
+                  </Badge>
+                ))}
               </div>
             )}
 
