@@ -194,33 +194,37 @@ export default function MobileNav({ user, currentPage, userRoles }) {
             </>
           )}
 
-          {/* Gouvernance */}
-          {isGouvernance && (
+          {/* Gouvernance — filtered by sub-role */}
+          {isGouvernance && allowedGouvGroups.length > 0 && (
             <>
               <SectionTitle icon={Shield} label="Gouvernance" />
-              {Object.values(NAVIGATION.gouvernance.groups).map((group) => (
-                <div key={group.label} className="mb-3">
-                  <p className="text-[10px] font-semibold text-zinc-600 px-3 mb-1">{group.label}</p>
-                  {group.items.map(item => (
-                    <NavLink key={item.page} item={item} currentPage={currentPage} onClose={close} />
-                  ))}
-                </div>
-              ))}
+              {Object.entries(NAVIGATION.gouvernance.groups)
+                .filter(([k]) => allowedGouvGroups.includes(k))
+                .map(([, group]) => (
+                  <div key={group.label} className="mb-3">
+                    <p className="text-[10px] font-semibold text-zinc-600 px-3 mb-1">{group.label}</p>
+                    {group.items.map(item => (
+                      <NavLink key={item.page} item={item} currentPage={currentPage} onClose={close} />
+                    ))}
+                  </div>
+                ))}
             </>
           )}
 
-          {/* Exécution */}
-          {isExecution && (
+          {/* Exécution — filtered by pole access */}
+          {isExecution && allowedExecPoles.length > 0 && (
             <>
               <SectionTitle icon={Briefcase} label="Exécution" />
-              {Object.values(NAVIGATION.execution.poles).map((pole) => (
-                <div key={pole.label} className="mb-3">
-                  <p className="text-[10px] font-semibold text-zinc-600 px-3 mb-1">{pole.label}</p>
-                  {pole.items.map(item => (
-                    <NavLink key={item.page} item={item} currentPage={currentPage} onClose={close} />
-                  ))}
-                </div>
-              ))}
+              {Object.entries(NAVIGATION.execution.poles)
+                .filter(([k]) => allowedExecPoles.includes(k))
+                .map(([, pole]) => (
+                  <div key={pole.label} className="mb-3">
+                    <p className="text-[10px] font-semibold text-zinc-600 px-3 mb-1">{pole.label}</p>
+                    {pole.items.map(item => (
+                      <NavLink key={item.page} item={item} currentPage={currentPage} onClose={close} />
+                    ))}
+                  </div>
+                ))}
             </>
           )}
         </nav>
