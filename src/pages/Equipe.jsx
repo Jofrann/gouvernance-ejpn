@@ -293,6 +293,7 @@ export default function EquipePage() {
         open={!!selectedMember}
         onClose={() => setSelectedMember(null)}
       />
+    
     </div>
   );
 }
