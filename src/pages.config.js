@@ -85,12 +85,12 @@ import GouvModelisation from './pages/GouvModelisation';
 import GouvRedaction from './pages/GouvRedaction';
 import GouvRoadmap from './pages/GouvRoadmap';
 import Home from './pages/Home';
+import Messagerie from './pages/Messagerie';
 import MonProfil from './pages/MonProfil';
 import Parametres from './pages/Parametres';
 import TroneArchives from './pages/TroneArchives';
 import TroneRadar from './pages/TroneRadar';
 import TroneValidation from './pages/TroneValidation';
-import Messagerie from './pages/Messagerie';
 import __Layout from './Layout.jsx';
 
 
@@ -133,12 +133,12 @@ export const PAGES = {
     "GouvRedaction": GouvRedaction,
     "GouvRoadmap": GouvRoadmap,
     "Home": Home,
+    "Messagerie": Messagerie,
     "MonProfil": MonProfil,
     "Parametres": Parametres,
     "TroneArchives": TroneArchives,
     "TroneRadar": TroneRadar,
     "TroneValidation": TroneValidation,
-    "Messagerie": Messagerie,
 }
 
 export const pagesConfig = {
