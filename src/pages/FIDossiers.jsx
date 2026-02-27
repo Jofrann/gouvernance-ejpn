@@ -265,6 +265,72 @@ export default function FIDossiersPage() {
         )}
       </div>
 
+      {/* Form Dialog: Create / Edit */}
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="max-w-lg border-white/10 text-white" style={{ background: "rgba(8,11,22,0.97)", backdropFilter: "blur(40px)" }}>
+          <DialogHeader>
+            <DialogTitle className="text-white">{editingMembre ? "Modifier le membre" : "Nouveau membre"}</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3 mt-2">
+            {[
+              { key: "nom_complet", label: "Nom complet", full: true },
+              { key: "telephone", label: "Téléphone" },
+              { key: "email", label: "Email" },
+              { key: "ville", label: "Ville" },
+              { key: "age", label: "Âge", type: "number" },
+            ].map(({ key, label, full, type }) => (
+              <div key={key} className={full ? "col-span-2" : ""}>
+                <label className="text-[10px] text-zinc-500 uppercase tracking-wider">{label}</label>
+                <Input
+                  type={type || "text"}
+                  value={formData[key]}
+                  onChange={(e) => setFormData(p => ({ ...p, [key]: e.target.value }))}
+                  className="mt-1 bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
+                />
+              </div>
+            ))}
+            <div>
+              <label className="text-[10px] text-zinc-500 uppercase tracking-wider">Genre</label>
+              <Select value={formData.genre} onValueChange={(v) => setFormData(p => ({ ...p, genre: v }))}>
+                <SelectTrigger className="mt-1 bg-white/5 border-white/10 text-white"><SelectValue placeholder="Genre" /></SelectTrigger>
+                <SelectContent>{GENRE_OPTIONS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-[10px] text-zinc-500 uppercase tracking-wider">Statut pipeline</label>
+              <Select value={formData.statut_pipeline} onValueChange={(v) => setFormData(p => ({ ...p, statut_pipeline: v }))}>
+                <SelectTrigger className="mt-1 bg-white/5 border-white/10 text-white"><SelectValue /></SelectTrigger>
+                <SelectContent>{STATUT_OPTIONS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="col-span-2 flex items-center gap-2">
+              <input type="checkbox" id="potentiel" checked={formData.potentiel_formation} onChange={(e) => setFormData(p => ({ ...p, potentiel_formation: e.target.checked }))} className="w-4 h-4" />
+              <label htmlFor="potentiel" className="text-sm text-zinc-300">Potentiel formation (40%)</label>
+            </div>
+          </div>
+          <DialogFooter className="mt-4">
+            <Button variant="ghost" onClick={() => setShowForm(false)} className="text-zinc-400">Annuler</Button>
+            <Button onClick={handleSave} disabled={saving || !formData.nom_complet} className="bg-blue-600 hover:bg-blue-700 text-white">
+              {saving ? "Enregistrement..." : editingMembre ? "Modifier" : "Créer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <Dialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <DialogContent className="max-w-sm border-white/10 text-white" style={{ background: "rgba(8,11,22,0.97)", backdropFilter: "blur(40px)" }}>
+          <DialogHeader>
+            <DialogTitle className="text-white">Supprimer le membre ?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-zinc-400 mt-2">Cette action est irréversible. <span className="text-white font-semibold">{deleteTarget?.nom_complet}</span> sera supprimé définitivement.</p>
+          <DialogFooter className="mt-4">
+            <Button variant="ghost" onClick={() => setDeleteTarget(null)} className="text-zinc-400">Annuler</Button>
+            <Button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">Supprimer</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Slide-over Dossier */}
       <Sheet open={!!selectedMembre} onOpenChange={() => setSelectedMembre(null)}>
         <SheetContent
