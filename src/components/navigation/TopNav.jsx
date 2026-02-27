@@ -106,7 +106,6 @@ const NAVIGATION = {
           { label: "Membres & Dossiers", page: "FIDossiers", icon: FolderOpen },
           { label: "Transferts", page: "FITransferts", icon: ArrowRightLeft },
           { label: "Tour de Contrôle", page: "FITourControle", icon: Eye },
-          { label: "Notre Équipe", page: "Equipe?pole=familles_impact", icon: Users },
         ],
       },
       formation: {
@@ -118,7 +117,6 @@ const NAVIGATION = {
           { label: "Mon Portfolio", page: "FormationBulletin", icon: Award },
           { label: "Correction", page: "FormationCorrection", icon: CheckSquare },
           { label: "Assiduité", page: "FormationAssiduite", icon: UserCheck },
-          { label: "Notre Équipe", page: "Equipe?pole=formation", icon: Users },
         ],
       },
       evangelisation: {
@@ -128,7 +126,6 @@ const NAVIGATION = {
           { label: "Agenda & Actions", page: "EvangelisationRadar", icon: Calendar },
           { label: "Debrief", page: "EvangelisationDebrief", icon: MessageSquare },
           { label: "Analyse des Résultats", page: "EvangelisationAnalyse", icon: Flame },
-          { label: "Notre Équipe", page: "Equipe?pole=evangelisation", icon: Users },
         ],
       },
       communication: {
@@ -139,7 +136,6 @@ const NAVIGATION = {
           { label: "Bibliothèque", page: "CommunicationBibliotheque", icon: Library },
           { label: "Analytics", page: "CommunicationFunnel", icon: BarChart2 },
           { label: "Directives", page: "CommunicationDirectives", icon: Briefcase },
-          { label: "Notre Équipe", page: "Equipe?pole=communication", icon: Users },
         ],
       },
     },
