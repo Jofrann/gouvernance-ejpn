@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -46,16 +47,11 @@
     overflow-x: hidden;
   }
 
-  /* Touch-friendly minimum target size */
-  button, a {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  /* Override for small inline buttons/badges */
-  .badge-dark, span[class*="rounded"] {
-    min-height: unset;
+  /* Touch-friendly on mobile */
+  @media (max-width: 768px) {
+    button, a[role="button"] {
+      min-height: 40px;
+    }
   }
 
   /* Scrollbar */
