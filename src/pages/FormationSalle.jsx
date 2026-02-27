@@ -235,6 +235,63 @@ export default function FormationSallePage() {
           </div>
         )}
       </div>
+      {/* Form Dialog */}
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="max-w-md border-white/10 text-white" style={{ background: "rgba(8,11,22,0.97)", backdropFilter: "blur(40px)" }}>
+          <DialogHeader>
+            <DialogTitle className="text-white">{editingRessource ? "Modifier la ressource" : "Nouvelle ressource"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <div>
+              <label className="text-[10px] text-zinc-500 uppercase tracking-wider">Titre</label>
+              <Input value={formData.titre} onChange={e => setFormData(p => ({ ...p, titre: e.target.value }))} className="mt-1 bg-white/5 border-white/10 text-white" />
+            </div>
+            <div>
+              <label className="text-[10px] text-zinc-500 uppercase tracking-wider">Type</label>
+              <Select value={formData.type_ressource} onValueChange={v => setFormData(p => ({ ...p, type_ressource: v }))}>
+                <SelectTrigger className="mt-1 bg-white/5 border-white/10 text-white"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pdf">PDF</SelectItem>
+                  <SelectItem value="video">Vidéo</SelectItem>
+                  <SelectItem value="lien">Lien</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-[10px] text-zinc-500 uppercase tracking-wider">URL</label>
+              <Input value={formData.url} onChange={e => setFormData(p => ({ ...p, url: e.target.value }))} className="mt-1 bg-white/5 border-white/10 text-white" placeholder="https://..." />
+            </div>
+            <div>
+              <label className="text-[10px] text-zinc-500 uppercase tracking-wider">Description (optionnel)</label>
+              <Input value={formData.description} onChange={e => setFormData(p => ({ ...p, description: e.target.value }))} className="mt-1 bg-white/5 border-white/10 text-white" />
+            </div>
+            <div>
+              <label className="text-[10px] text-zinc-500 uppercase tracking-wider">Mois cycle (ex: 2026-02)</label>
+              <Input value={formData.mois_cycle} onChange={e => setFormData(p => ({ ...p, mois_cycle: e.target.value }))} className="mt-1 bg-white/5 border-white/10 text-white" />
+            </div>
+          </div>
+          <DialogFooter className="mt-4">
+            <Button variant="ghost" onClick={() => setShowForm(false)} className="text-zinc-400">Annuler</Button>
+            <Button onClick={handleSave} disabled={saving || !formData.titre} className="bg-blue-600 hover:bg-blue-700 text-white">
+              {saving ? "Enregistrement..." : editingRessource ? "Modifier" : "Créer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <Dialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <DialogContent className="max-w-sm border-white/10 text-white" style={{ background: "rgba(8,11,22,0.97)", backdropFilter: "blur(40px)" }}>
+          <DialogHeader>
+            <DialogTitle className="text-white">Supprimer la ressource ?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-zinc-400 mt-2"><span className="text-white font-semibold">{deleteTarget?.titre}</span> sera supprimée définitivement.</p>
+          <DialogFooter className="mt-4">
+            <Button variant="ghost" onClick={() => setDeleteTarget(null)} className="text-zinc-400">Annuler</Button>
+            <Button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">Supprimer</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
