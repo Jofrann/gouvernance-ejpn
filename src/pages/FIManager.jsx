@@ -194,24 +194,22 @@ export default function FIManagerPage() {
 
       {/* Form Dialog */}
       <Dialog open={showForm} onOpenChange={handleCloseForm}>
-        <DialogContent className="max-w-lg">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingFI ? "Modifier" : "Créer"} une FI</DialogTitle>
+            <DialogTitle>{editingFI ? "Modifier" : "Créer"} une Maison</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <Input
-              placeholder="Nom de la FI"
+              placeholder="Nom de la Maison"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="bg-white/5 border-white/10"
             />
 
             <Input
               placeholder="Campus"
               value={formData.campus}
               onChange={(e) => setFormData({ ...formData, campus: e.target.value })}
-              className="bg-white/5 border-white/10"
             />
 
             <Select value={formData.pilote_email} onValueChange={(email) => {
@@ -222,8 +220,8 @@ export default function FIManagerPage() {
                 pilote_nom: user?.full_name || "",
               });
             }}>
-              <SelectTrigger className="bg-white/5 border-white/10">
-                <SelectValue placeholder="Sélectionner un pilote" />
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionner un Pilote" />
               </SelectTrigger>
               <SelectContent>
                 {allUsers.map((u) => (
@@ -235,7 +233,7 @@ export default function FIManagerPage() {
             </Select>
 
             <Select value={formData.status} onValueChange={(status) => setFormData({ ...formData, status })}>
-              <SelectTrigger className="bg-white/5 border-white/10">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
