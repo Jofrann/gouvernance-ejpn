@@ -67,7 +67,6 @@ import FIClinique from './pages/FIClinique';
 import FIDashboard from './pages/FIDashboard';
 import FIDossiers from './pages/FIDossiers';
 import FIHub from './pages/FIHub';
-import FIManager from './pages/FIManager';
 import FITourControle from './pages/FITourControle';
 import FITransferts from './pages/FITransferts';
 import FormationAssiduite from './pages/FormationAssiduite';
@@ -92,6 +91,8 @@ import TroneArchives from './pages/TroneArchives';
 import TroneRadar from './pages/TroneRadar';
 import TroneValidation from './pages/TroneValidation';
 import FIStats from './pages/FIStats';
+import FIManager from './pages/FIManager';
+import FIDetail from './pages/FIDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -116,7 +117,6 @@ export const PAGES = {
     "FIDashboard": FIDashboard,
     "FIDossiers": FIDossiers,
     "FIHub": FIHub,
-    "FIManager": FIManager,
     "FITourControle": FITourControle,
     "FITransferts": FITransferts,
     "FormationAssiduite": FormationAssiduite,
@@ -141,6 +141,8 @@ export const PAGES = {
     "TroneRadar": TroneRadar,
     "TroneValidation": TroneValidation,
     "FIStats": FIStats,
+    "FIManager": FIManager,
+    "FIDetail": FIDetail,
 }
 
 export const pagesConfig = {
