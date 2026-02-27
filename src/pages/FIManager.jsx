@@ -46,12 +46,13 @@ export default function FIManagerPage() {
 
   const userRoles = getUserRoles(user);
   // Full admin/write: can create, edit all fields, delete
-  const canWrite = userHasRole(user, ["admin", "responsable_fi"]);
-  // Pilote/copilote: can only edit status of their own FI
-  const isPilote = userHasRole(user, ["pilote_fi", "copilote_fi"]);
+  const canWriteAll = userHasRole(user, ["admin", "responsable_fi"]);
+  // Pilote/copilote: can create FI and edit all fields of their own FI
+  const isPiloteOrCopilote = userHasRole(user, ["pilote_fi", "copilote_fi"]);
+  const canWrite = canWriteAll || isPiloteOrCopilote;
 
   // Filter FIs by role
-  const mesFamilles = canWrite
+  const mesFamilles = canWriteAll
     ? familles
     : familles.filter(f =>
         f.pilote_email === user?.email || f.co_pilote_email === user?.email
