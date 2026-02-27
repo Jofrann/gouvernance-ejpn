@@ -278,7 +278,7 @@ export default function ParametresPage() {
               <Select value={form.role} onValueChange={handleRoleChange}>
                 <SelectTrigger className="mt-1 bg-white border-zinc-200"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <div className="px-2 py-1 text-[10px] font-bold text-amber-600 uppercase tracking-wider">Niveau I — Direction</div>
+                  <div className="px-2 py-1 text-[10px] font-bold text-amber-600 uppercase tracking-wider">Niveau I — Direction (Trône)</div>
                   {ROLES.filter((r) => r.niveau === "I").map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
                   <div className="px-2 py-1 mt-1 text-[10px] font-bold text-blue-600 uppercase tracking-wider">Niveau II — Gouvernance</div>
                   {ROLES.filter((r) => r.niveau === "II").map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
