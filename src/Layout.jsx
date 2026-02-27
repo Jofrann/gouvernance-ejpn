@@ -64,7 +64,7 @@ export default function Layout({ children, currentPageName }) {
 
       <TopNav user={user} currentPage={currentPageName} />
 
-      <main className="relative z-10 pt-16 min-h-screen">
+      <main className="relative z-10 pt-16 min-h-screen overflow-x-hidden">
         {children}
       </main>
     </div>
