@@ -1,162 +1,179 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
-import { Input } from "@/components/ui/input";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { Search, AlertCircle, CheckCircle2 } from "lucide-react";
-import { motion } from "framer-motion";
-import { useTrackActivity } from "@/components/equipe/LiveActivityIndicator";
+import { Bell, CheckCircle2, AlertTriangle, Eye, Users, Clock } from "lucide-react";
+import { format, setDay, startOfWeek, subWeeks } from "date-fns";
+import { fr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
+
+function getThisThursday() {
+  const now = new Date();
+  const start = startOfWeek(now, { weekStartsOn: 1 });
+  return setDay(start, 4, { weekStartsOn: 1 });
+}
 
 export default function FITourControlePage() {
-  useTrackActivity("FITourControle");
-  const [search, setSearch] = useState("");
+  const queryClient = useQueryClient();
+  const [nudging, setNudging] = useState({});
+  const thisThursday = format(getThisThursday(), "yyyy-MM-dd");
+
+  useEffect(() => {
+    const unsubFamilles = base44.entities.FamilleImpact.subscribe(() => queryClient.invalidateQueries({ queryKey: ["familles"] }));
+    const unsubMembres = base44.entities.Membre.subscribe(() => queryClient.invalidateQueries({ queryKey: ["membres-all"] }));
+    const unsubSaisies = base44.entities.CliniqueSaisie.subscribe(() => queryClient.invalidateQueries({ queryKey: ["all-saisies"] }));
+    return () => { unsubFamilles(); unsubMembres(); unsubSaisies(); };
+  }, [queryClient]);
+  const lastThursday = format(setDay(startOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 1 }), 4, { weekStartsOn: 1 }), "yyyy-MM-dd");
 
   const { data: familles = [] } = useQuery({
     queryKey: ["familles"],
-    queryFn: () => base44.entities.FamilleImpact.list()
+    queryFn: () => base44.entities.FamilleImpact.list(),
   });
 
-  const { data: suivi = [] } = useQuery({
-    queryKey: ["suivi"],
-    queryFn: () => base44.entities.SuiviHebdomadaire.list()
+  const { data: membres = [] } = useQuery({
+    queryKey: ["membres-all"],
+    queryFn: () => base44.entities.Membre.list("-created_date", 500),
   });
 
-  // Get this week's date (Thursday)
-  const getThursday = () => {
-    const today = new Date();
-    const day = today.getDay();
-    const diff = today.getDate() - day + (day === 0 ? -6 : 1) + 3; // Thursday
-    return new Date(today.setDate(diff)).toISOString().split("T")[0];
+  const { data: saisies = [] } = useQuery({
+    queryKey: ["all-saisies"],
+    queryFn: () => base44.entities.CliniqueSaisie.list("-created_date", 1000),
+  });
+
+  const fiStats = useMemo(() => {
+    return familles.map((fi) => {
+      const fiMembres = membres.filter((m) => m.famille_impact_id === fi.id);
+      const thisSaisies = saisies.filter((s) => s.famille_impact_id === fi.id && s.semaine === thisThursday);
+      const lastSaisies = saisies.filter((s) => s.famille_impact_id === fi.id && s.semaine === lastThursday);
+      const allFiSaisies = saisies.filter((s) => s.famille_impact_id === fi.id);
+
+      const presenceRate = thisSaisies.length > 0
+        ? thisSaisies.filter((s) => s.presence).length / Math.max(fiMembres.length, 1)
+        : null;
+
+      const alertCount = fiMembres.filter((m) => detectChuteLivre(m.id, allFiSaisies)).length;
+      const saisieComplete = thisSaisies.length >= fiMembres.length && fiMembres.length > 0;
+
+      return { fi, fiMembres, thisSaisies, presenceRate, alertCount, saisieComplete };
+    });
+  }, [familles, membres, saisies, thisThursday, lastThursday]);
+
+  const handleNudge = async (fi) => {
+    setNudging((prev) => ({ ...prev, [fi.id]: true }));
+    // Simulate notification via email (replace with real notification when needed)
+    await base44.integrations.Core.SendEmail({
+      to: fi.pilote_email,
+      subject: `🔔 Rappel : Suivi hebdomadaire de ${fi.name}`,
+      body: `Bonjour,\n\nN'oublie pas de faire le suivi clinique de ta Famille d'Impact "${fi.name}" pour le jeudi ${thisThursday}.\n\nChaque âme compte. Sois fidèle.\n\n— Gouvernance EJPN`,
+    }).catch(() => {});
+    toast.success(`Relance envoyée au Pilote de ${fi.name}`);
+    setNudging((prev) => ({ ...prev, [fi.id]: false }));
   };
 
-  const thursday = getThursday();
-
-  // Check if a FI has completed this week's suivi
-  const hasCompletedSuivi = (fiId) => {
-    const fiSuivi = suivi.filter(s => s.famille_impact_id === fiId && s.semaine_date === thursday);
-    return fiSuivi.length > 0;
-  };
-
-  const filtered = familles.filter(fi =>
-    fi.name.toLowerCase().includes(search.toLowerCase()) ||
-    fi.pilote_nom.toLowerCase().includes(search.toLowerCase())
-  );
+  const fiWithAlerts = fiStats.filter((s) => s.alertCount > 0 || !s.saisieComplete);
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="mb-6">
-          <p className="text-xs font-bold text-emerald-400/80 uppercase tracking-widest mb-1">Supervision</p>
-          <h1 className="text-3xl font-bold text-foreground">Tour de Contrôle</h1>
-          <p className="text-sm text-muted-foreground mt-2">Vue globale du statut de suivi de tous les Pilotes</p>
-        </div>
-
-        {/* Search */}
-        <div className="flex-1 relative max-w-md">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Chercher une FI ou un Pilote..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-      </motion.div>
-
-      {/* Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="ai-card p-4 bg-blue-500/10 border-blue-400/20 flex gap-3"
-      >
-        <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-        <div>
-          <p className="font-semibold text-foreground text-sm">Semaine du {thursday}</p>
-          <p className="text-xs text-muted-foreground mt-1">Les Pilotes qui ont complété leur suivi hebdomadaire apparaissent en vert.</p>
-        </div>
-      </motion.div>
-
-      {/* FI Table */}
-      <div className="space-y-3">
-        {filtered.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            Aucune Famille d'Impact trouvée
-          </div>
-        ) : (
-          filtered.map((fi, idx) => {
-            const isComplete = hasCompletedSuivi(fi.id);
-            return (
-              <motion.div
-                key={fi.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className="ai-card p-5 flex items-center justify-between gap-4 hover:border-border/80 transition-all"
-              >
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground">{fi.name}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{fi.pilote_nom}</p>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <Badge variant="outline" className="text-xs">
-                    {fi.status || "active"}
-                  </Badge>
-
-                  <div className="flex items-center gap-2">
-                    {isComplete ? (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-400/20 rounded-md"
-                      >
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        <span className="text-xs font-semibold text-emerald-400">Complété</span>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-400/20 rounded-md"
-                      >
-                        <AlertCircle className="w-4 h-4 text-red-400" />
-                        <span className="text-xs font-semibold text-red-400">En attente</span>
-                      </motion.div>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })
-        )}
+    <div className="p-6 max-w-7xl mx-auto space-y-5">
+      <div>
+        <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Tour de Contrôle</h1>
+        <p className="text-sm text-zinc-500 mt-0.5">Supervision des Pilotes · Relances en 1 clic</p>
       </div>
 
-      {/* Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8"
-      >
-        <Card className="p-4 text-center bg-muted/50">
-          <div className="text-2xl font-bold text-foreground">{filtered.length}</div>
-          <p className="text-xs text-muted-foreground mt-1">FI Totales</p>
+      {/* Summary */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card className="border-zinc-200 bg-white">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-100">
+              <Eye className="w-5 h-5 text-zinc-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-zinc-900">{familles.length}</p>
+              <p className="text-xs text-zinc-500">Familles suivies</p>
+            </div>
+          </CardContent>
         </Card>
-        <Card className="p-4 text-center bg-emerald-500/10 border-emerald-400/20">
-          <div className="text-2xl font-bold text-emerald-400">
-            {filtered.filter(fi => hasCompletedSuivi(fi.id)).length}
-          </div>
-          <p className="text-xs text-muted-foreground mt-1">Complétées</p>
+        <Card className="border-amber-200 bg-amber-50/50">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="p-2.5 rounded-lg bg-white border border-amber-100">
+              <Clock className="w-5 h-5 text-amber-500" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-amber-700">{fiStats.filter((s) => !s.saisieComplete).length}</p>
+              <p className="text-xs text-amber-600">Saisies manquantes</p>
+            </div>
+          </CardContent>
         </Card>
-        <Card className="p-4 text-center bg-red-500/10 border-red-400/20">
-          <div className="text-2xl font-bold text-red-400">
-            {filtered.filter(fi => !hasCompletedSuivi(fi.id)).length}
-          </div>
-          <p className="text-xs text-muted-foreground mt-1">En attente</p>
+        <Card className="border-red-200 bg-red-50/50">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="p-2.5 rounded-lg bg-white border border-red-100">
+              <AlertTriangle className="w-5 h-5 text-red-500" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-red-700">{fiStats.reduce((a, s) => a + s.alertCount, 0)}</p>
+              <p className="text-xs text-red-600">Alertes Chute Libre</p>
+            </div>
+          </CardContent>
         </Card>
-      </motion.div>
+      </div>
+
+      {/* FI Rows */}
+      <div className="space-y-3">
+        {fiStats.map(({ fi, fiMembres, thisSaisies, presenceRate, alertCount, saisieComplete }) => (
+          <Card key={fi.id} className={cn("border transition-all", !saisieComplete ? "border-amber-200 bg-amber-50/20" : alertCount > 0 ? "border-red-200 bg-red-50/20" : "border-zinc-200 bg-white")}>
+            <CardContent className="p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-zinc-50 border border-zinc-100">
+                    <Users className="w-4 h-4 text-zinc-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-zinc-900">{fi.name}</p>
+                    <p className="text-xs text-zinc-400">{fi.campus} · Pilote: {fi.pilote_email}</p>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      {saisieComplete ? (
+                        <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] gap-1">
+                          <CheckCircle2 className="w-3 h-3" /> Suivi complet
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] gap-1">
+                          <Clock className="w-3 h-3" /> {thisSaisies.length}/{fiMembres.length} saisies
+                        </Badge>
+                      )}
+                      {alertCount > 0 && (
+                        <Badge className="bg-red-50 text-red-700 border border-red-200 text-[10px] gap-1">
+                          <AlertTriangle className="w-3 h-3" /> {alertCount} alerte{alertCount > 1 ? "s" : ""}
+                        </Badge>
+                      )}
+                      {presenceRate !== null && (
+                        <Badge variant="outline" className="text-[10px] text-zinc-500">
+                          {Math.round(presenceRate * 100)}% présence
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {!saisieComplete && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-amber-300 text-amber-700 hover:bg-amber-50 gap-2 whitespace-nowrap"
+                    onClick={() => handleNudge(fi)}
+                    disabled={nudging[fi.id]}
+                  >
+                    <Bell className="w-3.5 h-3.5" />
+                    {nudging[fi.id] ? "Envoi..." : "Relancer le Pilote"}
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
