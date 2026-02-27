@@ -45,11 +45,10 @@ export default function FIManagerPage() {
   }, [queryClient]);
 
   const userRoles = getUserRoles(user);
-  // admin/responsable_fi: accès complet + suppression
+  // admin/responsable_fi: accès complet + suppression + création
   const canWriteAll = userHasRole(user, ["admin", "responsable_fi"]);
-  // pilote_fi/copilote_fi: accès complet (créer, modifier, voir toutes les FI), sauf suppression
-  const isPiloteOrCopilote = userHasRole(user, ["pilote_fi", "copilote_fi"]);
-  const canWrite = canWriteAll || isPiloteOrCopilote;
+  // Tout le monde peut modifier les FI (nommer pilotes/copilotes, changer statut, etc.)
+  const canWrite = true;
 
   // Tous les membres du pôle FI voient toutes les FI
   const mesFamilles = familles;
