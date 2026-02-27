@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Send, Paperclip, X, MessageSquare, ArrowLeft, File, Image, Check, CheckCheck } from "lucide-react";
+import { Search, Send, Paperclip, X, MessageSquare, ArrowLeft, File, Image, Check, CheckCheck, Edit2, Trash2 } from "lucide-react";
 import { format, isToday, isYesterday } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTrackActivity } from "@/components/equipe/LiveActivityIndicator";
@@ -18,12 +18,18 @@ function formatMsgTime(dateStr) {
   return format(d, "d MMM", { locale: fr });
 }
 
-function MessageBubble({ msg, isMine }) {
+function extractLinks(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.match(urlRegex) || [];
+}
+
+function MessageBubble({ msg, isMine, currentUserEmail, onEdit, onDelete }) {
   const hasFile = !!msg.file_url;
   const isImage = msg.file_type?.startsWith("image/");
+  const links = msg.content ? extractLinks(msg.content) : [];
 
   return (
-    <div className={`flex ${isMine ? "justify-end" : "justify-start"} mb-2`}>
+    <div className={`flex ${isMine ? "justify-end" : "justify-start"} mb-2 group`}>
       <div className={`max-w-[75%] ${isMine ? "items-end" : "items-start"} flex flex-col gap-1`}>
         {hasFile && (
           <div className={`rounded-xl overflow-hidden ${isMine ? "bg-blue-600/30 border border-blue-500/30" : "bg-white/5 border border-white/10"}`}>
@@ -45,14 +51,30 @@ function MessageBubble({ msg, isMine }) {
               : "bg-white/8 text-zinc-200 border border-white/10 rounded-bl-sm"
           }`}>
             {msg.content}
+            {msg.edited_at && <p className="text-xs opacity-70 mt-1">(modifié)</p>}
           </div>
         )}
-        <div className="flex items-center gap-1 px-1">
+        {links.length > 0 && (
+          <div className="space-y-1.5">
+            {links.map((url, i) => (
+              <a key={i} href={url} target="_blank" rel="noreferrer" className={`block text-xs px-3 py-2 rounded-lg border ${isMine ? "bg-blue-500/30 border-blue-400/30 text-blue-100" : "bg-white/5 border-white/10 text-zinc-300"} hover:opacity-80 truncate`}>
+                🔗 {new URL(url).hostname}
+              </a>
+            ))}
+          </div>
+        )}
+        <div className="flex items-center gap-2 px-1">
           <span className="text-[10px] text-zinc-600">{formatMsgTime(msg.created_date)}</span>
           {isMine && (
             msg.status === "read"
               ? <CheckCheck className="w-3 h-3 text-blue-400" />
               : <Check className="w-3 h-3 text-zinc-600" />
+          )}
+          {isMine && (
+            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onClick={() => onEdit(msg)} className="text-zinc-600 hover:text-zinc-300"><Edit2 className="w-3 h-3" /></button>
+              <button onClick={() => onDelete(msg.id)} className="text-zinc-600 hover:text-red-400"><Trash2 className="w-3 h-3" /></button>
+            </div>
           )}
         </div>
       </div>
