@@ -6,13 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Users, Search } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Users, Search, Plus, Pencil, Trash2 } from "lucide-react";
 import AssiduitéMatrix from "@/components/fi/AssiduitéMatrix";
 import ChuteLivreAlert, { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
 import { cn } from "@/lib/utils";
 import AIFIAssignment from "@/components/ai/AIFIAssignment";
 import InteractionsPastorales from "@/components/fi/InteractionsPastorales";
 import { motion } from "framer-motion";
+
+const STATUT_OPTIONS = ["passif", "regulier", "disciple", "reproducteur"];
+const GENRE_OPTIONS = ["homme", "femme"];
+
+const EMPTY_FORM = {
+  nom_complet: "",
+  telephone: "",
+  email: "",
+  ville: "",
+  age: "",
+  genre: "",
+  statut_pipeline: "passif",
+  potentiel_formation: false,
+  notes: "",
+};
 
 const STATUT_COLORS = {
   passif:       "bg-zinc-500/20 text-zinc-400 border-zinc-500/30",
