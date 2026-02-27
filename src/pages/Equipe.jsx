@@ -197,7 +197,10 @@ export default function EquipePage() {
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["users-equipe"],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: async () => {
+      const res = await base44.functions.invoke("listUsers", {});
+      return res.data?.users || [];
+    },
     refetchInterval: 20000,
   });
 
