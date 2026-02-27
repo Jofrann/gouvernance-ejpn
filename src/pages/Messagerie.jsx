@@ -124,11 +124,15 @@ export default function MessageriePage() {
   const [search, setSearch] = useState("");
   const [msgText, setMsgText] = useState("");
   const [uploadingFile, setUploadingFile] = useState(false);
-  const [pendingFile, setPendingFile] = useState(null); // {url, name, type}
+  const [pendingFile, setPendingFile] = useState(null);
   const [showNewConv, setShowNewConv] = useState(false);
   const [userSearch, setUserSearch] = useState("");
+  const [editingMsgId, setEditingMsgId] = useState(null);
+  const [editingText, setEditingText] = useState("");
+  const [typingUsers, setTypingUsers] = useState({});
   const bottomRef = useRef(null);
   const fileInputRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser).catch(() => {});
@@ -241,7 +245,6 @@ export default function MessageriePage() {
       };
       await base44.entities.Message.create(msgData);
 
-      // Update conv preview
       const conv = conversations.find(c => c.id === selectedConvId);
       const myIndex = conv?.participant_emails?.indexOf(currentUser.email);
       const unreadUpdate = myIndex === 0
@@ -259,6 +262,20 @@ export default function MessageriePage() {
       setPendingFile(null);
       qc.invalidateQueries({ queryKey: ["messages", selectedConvId] });
       qc.invalidateQueries({ queryKey: ["conversations"] });
+    },
+  });
+
+  const deleteMessage = useMutation({
+    mutationFn: (msgId) => base44.entities.Message.delete(msgId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["messages", selectedConvId] }),
+  });
+
+  const updateMessage = useMutation({
+    mutationFn: ({ msgId, content }) => base44.entities.Message.update(msgId, { content, edited_at: new Date().toISOString() }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["messages", selectedConvId] });
+      setEditingMsgId(null);
+      setEditingText("");
     },
   });
 
@@ -287,6 +304,21 @@ export default function MessageriePage() {
     setPendingFile({ url: file_url, name: file.name, type: file.type });
     setUploadingFile(false);
   }
+
+  const handleTyping = (text) => {
+    setMsgText(text);
+    clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      setTypingUsers(prev => {
+        const next = { ...prev };
+        delete next[currentUser.email];
+        return next;
+      });
+    }, 3000);
+    if (!typingUsers[currentUser.email]) {
+      setTypingUsers(prev => ({ ...prev, [currentUser.email]: true }));
+    }
+  };
 
   const selectedConv = conversations.find(c => c.id === selectedConvId);
   const otherParticipant = selectedConv
@@ -439,6 +471,7 @@ export default function MessageriePage() {
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-0.5">
               {messages.map((msg, i) => {
                 const isMine = msg.sender_email === currentUser.email;
+                const isEditing = editingMsgId === msg.id;
                 const showDate = i === 0 || (
                   new Date(msg.created_date).toDateString() !== new Date(messages[i - 1]?.created_date).toDateString()
                 );
@@ -455,10 +488,28 @@ export default function MessageriePage() {
                         <div className="flex-1 h-px bg-white/5" />
                       </div>
                     )}
-                    <MessageBubble msg={msg} isMine={isMine} />
+                    {isEditing ? (
+                      <div className="flex justify-end mb-2">
+                        <div className="flex gap-2 max-w-[75%]">
+                          <input type="text" value={editingText} onChange={e => setEditingText(e.target.value)}
+                            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-blue-500/50"
+                            placeholder="Modifier le message..." />
+                          <button onClick={() => { if (editingText.trim()) updateMessage.mutate({ msgId: msg.id, content: editingText.trim() }); }}
+                            className="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm text-white">✓</button>
+                          <button onClick={() => setEditingMsgId(null)} className="px-3 py-2 rounded-xl bg-white/10 text-sm text-zinc-300">✕</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <MessageBubble msg={msg} isMine={isMine} currentUserEmail={currentUser.email}
+                        onEdit={(m) => { setEditingMsgId(m.id); setEditingText(m.content); }}
+                        onDelete={(id) => deleteMessage.mutate(id)} />
+                    )}
                   </React.Fragment>
                 );
               })}
+              {Object.keys(typingUsers).map(email => email !== currentUser.email && (
+                <div key={email} className="text-xs text-zinc-600 italic py-1 px-4">💬 En train d'écrire...</div>
+              ))}
               <div ref={bottomRef} />
             </div>
 
@@ -491,7 +542,7 @@ export default function MessageriePage() {
               </button>
               <input
                 value={msgText}
-                onChange={e => setMsgText(e.target.value)}
+                onChange={e => handleTyping(e.target.value)}
                 onKeyDown={e => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
