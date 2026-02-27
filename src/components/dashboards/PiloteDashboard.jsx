@@ -134,7 +134,7 @@ export default function PiloteDashboard({ user }) {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Membres", value: membres.length, sub: `${members?.filter?.(m => m.potentiel_formation)?.length ?? membres.filter(m => m.potentiel_formation).length} potentiel formation`, icon: Users, color: "text-blue-400" },
+          { label: "Membres", value: membres.length, sub: `${membres.filter(m => m.potentiel_formation).length} potentiel formation`, icon: Users, color: "text-blue-400" },
           { label: "Présence ce jeudi", value: presenceRate != null ? `${presenceRate}%` : "—", sub: `${presenceThisWeek}/${membres.length} présents`, icon: Heart, color: presenceRate != null && presenceRate >= 70 ? "text-emerald-400" : "text-amber-400" },
           { label: "Santé moyenne", value: avgSante ? `${avgSante}/10` : "—", sub: "Clinique hebdo", icon: Activity, color: avgSante && parseFloat(avgSante) >= 7 ? "text-emerald-400" : "text-amber-400" },
           { label: "Alertes", value: alertes.length, sub: interactionsSuivi.length > 0 ? `${interactionsSuivi.length} suivi(s) en attente` : "Aucun suivi requis", icon: AlertTriangle, color: alertes.length > 0 ? "text-red-400" : "text-zinc-500" },
