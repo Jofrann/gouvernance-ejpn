@@ -3,7 +3,6 @@ import { base44 } from "@/api/base44Client";
 import TopNav from "@/components/navigation/TopNav";
 import AnimatedBackground from "@/components/layout/AnimatedBackground";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
