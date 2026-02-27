@@ -6,7 +6,7 @@ import {
   AlertTriangle, Database, FileText, GitCompare, FlaskConical,
   PenTool, Home, Heart, ClipboardList, FolderOpen, ArrowRightLeft,
   Eye, GraduationCap, BookOpen, Upload, Award, CheckSquare,
-  UserCheck, Globe, Calendar, MessageSquare, Flame, Calculator,
+  UserCheck, Globe, Calendar, MessageSquare, Flame,
   Megaphone, Kanban, Library, BarChart2, Briefcase, Shield,
   Settings, LogOut, User, Menu, Zap
 } from "lucide-react";
@@ -115,8 +115,6 @@ const NAVIGATION = {
     },
   },
 };
-
-
 
 function NavLink({ item, currentPage, onClose }) {
   return (
