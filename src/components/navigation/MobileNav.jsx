@@ -152,6 +152,9 @@ export default function MobileNav({ user, currentPage, userRoles }) {
   const isGouvernance = userRoles.some(r => GOUV_ROLES.includes(r));
   const isExecution = userRoles.some(r => EXEC_ROLES.includes(r));
 
+  const allowedExecPoles = getAllowedExecPoles(userRoles);
+  const allowedGouvGroups = getAllowedGouvGroups(userRoles);
+
   const close = () => setOpen(false);
 
   return (
