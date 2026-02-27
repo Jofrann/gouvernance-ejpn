@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Search, Calendar, Settings2, ArrowLeft } from "lucide-react";
+import { Users, Search, Calendar, Settings2, ArrowLeft, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTrackActivity } from "@/components/equipe/LiveActivityIndicator";
 import MembersGrid from "@/components/fi/MembersGrid";
 import MemberProfile from "@/components/fi/MemberProfile";
+import FICalendar from "@/components/fi/FICalendar";
+import ManageMembersModal from "@/components/fi/ManageMembersModal";
+import EventFormModal from "@/components/fi/EventFormModal";
 
 const urlParams = new URLSearchParams(window.location.search);
 const INIT_FI_ID = urlParams.get("fiId");
@@ -22,6 +25,9 @@ export default function FIHubPage() {
   const [selectedMembre, setSelectedMembre] = useState(null);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("membres");
+  const [showManageMembers, setShowManageMembers] = useState(false);
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [selectedEventDate, setSelectedEventDate] = useState(new Date());
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -47,6 +53,12 @@ export default function FIHubPage() {
     enabled: !!selectedFI,
   });
 
+  const { data: events = [] } = useQuery({
+    queryKey: ["events", selectedFI],
+    queryFn: () => selectedFI ? base44.entities.EvenementFI.filter({ famille_impact_id: selectedFI }) : Promise.resolve([]),
+    enabled: !!selectedFI,
+  });
+
   // Real-time subscriptions
   useEffect(() => {
     const unsubMembres = base44.entities.Membre.subscribe(() => {
@@ -60,7 +72,10 @@ export default function FIHubPage() {
     const unsubInteractions = base44.entities.InteractionPastorale.subscribe(() => {
       queryClient.invalidateQueries({ queryKey: ["interactions"] });
     });
-    return () => { unsubMembres(); unsubSaisies(); unsubInteractions(); };
+    const unsubEvents = base44.entities.EvenementFI.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["events", selectedFI] });
+    });
+    return () => { unsubMembres(); unsubSaisies(); unsubInteractions(); unsubEvents(); };
   }, [selectedFI, queryClient]);
 
   const filtered = membres.filter(m =>
@@ -90,13 +105,23 @@ export default function FIHubPage() {
         </Select>
 
         {currentFI && (
-          <div className="flex items-center gap-3 px-4 py-2 rounded-xl border border-white/[0.07] bg-white/[0.02]">
-            <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-            <div>
-              <p className="text-xs font-semibold text-white">{currentFI.pilote_nom}</p>
-              <p className="text-[10px] text-zinc-500">Pilote</p>
+          <>
+            <div className="flex items-center gap-3 px-4 py-2 rounded-xl border border-white/[0.07] bg-white/[0.02]">
+              <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+              <div>
+                <p className="text-xs font-semibold text-white">{currentFI.pilote_nom}</p>
+                <p className="text-[10px] text-zinc-500">Pilote</p>
+              </div>
             </div>
-          </div>
+            {["admin", "responsable_fi", "pilote_fi", "copilote_fi"].includes(user?.role) && (
+              <Button
+                onClick={() => setShowManageMembers(true)}
+                className="gap-2 bg-blue-600/80 hover:bg-blue-600"
+              >
+                <UserPlus className="w-4 h-4" /> Gérer membres
+              </Button>
+            )}
+          </>
         )}
       </motion.div>
 
@@ -142,10 +167,20 @@ export default function FIHubPage() {
 
         {/* Clinique Tab */}
         <TabsContent value="clinique" className="space-y-4">
-          <div className="p-8 rounded-xl border border-white/[0.07] bg-white/[0.02] text-center">
-            <p className="text-sm text-zinc-500">Accédez à <span className="font-semibold text-white">Clinique du Jeudi</span> depuis le menu principal</p>
-            <p className="text-xs text-zinc-600 mt-2">Saisies hebdomadaires des 4 dimensions (Temps, Finances, Émotions, Spirituel)</p>
-          </div>
+          <FICalendar
+            events={events}
+            onSelectEvent={(evt) => {}} // Could expand event details
+            onCreateEvent={() => {
+              setSelectedEventDate(new Date());
+              setShowEventForm(true);
+            }}
+            onDeleteEvent={(eventId) => {
+              base44.entities.EvenementFI.delete(eventId).then(() => {
+                queryClient.invalidateQueries({ queryKey: ["events", selectedFI] });
+              });
+            }}
+            canEdit={["admin", "responsable_fi", "pilote_fi", "copilote_fi"].includes(user?.role)}
+          />
         </TabsContent>
 
         {/* Settings Tab */}
@@ -164,6 +199,23 @@ export default function FIHubPage() {
         fiId={selectedFI}
         user={user}
         saisies={saisies}
+      />
+
+      {/* Manage Members Modal */}
+      <ManageMembersModal
+        isOpen={showManageMembers}
+        onClose={() => setShowManageMembers(false)}
+        fiId={selectedFI}
+        fiName={currentFI?.name}
+      />
+
+      {/* Event Form Modal */}
+      <EventFormModal
+        isOpen={showEventForm}
+        onClose={() => setShowEventForm(false)}
+        fiId={selectedFI}
+        selectedDate={selectedEventDate}
+        user={user}
       />
     </div>
   );
