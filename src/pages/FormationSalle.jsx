@@ -7,6 +7,7 @@ import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useTrackActivity } from "@/components/equipe/LiveActivityIndicator";
+import RessourceComments from "@/components/formation/RessourceComments";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
