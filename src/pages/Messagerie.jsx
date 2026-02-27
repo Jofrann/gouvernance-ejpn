@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Send, Paperclip, X, MessageSquare, ArrowLeft, File, Image, Check, CheckCheck } from "lucide-react";
+import { Search, Send, Paperclip, X, MessageSquare, ArrowLeft, File, Image, Check, CheckCheck, Pencil, Trash2, ExternalLink } from "lucide-react";
 import { format, isToday, isYesterday } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTrackActivity } from "@/components/equipe/LiveActivityIndicator";
 
 const urlParams = new URLSearchParams(window.location.search);
 const INIT_RECIPIENT = urlParams.get("to");
+
+// ─── Typing state stored in user entity (current_typing field) ────────────────
+// We reuse base44.auth.updateMe to broadcast typing status.
 
 function formatMsgTime(dateStr) {
   if (!dateStr) return "";
@@ -18,13 +21,98 @@ function formatMsgTime(dateStr) {
   return format(d, "d MMM", { locale: fr });
 }
 
-function MessageBubble({ msg, isMine }) {
-  const hasFile = !!msg.file_url;
-  const isImage = msg.file_type?.startsWith("image/");
+// Detect URLs in text
+const URL_REGEX = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi;
+
+function LinkPreview({ url }) {
+  const [meta, setMeta] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    // Use Open Graph / meta extraction via LLM (lightweight)
+    base44.integrations.Core.InvokeLLM({
+      prompt: `Extract title, description and image_url from this URL's Open Graph tags: ${url}. Return JSON only with keys: title, description, image_url, domain. Keep description under 100 chars. If you can't access the page, use the domain name as title.`,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          description: { type: "string" },
+          image_url: { type: "string" },
+          domain: { type: "string" },
+        },
+      },
+    }).then(res => {
+      setMeta(res);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [url]);
+
+  if (loading) {
+    return (
+      <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-white/5 animate-pulse">
+        <div className="w-4 h-4 border-t border-blue-400 rounded-full animate-spin flex-shrink-0" />
+        <span className="text-[10px] text-zinc-600 truncate">{url}</span>
+      </div>
+    );
+  }
+  if (!meta) return null;
 
   return (
-    <div className={`flex ${isMine ? "justify-end" : "justify-start"} mb-2`}>
-      <div className={`max-w-[75%] ${isMine ? "items-end" : "items-start"} flex flex-col gap-1`}>
+    <a href={url} target="_blank" rel="noreferrer"
+      className="mt-2 flex items-start gap-3 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors group cursor-pointer">
+      {meta.image_url && (
+        <img src={meta.image_url} alt="" className="w-14 h-14 rounded-lg object-cover flex-shrink-0 bg-white/5" onError={e => e.target.style.display = 'none'} />
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-semibold text-white truncate">{meta.title || meta.domain || url}</p>
+        {meta.description && <p className="text-[10px] text-zinc-500 mt-0.5 line-clamp-2">{meta.description}</p>}
+        <p className="text-[10px] text-blue-400 mt-1 flex items-center gap-1 truncate">
+          <ExternalLink className="w-2.5 h-2.5" />{meta.domain || url}
+        </p>
+      </div>
+    </a>
+  );
+}
+
+function MessageBubble({ msg, isMine, onEdit, onDelete }) {
+  const [showActions, setShowActions] = useState(false);
+  const hasFile = !!msg.file_url;
+  const isImage = msg.file_type?.startsWith("image/");
+  const urls = msg.content?.match(URL_REGEX) || [];
+
+  return (
+    <div
+      className={`flex ${isMine ? "justify-end" : "justify-start"} mb-2 group`}
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => setShowActions(false)}
+    >
+      {/* Actions (shown on hover) */}
+      {isMine && (
+        <AnimatePresence>
+          {showActions && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="flex items-center gap-1 mr-2 self-center"
+            >
+              {msg.content && (
+                <button onClick={() => onEdit(msg)}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
+                  <Pencil className="w-3 h-3 text-zinc-400" />
+                </button>
+              )}
+              <button onClick={() => onDelete(msg.id)}
+                className="p-1.5 rounded-lg bg-white/10 hover:bg-red-500/30 transition-colors">
+                <Trash2 className="w-3 h-3 text-zinc-400 hover:text-red-400" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+
+      <div className={`max-w-[72%] ${isMine ? "items-end" : "items-start"} flex flex-col gap-1`}>
         {hasFile && (
           <div className={`rounded-xl overflow-hidden ${isMine ? "bg-blue-600/30 border border-blue-500/30" : "bg-white/5 border border-white/10"}`}>
             {isImage ? (
@@ -44,7 +132,10 @@ function MessageBubble({ msg, isMine }) {
               ? "bg-blue-600 text-white rounded-br-sm"
               : "bg-white/8 text-zinc-200 border border-white/10 rounded-bl-sm"
           }`}>
-            {msg.content}
+            <span style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{msg.content}</span>
+            {msg.edited && <span className="text-[10px] opacity-60 ml-2">(modifié)</span>}
+            {/* Link previews */}
+            {urls.map(url => <LinkPreview key={url} url={url} />)}
           </div>
         )}
         <div className="flex items-center gap-1 px-1">
@@ -60,6 +151,24 @@ function MessageBubble({ msg, isMine }) {
   );
 }
 
+function TypingIndicator({ name }) {
+  return (
+    <div className="flex justify-start mb-2">
+      <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/8 border border-white/10 rounded-bl-sm">
+        <span className="text-xs text-zinc-500">{name} écrit</span>
+        <div className="flex gap-0.5">
+          {[0, 1, 2].map(i => (
+            <motion.div key={i} className="w-1.5 h-1.5 rounded-full bg-zinc-500"
+              animate={{ y: [0, -4, 0] }}
+              transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ConversationItem({ conv, currentUserEmail, isActive, onClick }) {
   const otherName = conv.participant_names?.find((_, i) => conv.participant_emails?.[i] !== currentUserEmail) || "Inconnu";
   const otherInitial = otherName[0]?.toUpperCase() || "?";
@@ -67,12 +176,8 @@ function ConversationItem({ conv, currentUserEmail, isActive, onClick }) {
   const unread = myIndex === 0 ? (conv.unread_count_a || 0) : (conv.unread_count_b || 0);
 
   return (
-    <button
-      onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-3 transition-all text-left ${
-        isActive ? "bg-white/10" : "hover:bg-white/5"
-      }`}
-    >
+    <button onClick={onClick}
+      className={`w-full flex items-center gap-3 px-4 py-3 transition-all text-left ${isActive ? "bg-white/10" : "hover:bg-white/5"}`}>
       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
         {otherInitial}
       </div>
@@ -102,17 +207,21 @@ export default function MessageriePage() {
   const [search, setSearch] = useState("");
   const [msgText, setMsgText] = useState("");
   const [uploadingFile, setUploadingFile] = useState(false);
-  const [pendingFile, setPendingFile] = useState(null); // {url, name, type}
+  const [pendingFile, setPendingFile] = useState(null);
   const [showNewConv, setShowNewConv] = useState(false);
   const [userSearch, setUserSearch] = useState("");
+  const [editingMsg, setEditingMsg] = useState(null); // {id, content}
+  const [editText, setEditText] = useState("");
+  const [otherTyping, setOtherTyping] = useState(false);
   const bottomRef = useRef(null);
   const fileInputRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+  const typingCheckRef = useRef(null);
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser).catch(() => {});
   }, []);
 
-  // All users for new conv
   const { data: allUsers = [] } = useQuery({
     queryKey: ["all-users-msg"],
     queryFn: async () => {
@@ -122,19 +231,13 @@ export default function MessageriePage() {
     enabled: !!currentUser,
   });
 
-  // Conversations
   const { data: conversations = [] } = useQuery({
     queryKey: ["conversations", currentUser?.email],
-    queryFn: () => base44.entities.Conversation.filter(
-      { participant_emails: currentUser.email },
-      "-last_message_at",
-      50
-    ),
+    queryFn: () => base44.entities.Conversation.filter({ participant_emails: currentUser.email }, "-last_message_at", 50),
     enabled: !!currentUser,
     refetchInterval: 10000,
   });
 
-  // Real-time convs
   useEffect(() => {
     if (!currentUser) return;
     const unsub = base44.entities.Conversation.subscribe(() => {
@@ -143,7 +246,6 @@ export default function MessageriePage() {
     return unsub;
   }, [currentUser]);
 
-  // Messages for selected conv
   const { data: messages = [] } = useQuery({
     queryKey: ["messages", selectedConvId],
     queryFn: () => base44.entities.Message.filter({ conversation_id: selectedConvId }, "created_date", 200),
@@ -151,7 +253,6 @@ export default function MessageriePage() {
     refetchInterval: 5000,
   });
 
-  // Real-time messages
   useEffect(() => {
     if (!selectedConvId) return;
     const unsub = base44.entities.Message.subscribe(() => {
@@ -160,41 +261,72 @@ export default function MessageriePage() {
     return unsub;
   }, [selectedConvId]);
 
-  // Auto-scroll
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, otherTyping]);
 
-  // Mark messages as read
+  // Mark as read
   useEffect(() => {
     if (!selectedConvId || !currentUser || messages.length === 0) return;
     const conv = conversations.find(c => c.id === selectedConvId);
     if (!conv) return;
-
-    // Mark unread messages from other as read
-    const unreadMsgs = messages.filter(m =>
-      m.sender_email !== currentUser.email &&
-      !m.read_by?.includes(currentUser.email)
-    );
-    if (unreadMsgs.length === 0) return;
-
-    unreadMsgs.forEach(m => {
-      base44.entities.Message.update(m.id, {
-        read_by: [...(m.read_by || []), currentUser.email],
-        status: "read",
-      });
+    const unread = messages.filter(m => m.sender_email !== currentUser.email && !m.read_by?.includes(currentUser.email));
+    if (unread.length === 0) return;
+    unread.forEach(m => {
+      base44.entities.Message.update(m.id, { read_by: [...(m.read_by || []), currentUser.email], status: "read" });
     });
-
-    // Reset unread count
     const myIndex = conv.participant_emails?.indexOf(currentUser.email);
-    const update = myIndex === 0
-      ? { unread_count_a: 0 }
-      : { unread_count_b: 0 };
-    base44.entities.Conversation.update(selectedConvId, update);
+    base44.entities.Conversation.update(selectedConvId, myIndex === 0 ? { unread_count_a: 0 } : { unread_count_b: 0 });
     qc.invalidateQueries({ queryKey: ["conversations"] });
   }, [selectedConvId, messages, currentUser]);
 
-  // Handle init recipient from URL
+  // Typing detection: broadcast when user types
+  const handleMsgTextChange = useCallback((val) => {
+    setMsgText(val);
+    if (!currentUser || !selectedConvId) return;
+
+    // Set typing true
+    base44.auth.updateMe({ current_typing: selectedConvId }).catch(() => {});
+
+    // Clear existing timeout
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+    // Stop typing after 2s of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      base44.auth.updateMe({ current_typing: null }).catch(() => {});
+    }, 2000);
+  }, [currentUser, selectedConvId]);
+
+  // Poll other user's typing status
+  useEffect(() => {
+    if (!selectedConvId || !currentUser) return;
+
+    const conv = conversations.find(c => c.id === selectedConvId);
+    if (!conv) return;
+
+    const otherEmail = conv.participant_emails?.find(e => e !== currentUser.email);
+    if (!otherEmail) return;
+
+    const checkTyping = async () => {
+      const users = await base44.entities.User.filter({ email: otherEmail });
+      const other = users[0];
+      setOtherTyping(other?.current_typing === selectedConvId);
+    };
+
+    checkTyping();
+    typingCheckRef.current = setInterval(checkTyping, 2000);
+    return () => clearInterval(typingCheckRef.current);
+  }, [selectedConvId, currentUser, conversations]);
+
+  // Clear typing on unmount / conv change
+  useEffect(() => {
+    return () => {
+      base44.auth.updateMe({ current_typing: null }).catch(() => {});
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
+  }, [selectedConvId]);
+
+  // Handle URL param
   useEffect(() => {
     if (!INIT_RECIPIENT || !currentUser || conversations.length === 0) return;
     const existing = conversations.find(c => c.participant_emails?.includes(INIT_RECIPIENT));
@@ -218,19 +350,12 @@ export default function MessageriePage() {
         ...(pendingFile ? { file_url: pendingFile.url, file_name: pendingFile.name, file_type: pendingFile.type } : {}),
       };
       await base44.entities.Message.create(msgData);
-
-      // Update conv preview
       const conv = conversations.find(c => c.id === selectedConvId);
       const myIndex = conv?.participant_emails?.indexOf(currentUser.email);
-      const unreadUpdate = myIndex === 0
-        ? { unread_count_b: (conv?.unread_count_b || 0) + 1 }
-        : { unread_count_a: (conv?.unread_count_a || 0) + 1 };
-      await base44.entities.Conversation.update(selectedConvId, {
-        last_message: msgText.trim() || (pendingFile?.name || "Fichier"),
-        last_message_at: new Date().toISOString(),
-        last_message_by: currentUser.email,
-        ...unreadUpdate,
-      });
+      const unreadUpdate = myIndex === 0 ? { unread_count_b: (conv?.unread_count_b || 0) + 1 } : { unread_count_a: (conv?.unread_count_a || 0) + 1 };
+      await base44.entities.Conversation.update(selectedConvId, { last_message: msgText.trim() || (pendingFile?.name || "Fichier"), last_message_at: new Date().toISOString(), last_message_by: currentUser.email, ...unreadUpdate });
+      // Stop typing indicator
+      base44.auth.updateMe({ current_typing: null }).catch(() => {});
     },
     onSuccess: () => {
       setMsgText("");
@@ -240,10 +365,28 @@ export default function MessageriePage() {
     },
   });
 
+  const deleteMessage = useMutation({
+    mutationFn: (msgId) => base44.entities.Message.delete(msgId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["messages", selectedConvId] }),
+  });
+
+  const saveEdit = useMutation({
+    mutationFn: () => base44.entities.Message.update(editingMsg.id, { content: editText.trim(), edited: true }),
+    onSuccess: () => {
+      setEditingMsg(null);
+      setEditText("");
+      qc.invalidateQueries({ queryKey: ["messages", selectedConvId] });
+    },
+  });
+
+  function handleEdit(msg) {
+    setEditingMsg(msg);
+    setEditText(msg.content);
+  }
+
   async function startConversation(recipient) {
     const existing = conversations.find(c => c.participant_emails?.includes(recipient.email));
     if (existing) { setSelectedConvId(existing.id); setShowNewConv(false); return; }
-
     const conv = await base44.entities.Conversation.create({
       participant_emails: [currentUser.email, recipient.email],
       participant_names: [currentUser.full_name, recipient.full_name],
@@ -279,8 +422,7 @@ export default function MessageriePage() {
 
   const filteredUsers = allUsers.filter(u =>
     u.email !== currentUser?.email &&
-    (u.full_name?.toLowerCase().includes(userSearch.toLowerCase()) ||
-      u.email?.toLowerCase().includes(userSearch.toLowerCase()))
+    (u.full_name?.toLowerCase().includes(userSearch.toLowerCase()) || u.email?.toLowerCase().includes(userSearch.toLowerCase()))
   );
 
   if (!currentUser) {
@@ -294,43 +436,26 @@ export default function MessageriePage() {
   return (
     <div className="h-[calc(100vh-64px)] flex overflow-hidden">
       {/* Sidebar */}
-      <div className={`flex flex-col border-r border-white/10 bg-[#080c14]/80 backdrop-blur-sm
-        ${selectedConvId ? "hidden md:flex w-80" : "flex w-full md:w-80"}`}>
-        {/* Header */}
+      <div className={`flex flex-col border-r border-white/10 bg-[#080c14]/80 backdrop-blur-sm ${selectedConvId ? "hidden md:flex w-80" : "flex w-full md:w-80"}`}>
         <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
           <h2 className="text-sm font-bold text-white">Messages</h2>
-          <button
-            onClick={() => setShowNewConv(!showNewConv)}
-            className="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 transition-colors"
-          >
+          <button onClick={() => setShowNewConv(!showNewConv)}
+            className="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 transition-colors">
             <MessageSquare className="w-3.5 h-3.5 text-white" />
           </button>
         </div>
 
-        {/* New conv user picker */}
         <AnimatePresence>
           {showNewConv && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="border-b border-white/10 overflow-hidden"
-            >
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+              className="border-b border-white/10 overflow-hidden">
               <div className="p-3">
-                <input
-                  autoFocus
-                  value={userSearch}
-                  onChange={e => setUserSearch(e.target.value)}
-                  placeholder="Chercher un membre..."
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none placeholder:text-zinc-600"
-                />
+                <input autoFocus value={userSearch} onChange={e => setUserSearch(e.target.value)} placeholder="Chercher un membre..."
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none placeholder:text-zinc-600" />
                 <div className="mt-2 max-h-40 overflow-y-auto space-y-0.5">
                   {filteredUsers.slice(0, 10).map(u => (
-                    <button
-                      key={u.id}
-                      onClick={() => startConversation(u)}
-                      className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-white/10 text-left transition-colors"
-                    >
+                    <button key={u.id} onClick={() => startConversation(u)}
+                      className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-white/10 text-left transition-colors">
                       <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                         {u.full_name?.[0]?.toUpperCase()}
                       </div>
@@ -340,29 +465,21 @@ export default function MessageriePage() {
                       </div>
                     </button>
                   ))}
-                  {filteredUsers.length === 0 && (
-                    <p className="text-xs text-zinc-600 text-center py-3">Aucun membre trouvé</p>
-                  )}
+                  {filteredUsers.length === 0 && <p className="text-xs text-zinc-600 text-center py-3">Aucun membre trouvé</p>}
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Search */}
         <div className="px-3 py-2 border-b border-white/5">
           <div className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
             <Search className="w-3.5 h-3.5 text-zinc-600" />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Rechercher..."
-              className="flex-1 bg-transparent text-xs text-white outline-none placeholder:text-zinc-600"
-            />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher..."
+              className="flex-1 bg-transparent text-xs text-white outline-none placeholder:text-zinc-600" />
           </div>
         </div>
 
-        {/* Conversations list */}
         <div className="flex-1 overflow-y-auto">
           {filteredConvs.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-center">
@@ -371,13 +488,8 @@ export default function MessageriePage() {
             </div>
           ) : (
             filteredConvs.map(conv => (
-              <ConversationItem
-                key={conv.id}
-                conv={conv}
-                currentUserEmail={currentUser.email}
-                isActive={conv.id === selectedConvId}
-                onClick={() => setSelectedConvId(conv.id)}
-              />
+              <ConversationItem key={conv.id} conv={conv} currentUserEmail={currentUser.email}
+                isActive={conv.id === selectedConvId} onClick={() => setSelectedConvId(conv.id)} />
             ))
           )}
         </div>
@@ -396,10 +508,7 @@ export default function MessageriePage() {
           <>
             {/* Chat header */}
             <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10 bg-[#080c14]/60 backdrop-blur-sm">
-              <button
-                className="md:hidden p-1.5 rounded-lg hover:bg-white/10 transition-colors"
-                onClick={() => setSelectedConvId(null)}
-              >
+              <button className="md:hidden p-1.5 rounded-lg hover:bg-white/10 transition-colors" onClick={() => setSelectedConvId(null)}>
                 <ArrowLeft className="w-4 h-4 text-zinc-400" />
               </button>
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold">
@@ -407,9 +516,7 @@ export default function MessageriePage() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-white">{otherParticipant || "Conversation"}</p>
-                <p className="text-[10px] text-zinc-600">
-                  {selectedConv?.participant_emails?.find(e => e !== currentUser.email)}
-                </p>
+                <p className="text-[10px] text-zinc-600">{selectedConv?.participant_emails?.find(e => e !== currentUser.email)}</p>
               </div>
             </div>
 
@@ -417,9 +524,7 @@ export default function MessageriePage() {
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-0.5">
               {messages.map((msg, i) => {
                 const isMine = msg.sender_email === currentUser.email;
-                const showDate = i === 0 || (
-                  new Date(msg.created_date).toDateString() !== new Date(messages[i - 1]?.created_date).toDateString()
-                );
+                const showDate = i === 0 || new Date(msg.created_date).toDateString() !== new Date(messages[i - 1]?.created_date).toDateString();
                 return (
                   <React.Fragment key={msg.id}>
                     {showDate && (
@@ -428,62 +533,79 @@ export default function MessageriePage() {
                         <span className="text-[10px] text-zinc-600">
                           {isToday(new Date(msg.created_date)) ? "Aujourd'hui"
                             : isYesterday(new Date(msg.created_date)) ? "Hier"
-                              : format(new Date(msg.created_date), "d MMMM yyyy", { locale: fr })}
+                            : format(new Date(msg.created_date), "d MMMM yyyy", { locale: fr })}
                         </span>
                         <div className="flex-1 h-px bg-white/5" />
                       </div>
                     )}
-                    <MessageBubble msg={msg} isMine={isMine} />
+                    <MessageBubble
+                      msg={msg}
+                      isMine={isMine}
+                      onEdit={handleEdit}
+                      onDelete={(id) => deleteMessage.mutate(id)}
+                    />
                   </React.Fragment>
                 );
               })}
+              {/* Typing indicator */}
+              {otherTyping && <TypingIndicator name={otherParticipant || "..."} />}
               <div ref={bottomRef} />
             </div>
 
             {/* File preview */}
             {pendingFile && (
               <div className="flex items-center gap-3 px-4 py-2 bg-white/5 border-t border-white/10">
-                {pendingFile.type?.startsWith("image/")
-                  ? <Image className="w-4 h-4 text-blue-400" />
-                  : <File className="w-4 h-4 text-blue-400" />
-                }
+                {pendingFile.type?.startsWith("image/") ? <Image className="w-4 h-4 text-blue-400" /> : <File className="w-4 h-4 text-blue-400" />}
                 <span className="text-xs text-zinc-400 truncate flex-1">{pendingFile.name}</span>
-                <button onClick={() => setPendingFile(null)}>
-                  <X className="w-3.5 h-3.5 text-zinc-600 hover:text-red-400 transition-colors" />
+                <button onClick={() => setPendingFile(null)}><X className="w-3.5 h-3.5 text-zinc-600 hover:text-red-400 transition-colors" /></button>
+              </div>
+            )}
+
+            {/* Edit mode banner */}
+            {editingMsg && (
+              <div className="flex items-center gap-3 px-4 py-2 bg-amber-900/20 border-t border-amber-500/20">
+                <Pencil className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                <span className="text-xs text-amber-400 flex-1 truncate">Modification du message</span>
+                <button onClick={() => { setEditingMsg(null); setEditText(""); }}>
+                  <X className="w-3.5 h-3.5 text-amber-400 hover:text-red-400 transition-colors" />
                 </button>
               </div>
             )}
 
             {/* Input */}
             <div className="flex items-end gap-2 px-4 py-3 border-t border-white/10 bg-[#080c14]/60 backdrop-blur-sm">
-              <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploadingFile}
-                className="p-2 rounded-lg text-zinc-600 hover:text-zinc-300 hover:bg-white/10 transition-all flex-shrink-0"
-              >
-                {uploadingFile
-                  ? <div className="w-4 h-4 border-t border-blue-400 rounded-full animate-spin" />
-                  : <Paperclip className="w-4 h-4" />
-                }
-              </button>
+              {!editingMsg && (
+                <>
+                  <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
+                  <button onClick={() => fileInputRef.current?.click()} disabled={uploadingFile}
+                    className="p-2 rounded-lg text-zinc-600 hover:text-zinc-300 hover:bg-white/10 transition-all flex-shrink-0">
+                    {uploadingFile
+                      ? <div className="w-4 h-4 border-t border-blue-400 rounded-full animate-spin" />
+                      : <Paperclip className="w-4 h-4" />}
+                  </button>
+                </>
+              )}
               <input
-                value={msgText}
-                onChange={e => setMsgText(e.target.value)}
+                value={editingMsg ? editText : msgText}
+                onChange={e => editingMsg ? setEditText(e.target.value) : handleMsgTextChange(e.target.value)}
                 onKeyDown={e => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
-                    if (msgText.trim() || pendingFile) sendMessage.mutate();
+                    if (editingMsg) { if (editText.trim()) saveEdit.mutate(); }
+                    else { if (msgText.trim() || pendingFile) sendMessage.mutate(); }
                   }
+                  if (e.key === "Escape" && editingMsg) { setEditingMsg(null); setEditText(""); }
                 }}
-                placeholder="Écrire un message..."
+                placeholder={editingMsg ? "Modifier le message..." : "Écrire un message..."}
                 className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-blue-500/50 transition-colors"
               />
               <button
-                onClick={() => { if (msgText.trim() || pendingFile) sendMessage.mutate(); }}
-                disabled={!msgText.trim() && !pendingFile}
-                className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-40 transition-all flex-shrink-0"
-              >
+                onClick={() => {
+                  if (editingMsg) { if (editText.trim()) saveEdit.mutate(); }
+                  else { if (msgText.trim() || pendingFile) sendMessage.mutate(); }
+                }}
+                disabled={editingMsg ? !editText.trim() : (!msgText.trim() && !pendingFile)}
+                className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-40 transition-all flex-shrink-0">
                 <Send className="w-4 h-4 text-white" />
               </button>
             </div>
