@@ -504,7 +504,7 @@ export default function TopNav({ user, currentPage }) {
             </div>
             <div>
               <p className="text-xs font-semibold text-white leading-none">{user?.full_name || "Utilisateur"}</p>
-              <p className="text-[10px] text-zinc-500 mt-0.5">{ROLE_LABELS[role] || role}</p>
+              <p className="text-[10px] text-zinc-500 mt-0.5">{roleDisplayLabel}</p>
             </div>
           </div>
 
