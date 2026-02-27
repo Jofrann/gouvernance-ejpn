@@ -9,11 +9,11 @@ import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-// Import des composants d'onglets (à créer)
-import FIDashboardTab from "@/components/fi/FIDashboardTab";
-import FIMembersTab from "@/components/fi/FIMembersTab";
-import FIFollowupTab from "@/components/fi/FIFollowupTab";
-import FIAgendaTab from "@/components/fi/FIAgendaTab";
+// Import des composants d'onglets
+import FIDashboardTab from "@/components/fi/FIDashboardTab.jsx";
+import FIMembersTab from "@/components/fi/FIMembersTab.jsx";
+import FIFollowupTab from "@/components/fi/FIFollowupTab.jsx";
+import FIAgendaTab from "@/components/fi/FIAgendaTab.jsx";
 
 export default function FIDetail() {
   const { fiId } = useParams();
