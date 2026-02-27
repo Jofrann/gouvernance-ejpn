@@ -3,16 +3,15 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Search, Calendar, Settings2, ArrowLeft, UserPlus } from "lucide-react";
+import { Users, Activity, Calendar, Gauge, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTrackActivity } from "@/components/equipe/LiveActivityIndicator";
-import MembersGrid from "@/components/fi/MembersGrid";
-import MemberProfile from "@/components/fi/MemberProfile";
-import FICalendar from "@/components/fi/FICalendar";
+import HubMembresTab from "@/components/fi/HubMembresTab";
+import HubSuiviTab from "@/components/fi/HubSuiviTab";
+import HubAgendaTab from "@/components/fi/HubAgendaTab";
+import HubDashboardTab from "@/components/fi/HubDashboardTab";
 import ManageMembersModal from "@/components/fi/ManageMembersModal";
-import EventFormModal from "@/components/fi/EventFormModal";
 
 const urlParams = new URLSearchParams(window.location.search);
 const INIT_FI_ID = urlParams.get("fiId");
@@ -21,13 +20,9 @@ export default function FIHubPage() {
   useTrackActivity("FIHub");
   const queryClient = useQueryClient();
   const [selectedFI, setSelectedFI] = useState(INIT_FI_ID || null);
-  const [search, setSearch] = useState("");
-  const [selectedMembre, setSelectedMembre] = useState(null);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("membres");
   const [showManageMembers, setShowManageMembers] = useState(false);
-  const [showEventForm, setShowEventForm] = useState(false);
-  const [selectedEventDate, setSelectedEventDate] = useState(new Date());
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -41,182 +36,135 @@ export default function FIHubPage() {
 
   const currentFI = familles.find(f => f.id === selectedFI);
 
-  const { data: membres = [] } = useQuery({
-    queryKey: ["membres", selectedFI],
-    queryFn: () => selectedFI ? base44.entities.Membre.filter({ famille_impact_id: selectedFI }) : Promise.resolve([]),
-    enabled: !!selectedFI,
-  });
-
-  const { data: saisies = [] } = useQuery({
-    queryKey: ["saisies-fi", selectedFI],
-    queryFn: () => selectedFI ? base44.entities.CliniqueSaisie.filter({ famille_impact_id: selectedFI }) : Promise.resolve([]),
-    enabled: !!selectedFI,
-  });
-
-  const { data: events = [] } = useQuery({
-    queryKey: ["events", selectedFI],
-    queryFn: () => selectedFI ? base44.entities.EvenementFI.filter({ famille_impact_id: selectedFI }) : Promise.resolve([]),
-    enabled: !!selectedFI,
-  });
-
   // Real-time subscriptions
   useEffect(() => {
-    const unsubMembres = base44.entities.Membre.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ["membres", selectedFI] });
-    });
-    const unsubSaisies = base44.entities.CliniqueSaisie.subscribe((event) => {
-      if (!selectedFI || event.data?.famille_impact_id === selectedFI) {
-        queryClient.invalidateQueries({ queryKey: ["saisies-fi", selectedFI] });
-      }
-    });
-    const unsubInteractions = base44.entities.InteractionPastorale.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ["interactions"] });
-    });
-    const unsubEvents = base44.entities.EvenementFI.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ["events", selectedFI] });
-    });
-    return () => { unsubMembres(); unsubSaisies(); unsubInteractions(); unsubEvents(); };
+    if (!selectedFI) return;
+    
+    const unsubs = [
+      base44.entities.AmeCRM.subscribe(() => {
+        queryClient.invalidateQueries({ queryKey: ["membres", selectedFI] });
+      }),
+      base44.entities.SuiviHebdomadaire.subscribe((event) => {
+        if (event.data?.famille_impact_id === selectedFI) {
+          queryClient.invalidateQueries({ queryKey: ["suivi", selectedFI] });
+        }
+      }),
+      base44.entities.EvenementAgenda.subscribe((event) => {
+        if (event.data?.famille_impact_id === selectedFI) {
+          queryClient.invalidateQueries({ queryKey: ["events", selectedFI] });
+        }
+      })
+    ];
+
+    return () => unsubs.forEach(u => u?.());
   }, [selectedFI, queryClient]);
 
-  const filtered = membres.filter(m =>
-    m.nom_complet?.toLowerCase().includes(search.toLowerCase())
-  );
+  const canManage = ["admin", "responsable_pole", "pilote", "co_pilote"].includes(user?.role);
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-5">
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <p className="text-[10px] font-bold text-blue-400/80 uppercase tracking-[0.25em] mb-1">Familles d'Impact</p>
-          <h1 className="text-2xl font-black text-white tracking-tight">Hub Exécution FI</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Espace centralisé de gestion des membres · Suivi clinique · Interactions pastorales</p>
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="mb-4">
+          <p className="text-xs font-bold text-blue-400/80 uppercase tracking-widest mb-1">Familles d'Impact</p>
+          <h1 className="text-3xl font-bold text-foreground">Hub de Gestion</h1>
+          <p className="text-sm text-muted-foreground mt-2">Espace centralisé pour gérer votre Famille d'Impact</p>
+        </div>
+
+        {/* FI Selector */}
+        <div className="flex items-center gap-4 flex-wrap">
+          <Select value={selectedFI || ""} onValueChange={setSelectedFI}>
+            <SelectTrigger className="w-80">
+              <SelectValue placeholder="Sélectionner une FI" />
+            </SelectTrigger>
+            <SelectContent>
+              {familles.map((fi) => (
+                <SelectItem key={fi.id} value={fi.id}>{fi.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {currentFI && (
+            <>
+              <div className="flex items-center gap-3 px-4 py-2 rounded-lg border border-border bg-card">
+                <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{currentFI.pilote_nom}</p>
+                  <p className="text-xs text-muted-foreground">Pilote</p>
+                </div>
+              </div>
+
+              {canManage && (
+                <Button
+                  onClick={() => setShowManageMembers(true)}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Gérer membres
+                </Button>
+              )}
+            </>
+          )}
         </div>
       </motion.div>
 
-      {/* FI Selector */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 items-center flex-wrap">
-        <Select value={selectedFI || ""} onValueChange={setSelectedFI}>
-          <SelectTrigger className="w-80 bg-white/5 border-white/10 text-white">
-            <SelectValue placeholder="Sélectionner une FI" />
-          </SelectTrigger>
-          <SelectContent>
-            {familles.map((fi) => <SelectItem key={fi.id} value={fi.id}>{fi.name}</SelectItem>)}
-          </SelectContent>
-        </Select>
-
-        {currentFI && (
-          <>
-            <div className="flex items-center gap-3 px-4 py-2 rounded-xl border border-white/[0.07] bg-white/[0.02]">
-              <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-              <div>
-                <p className="text-xs font-semibold text-white">{currentFI.pilote_nom}</p>
-                <p className="text-[10px] text-zinc-500">Pilote</p>
-              </div>
-            </div>
-            {["admin", "responsable_fi", "pilote_fi", "copilote_fi"].includes(user?.role) && (
-              <Button
-                onClick={() => setShowManageMembers(true)}
-                className="gap-2 bg-blue-600/80 hover:bg-blue-600"
-              >
-                <UserPlus className="w-4 h-4" /> Gérer membres
-              </Button>
-            )}
-          </>
-        )}
-      </motion.div>
-
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-white/[0.04] border border-white/[0.08] p-1 rounded-xl">
-          <TabsTrigger value="membres" className="gap-2">
-            <Users className="w-3.5 h-3.5" /> Membres ({filtered.length})
-          </TabsTrigger>
-          <TabsTrigger value="clinique" className="gap-2">
-            <Calendar className="w-3.5 h-3.5" /> Clinique Hebdo
-          </TabsTrigger>
-          <TabsTrigger value="parametres" className="gap-2">
-            <Settings2 className="w-3.5 h-3.5" /> Paramètres FI
-          </TabsTrigger>
-        </TabsList>
+      {selectedFI && (
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="bg-muted p-1 rounded-lg flex gap-1">
+            <TabsTrigger value="membres" className="gap-2">
+              <Users className="w-4 h-4" />
+              Membres
+            </TabsTrigger>
+            <TabsTrigger value="suivi" className="gap-2">
+              <Activity className="w-4 h-4" />
+              Suivi Hebdo
+            </TabsTrigger>
+            <TabsTrigger value="agenda" className="gap-2">
+              <Calendar className="w-4 h-4" />
+              Agenda
+            </TabsTrigger>
+            <TabsTrigger value="dashboard" className="gap-2">
+              <Gauge className="w-4 h-4" />
+              Dashboard
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Members Tab */}
-        <TabsContent value="membres" className="space-y-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <Input
-              placeholder="Rechercher un membre..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
-            />
-          </div>
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <TabsContent value="membres" className="space-y-4">
+              <HubMembresTab familleImpactId={selectedFI} />
+            </TabsContent>
 
-          {filtered.length === 0 ? (
-            <div className="py-16 text-center text-sm text-zinc-600">
-              <Users className="w-8 h-8 mx-auto mb-2 text-zinc-700" />
-              Aucun membre trouvé
-            </div>
-          ) : (
-            <MembersGrid
-              membres={filtered}
-              saisies={saisies}
-              onSelectMember={setSelectedMembre}
-            />
-          )}
-        </TabsContent>
+            <TabsContent value="suivi" className="space-y-4">
+              <HubSuiviTab familleImpactId={selectedFI} />
+            </TabsContent>
 
-        {/* Clinique Tab */}
-        <TabsContent value="clinique" className="space-y-4">
-          <FICalendar
-            events={events}
-            onSelectEvent={(evt) => {}} // Could expand event details
-            onCreateEvent={() => {
-              setSelectedEventDate(new Date());
-              setShowEventForm(true);
-            }}
-            onDeleteEvent={(eventId) => {
-              base44.entities.EvenementFI.delete(eventId).then(() => {
-                queryClient.invalidateQueries({ queryKey: ["events", selectedFI] });
-              });
-            }}
-            canEdit={["admin", "responsable_fi", "pilote_fi", "copilote_fi"].includes(user?.role)}
-          />
-        </TabsContent>
+            <TabsContent value="agenda" className="space-y-4">
+              <HubAgendaTab familleImpactId={selectedFI} canEdit={canManage} />
+            </TabsContent>
 
-        {/* Settings Tab */}
-        <TabsContent value="parametres" className="space-y-4">
-          <div className="p-8 rounded-xl border border-white/[0.07] bg-white/[0.02] text-center">
-            <p className="text-sm text-zinc-500">Les paramètres FI seront disponibles prochainement</p>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* Member Profile Sheet */}
-      <MemberProfile
-        membre={selectedMembre}
-        isOpen={!!selectedMembre}
-        onClose={() => setSelectedMembre(null)}
-        fiId={selectedFI}
-        user={user}
-        saisies={saisies}
-      />
+            <TabsContent value="dashboard" className="space-y-4">
+              <HubDashboardTab familleImpactId={selectedFI} />
+            </TabsContent>
+          </motion.div>
+        </Tabs>
+      )}
 
       {/* Manage Members Modal */}
-      <ManageMembersModal
-        isOpen={showManageMembers}
-        onClose={() => setShowManageMembers(false)}
-        fiId={selectedFI}
-        fiName={currentFI?.name}
-      />
-
-      {/* Event Form Modal */}
-      <EventFormModal
-        isOpen={showEventForm}
-        onClose={() => setShowEventForm(false)}
-        fiId={selectedFI}
-        selectedDate={selectedEventDate}
-        user={user}
-      />
+      {selectedFI && (
+        <ManageMembersModal
+          isOpen={showManageMembers}
+          onClose={() => setShowManageMembers(false)}
+          fiId={selectedFI}
+          fiName={currentFI?.name}
+        />
+      )}
     </div>
   );
 }
