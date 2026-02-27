@@ -84,7 +84,7 @@ export default function FIDossiersPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-5">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-4 md:space-y-5">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <p className="text-[10px] font-bold text-blue-400/80 uppercase tracking-[0.25em] mb-1">Familles d'Impact</p>

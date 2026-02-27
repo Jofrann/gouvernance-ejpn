@@ -114,7 +114,7 @@ export default function FICliniquePage() {
   }).length;
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-5">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-4 md:space-y-5">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
