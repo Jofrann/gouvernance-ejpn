@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookOpen, FileText, Video, Link as LinkIcon, CheckCircle2, ExternalLink, Users } from "lucide-react";
+import { BookOpen, FileText, Video, Link as LinkIcon, CheckCircle2, ExternalLink, Users, Plus, Pencil, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useTrackActivity } from "@/components/equipe/LiveActivityIndicator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const EMPTY_RESSOURCE = { titre: "", type_ressource: "pdf", url: "", description: "", mois_cycle: format(new Date(), "yyyy-MM") };
 
 const TYPE_CONFIG = {
   pdf:   { icon: FileText, color: "text-red-400 bg-red-500/10 border-red-500/20" },
