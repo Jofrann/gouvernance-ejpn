@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import MobileNav from "@/components/navigation/MobileNav";
 import {
   TRONE_ROLES, GOUV_ROLES, EXEC_ROLES,
-  getAllowedExecPoles, getAllowedGouvGroups, normalizeRole
+  getAllowedExecPoles, getAllowedGouvGroups
 } from "@/components/shared/roleAccess";
 
 const NOTIF_SAMPLES = [
@@ -28,17 +28,13 @@ const NOTIF_SAMPLES = [
 const ROLE_LABELS = {
   admin: "Administrateur",
   trone: "Trône",
-  responsable_general: "Responsable Général",
-  gouvernance_direction: "Directrice d'Exécution",
-  directrice_execution: "Directrice d'Exécution",
-  gouvernance_suivi: "Responsable de Suivi",
-  responsable_suivi: "Responsable de Suivi",
-  gouvernance_strategie: "Analyste Stratégique",
-  analyste_strategique: "Analyste Stratégique",
+  gouvernance_direction: "Direction",
+  gouvernance_suivi: "Suivi",
+  gouvernance_strategie: "Stratégie",
   pilote_fi: "Pilote FI",
   copilote_fi: "Co-Pilote FI",
-  responsable_fi: "Resp. Pôle FI",
-  etudiant: "Pilote en Formation",
+  responsable_fi: "Resp. FI",
+  etudiant: "Étudiant",
   responsable_formation: "Resp. Formation",
   agent_terrain: "Agent Terrain",
   agent_virtuel: "Agent Virtuel",
@@ -292,11 +288,9 @@ export default function TopNav({ user, currentPage }) {
   }, []);
 
   // Support multi-rôles : tableau `roles` ou fallback sur `role` (string)
-  // Normalize legacy role names so navigation access is always correct
-  const rawRoles = Array.isArray(user?.roles) && user.roles.length > 0
+  const userRoles = Array.isArray(user?.roles) && user.roles.length > 0
     ? user.roles
     : user?.role ? [user.role] : ["admin"];
-  const userRoles = rawRoles.map(normalizeRole);
 
   const isAdmin = userRoles.includes("admin");
 
@@ -309,7 +303,6 @@ export default function TopNav({ user, currentPage }) {
   const allowedGouvGroups = getAllowedGouvGroups(userRoles);
 
   const role = userRoles[0] || "admin";
-  const roleDisplayLabel = ROLE_LABELS[role] || ROLE_LABELS[rawRoles[0]] || role;
 
   const tronePages = NAVIGATION.trone.items.map(i => i.page);
   const gouvPages = Object.values(NAVIGATION.gouvernance.groups).flatMap(g => g.items.map(i => i.page));
@@ -508,7 +501,7 @@ export default function TopNav({ user, currentPage }) {
             </div>
             <div>
               <p className="text-xs font-semibold text-white leading-none">{user?.full_name || "Utilisateur"}</p>
-              <p className="text-[10px] text-zinc-500 mt-0.5">{roleDisplayLabel}</p>
+              <p className="text-[10px] text-zinc-500 mt-0.5">{ROLE_LABELS[role] || role}</p>
             </div>
           </div>
 

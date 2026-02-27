@@ -63,9 +63,12 @@ import EvangelisationDebrief from './pages/EvangelisationDebrief';
 import EvangelisationHeatmap from './pages/EvangelisationHeatmap';
 import EvangelisationROI from './pages/EvangelisationROI';
 import EvangelisationRadar from './pages/EvangelisationRadar';
+import FIClinique from './pages/FIClinique';
 import FIDashboard from './pages/FIDashboard';
+import FIDossiers from './pages/FIDossiers';
 import FIHub from './pages/FIHub';
 import FIManager from './pages/FIManager';
+import FITourControle from './pages/FITourControle';
 import FITransferts from './pages/FITransferts';
 import FormationAssiduite from './pages/FormationAssiduite';
 import FormationBulletin from './pages/FormationBulletin';
@@ -88,7 +91,6 @@ import Parametres from './pages/Parametres';
 import TroneArchives from './pages/TroneArchives';
 import TroneRadar from './pages/TroneRadar';
 import TroneValidation from './pages/TroneValidation';
-import FIDetail from './pages/FIDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -109,9 +111,12 @@ export const PAGES = {
     "EvangelisationHeatmap": EvangelisationHeatmap,
     "EvangelisationROI": EvangelisationROI,
     "EvangelisationRadar": EvangelisationRadar,
+    "FIClinique": FIClinique,
     "FIDashboard": FIDashboard,
+    "FIDossiers": FIDossiers,
     "FIHub": FIHub,
     "FIManager": FIManager,
+    "FITourControle": FITourControle,
     "FITransferts": FITransferts,
     "FormationAssiduite": FormationAssiduite,
     "FormationBulletin": FormationBulletin,
@@ -134,7 +139,6 @@ export const PAGES = {
     "TroneArchives": TroneArchives,
     "TroneRadar": TroneRadar,
     "TroneValidation": TroneValidation,
-    "FIDetail": FIDetail,
 }
 
 export const pagesConfig = {

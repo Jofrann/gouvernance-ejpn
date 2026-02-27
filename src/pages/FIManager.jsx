@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUserRoles, userHasRole, ROLE_EXEC_POLES } from "@/components/shared/roleAccess";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -44,14 +43,20 @@ export default function FIManagerPage() {
     return () => { unsubFI(); unsubM(); };
   }, [queryClient]);
 
-  const userRoles = getUserRoles(user);
-  // admin/responsable_fi: accès complet + suppression + création
-  const canWriteAll = userHasRole(user, ["admin", "responsable_fi"]);
-  // Tout le monde peut modifier les FI (nommer pilotes/copilotes, changer statut, etc.)
-  const canWrite = true;
+  const role = user?.role;
+  // Full admin/write: can create, edit all fields, delete
+  const canWrite = role === "admin" || role === "responsable_fi";
+  // Pilote/copilote: can only edit status of their own FI
+  const isPilote = role === "pilote_fi" || role === "copilote_fi";
 
-  // Tous les membres du pôle FI voient toutes les FI
-  const mesFamilles = familles;
+  // Filter FIs by role
+  const mesFamilles = canWrite
+    ? familles
+    : familles.filter(f =>
+        f.pilote_email === user?.email || f.co_pilote_email === user?.email
+      );
+
+  const piloteUsers = users.filter(u => ["pilote_fi", "copilote_fi", "responsable_fi"].includes(u.role));
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.FamilleImpact.create(data),
@@ -96,11 +101,8 @@ export default function FIManagerPage() {
     setForm(f => ({ ...f, co_pilote_email: email, co_pilote_nom: u?.full_name || "" }));
   };
 
-  // Seulement les utilisateurs aptes à piloter sont sélectionnables comme pilote/co-pilote
-  const allSelectableUsers = users.filter(u => !!u.email && u.is_eligible_pilote);
-
   return (
-    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-4 md:space-y-6">
+    <div className="p-6 max-w-6xl mx-auto space-y-6">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
@@ -110,7 +112,7 @@ export default function FIManagerPage() {
             {canWrite ? "Création · Attribution des pilotes · Suivi des capacités" : "Statut de votre Famille d'Impact"}
           </p>
         </div>
-        {canWriteAll && (
+        {canWrite && (
           <Button onClick={openCreate} className="bg-emerald-600/80 hover:bg-emerald-600 border border-emerald-500/30 text-white gap-2">
             <Plus className="w-4 h-4" /> Créer une FI
           </Button>
@@ -160,23 +162,28 @@ export default function FIManagerPage() {
                 </div>
 
                 {/* Actions par rôle */}
-                {canWrite && (
-                  <div className="flex gap-2 pt-1 border-t border-white/5">
-                    <Button size="sm" variant="ghost" className="flex-1 text-zinc-400 hover:text-white hover:bg-white/10 h-8" onClick={() => window.location.href = createPageUrl(`FIDetail?fiId=${fi.id}`)}>
-                      <Pencil className="w-3.5 h-3.5 mr-1.5" />Détails
+                <div className="flex gap-2 pt-1 border-t border-white/5">
+                  {canWrite && (
+                    <>
+                      <Button size="sm" variant="ghost" className="flex-1 text-zinc-400 hover:text-white hover:bg-white/10 h-8" onClick={() => openEdit(fi)}>
+                        <Pencil className="w-3.5 h-3.5 mr-1.5" />Modifier
+                      </Button>
+                      <Button size="sm" variant="ghost" className="text-red-500/60 hover:text-red-400 hover:bg-red-500/10 h-8" onClick={() => setDeleteFI(fi)}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </>
+                  )}
+                  {isPilote && (
+                    <Button size="sm" variant="ghost" className="flex-1 text-zinc-400 hover:text-white hover:bg-white/10 h-8" onClick={() => openStatusEdit(fi)}>
+                      <Pencil className="w-3.5 h-3.5 mr-1.5" />Changer le statut
                     </Button>
-                    {canWriteAll && (
-                      <>
-                        <Button size="sm" variant="ghost" className="text-amber-500/60 hover:text-amber-400 hover:bg-amber-500/10 h-8" onClick={() => openStatusEdit(fi)}>
-                          <Pencil className="w-3.5 h-3.5 mr-1.5" />Archiver
-                        </Button>
-                        <Button size="sm" variant="ghost" className="text-red-500/60 hover:text-red-400 hover:bg-red-500/10 h-8" onClick={() => setDeleteFI(fi)}>
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                )}
+                  )}
+                  {!canWrite && !isPilote && (
+                    <div className="flex-1 flex items-center gap-1.5 justify-center text-xs text-zinc-600">
+                      <Lock className="w-3 h-3" /> Lecture seule
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           );
@@ -208,23 +215,23 @@ export default function FIManagerPage() {
             <div>
               <p className="text-xs text-zinc-400 mb-1.5">Pilote *</p>
               <Select value={form.pilote_email} onValueChange={handlePiloteSelect}>
-              <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                <SelectValue placeholder="Sélectionner un pilote" />
-              </SelectTrigger>
-              <SelectContent>
-                {allSelectableUsers.map(u => <SelectItem key={u.id} value={u.email}>{u.full_name || u.email} ({getUserRoles(u).join(", ")})</SelectItem>)}
-              </SelectContent>
+                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                  <SelectValue placeholder="Sélectionner un pilote" />
+                </SelectTrigger>
+                <SelectContent>
+                  {piloteUsers.map(u => <SelectItem key={u.id} value={u.email}>{u.full_name || u.email} ({u.role})</SelectItem>)}
+                </SelectContent>
               </Select>
-              </div>
-              <div>
+            </div>
+            <div>
               <p className="text-xs text-zinc-400 mb-1.5">Co-Pilote</p>
               <Select value={form.co_pilote_email || ""} onValueChange={handleCoPiloteSelect}>
-              <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                <SelectValue placeholder="Sélectionner un co-pilote (optionnel)" />
-              </SelectTrigger>
-              <SelectContent>
-                {allSelectableUsers.map(u => <SelectItem key={u.id} value={u.email}>{u.full_name || u.email} ({getUserRoles(u).join(", ")})</SelectItem>)}
-              </SelectContent>
+                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                  <SelectValue placeholder="Sélectionner un co-pilote (optionnel)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {piloteUsers.map(u => <SelectItem key={u.id} value={u.email}>{u.full_name || u.email} ({u.role})</SelectItem>)}
+                </SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-3">

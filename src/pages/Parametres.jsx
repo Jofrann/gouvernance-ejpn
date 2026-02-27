@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserRoles } from "@/components/shared/roleAccess";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,13 +16,13 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const ROLES = [
-  // Niveau I — Direction (Trône)
+  // Niveau I
   { value: "admin", label: "Admin Plateforme", niveau: "I", color: "bg-amber-100 text-amber-800 border-amber-200" },
-  { value: "trone", label: "Trône / Direction", niveau: "I", color: "bg-amber-100 text-amber-800 border-amber-200" },
-  // Niveau II — Gouvernance
-  { value: "gouvernance_direction", label: "Directrice d'Exécution", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
-  { value: "gouvernance_suivi", label: "Responsable de Suivi", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
-  { value: "gouvernance_strategie", label: "Analyste Stratégique", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  { value: "responsable_general", label: "Responsable Général FIJ", niveau: "I", color: "bg-amber-100 text-amber-800 border-amber-200" },
+  // Niveau II
+  { value: "directrice_execution", label: "Directrice d'Exécution", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  { value: "responsable_suivi", label: "Responsable de Suivi", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  { value: "analyste_strategique", label: "Analyste Stratégique", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
   // Niveau III — FI
   { value: "responsable_fi", label: "Responsable Pôle FI", niveau: "III", pole: "familles_impact", color: "bg-emerald-100 text-emerald-800 border-emerald-200" },
   { value: "pilote_fi", label: "Pilote de FI", niveau: "III", pole: "familles_impact", color: "bg-emerald-100 text-emerald-800 border-emerald-200" },
@@ -55,12 +54,6 @@ const NIVEAUX = [
   { value: "execution", label: "Niveau III — Exécution" },
 ];
 
-// Map role value → niveau display key for UserRow
-const ROLE_NIVEAU_MAP = {
-  admin: "I", trone: "I",
-  gouvernance_direction: "II", gouvernance_suivi: "II", gouvernance_strategie: "II",
-};
-
 const NIVEAU_ICONS = { I: Crown, II: Shield, III: Briefcase };
 const NIVEAU_COLORS = {
   I: "text-amber-700",
@@ -73,9 +66,8 @@ function getRoleInfo(roleValue) {
 }
 
 function UserRow({ user, onEdit, onDelete, isCurrentUser }) {
-  const userRolesList = getUserRoles(user);
-  const primaryRole = getRoleInfo(userRolesList[0] || user.role);
-  const NiveauIcon = NIVEAU_ICONS[primaryRole.niveau] || Briefcase;
+  const role = getRoleInfo(user.role);
+  const NiveauIcon = NIVEAU_ICONS[role.niveau] || Briefcase;
   return (
     <tr className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
       <td className="py-3 px-4">
@@ -90,12 +82,9 @@ function UserRow({ user, onEdit, onDelete, isCurrentUser }) {
         </div>
       </td>
       <td className="py-3 px-4">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <NiveauIcon className={cn("w-3.5 h-3.5", NIVEAU_COLORS[primaryRole.niveau])} />
-          {userRolesList.map(r => {
-            const info = getRoleInfo(r);
-            return <Badge key={r} variant="outline" className={cn("text-[10px] border", info.color)}>{info.label}</Badge>;
-          })}
+        <div className="flex items-center gap-1.5">
+          <NiveauIcon className={cn("w-3.5 h-3.5", NIVEAU_COLORS[role.niveau])} />
+          <Badge variant="outline" className={cn("text-[10px] border", role.color)}>{role.label}</Badge>
         </div>
       </td>
       <td className="py-3 px-4">
@@ -134,7 +123,7 @@ export default function ParametresPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [saving, setSaving] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [form, setForm] = useState({ role: "pilote_fi", roles: ["pilote_fi"], niveau: "execution", pole: "familles_impact" });
+  const [form, setForm] = useState({ role: "pilote_fi", niveau: "execution", pole: "familles_impact" });
 
   const { data: me } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
   const { data: users = [], isLoading } = useQuery({
@@ -165,26 +154,25 @@ export default function ParametresPage() {
   const openCreate = () => {
     setEditUser(null);
     setInviteEmail("");
-    setForm({ role: "pilote_fi", roles: ["pilote_fi"], niveau: "execution", pole: "familles_impact" });
+    setForm({ role: "pilote_fi", niveau: "execution", pole: "familles_impact" });
     setSheetOpen(true);
   };
 
   const openEdit = (user) => {
     setEditUser(user);
-    const existingRoles = getUserRoles(user);
-    setForm({ role: user.role || "pilote_fi", roles: existingRoles.length > 0 ? existingRoles : [user.role || "pilote_fi"], niveau: user.niveau || "execution", pole: user.pole || "" });
+    setForm({ role: user.role || "pilote_fi", niveau: user.niveau || "execution", pole: user.pole || "" });
     setSheetOpen(true);
   };
 
   const handleSave = async () => {
     setSaving(true);
-    const primaryRole = (form.roles && form.roles.length > 0) ? form.roles[0] : form.role;
     if (editUser) {
-      await base44.entities.User.update(editUser.id, { role: primaryRole, roles: form.roles || [primaryRole], niveau: form.niveau, pole: form.pole });
+      await base44.entities.User.update(editUser.id, { role: form.role, niveau: form.niveau, pole: form.pole });
       toast.success("Utilisateur mis à jour");
     } else {
       if (!inviteEmail) { toast.error("Email requis"); setSaving(false); return; }
-      await base44.users.inviteUser(inviteEmail, primaryRole === "admin" ? "admin" : "user");
+      await base44.users.inviteUser(inviteEmail, form.role === "admin" ? "admin" : "user");
+      // Store extra fields — will be applied after first login
       toast.success(`Invitation envoyée à ${inviteEmail}`);
     }
     queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -203,19 +191,7 @@ export default function ParametresPage() {
   const handleRoleChange = (value) => {
     const roleInfo = getRoleInfo(value);
     const niveauMap = { "I": "trone", "II": "gouvernance", "III": "execution" };
-    setForm(f => ({ ...f, role: value, roles: [value], niveau: niveauMap[roleInfo.niveau] || "execution", pole: roleInfo.pole || "" }));
-  };
-
-  const toggleExtraRole = (value) => {
-    setForm(f => {
-      const current = f.roles || [f.role];
-      if (current.includes(value)) {
-        const next = current.filter(r => r !== value);
-        return { ...f, roles: next.length > 0 ? next : [f.role] };
-      } else {
-        return { ...f, roles: [...current, value] };
-      }
-    });
+    setForm({ role: value, niveau: niveauMap[roleInfo.niveau] || "execution", pole: roleInfo.pole || "" });
   };
 
   // Group by niveau for display
@@ -296,13 +272,13 @@ export default function ParametresPage() {
               </div>
             )}
 
-            {/* Role principal */}
+            {/* Role */}
             <div>
-              <label className="text-xs font-medium text-zinc-500">Rôle principal *</label>
+              <label className="text-xs font-medium text-zinc-500">Rôle *</label>
               <Select value={form.role} onValueChange={handleRoleChange}>
                 <SelectTrigger className="mt-1 bg-white border-zinc-200"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <div className="px-2 py-1 text-[10px] font-bold text-amber-600 uppercase tracking-wider">Niveau I — Direction (Trône)</div>
+                  <div className="px-2 py-1 text-[10px] font-bold text-amber-600 uppercase tracking-wider">Niveau I — Direction</div>
                   {ROLES.filter((r) => r.niveau === "I").map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
                   <div className="px-2 py-1 mt-1 text-[10px] font-bold text-blue-600 uppercase tracking-wider">Niveau II — Gouvernance</div>
                   {ROLES.filter((r) => r.niveau === "II").map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
@@ -318,31 +294,13 @@ export default function ParametresPage() {
               </Select>
             </div>
 
-            {/* Rôles supplémentaires */}
-            <div>
-              <label className="text-xs font-medium text-zinc-500 mb-2 block">Rôles supplémentaires <span className="text-zinc-400 font-normal">(optionnel — multi-rôles)</span></label>
-              <div className="border border-zinc-200 rounded-lg p-3 space-y-1.5 max-h-48 overflow-y-auto">
-                {ROLES.filter(r => r.value !== form.role).map(r => {
-                  const checked = (form.roles || []).includes(r.value);
-                  return (
-                    <label key={r.value} className="flex items-center gap-2.5 cursor-pointer hover:bg-zinc-50 rounded px-1 py-0.5">
-                      <input type="checkbox" checked={checked} onChange={() => toggleExtraRole(r.value)} className="rounded border-zinc-300 accent-zinc-700 w-3.5 h-3.5" />
-                      <Badge variant="outline" className={cn("text-[10px] border pointer-events-none", r.color)}>{r.label}</Badge>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Preview badges */}
-            {(form.roles || [form.role]).length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
-                <span className="text-xs text-zinc-500">Accès accordés :</span>
-                {(form.roles || [form.role]).map(r => (
-                  <Badge key={r} variant="outline" className={cn("text-[10px] border", getRoleInfo(r).color)}>
-                    {getRoleInfo(r).label}
-                  </Badge>
-                ))}
+            {/* Preview badge */}
+            {form.role && (
+              <div className="flex items-center gap-2 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
+                <span className="text-xs text-zinc-500">Accès accordé :</span>
+                <Badge variant="outline" className={cn("text-[10px] border", getRoleInfo(form.role).color)}>
+                  {getRoleInfo(form.role).label}
+                </Badge>
               </div>
             )}
 

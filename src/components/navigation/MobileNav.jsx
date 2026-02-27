@@ -15,7 +15,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { base44 } from "@/api/base44Client";
 import {
   TRONE_ROLES, GOUV_ROLES, EXEC_ROLES,
-  getAllowedExecPoles, getAllowedGouvGroups, normalizeRole
+  getAllowedExecPoles, getAllowedGouvGroups
 } from "@/components/shared/roleAccess";
 
 const NAVIGATION = {
@@ -143,11 +143,8 @@ function SectionTitle({ icon: Icon, label }) {
   );
 }
 
-export default function MobileNav({ user, currentPage, userRoles: rawUserRoles }) {
+export default function MobileNav({ user, currentPage, userRoles }) {
   const [open, setOpen] = React.useState(false);
-
-  // Normalize legacy role names
-  const userRoles = (rawUserRoles || []).map(normalizeRole);
 
   const isTrone = userRoles.some(r => TRONE_ROLES.includes(r));
   const isGouvernance = userRoles.some(r => GOUV_ROLES.includes(r));

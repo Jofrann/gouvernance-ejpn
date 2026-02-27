@@ -36,26 +36,11 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Prevent horizontal overflow on mobile */
-    overflow-x: hidden;
   }
 
   body {
     @apply bg-[#060810] text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    overflow-x: hidden;
-  }
-
-  /* Prevent labels from appearing fully white — use zinc-300 as default */
-  label {
-    color: rgb(212 212 216); /* zinc-300 */
-  }
-
-  /* Touch-friendly on mobile */
-  @media (max-width: 768px) {
-    button, a[role="button"] {
-      min-height: 40px;
-    }
   }
 
   /* Scrollbar */
@@ -67,11 +52,6 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     background: rgba(255,255,255,0.15);
-  }
-
-  /* Responsive helpers */
-  .page-container {
-    @apply px-4 md:px-6 py-4 md:py-6 max-w-7xl mx-auto;
   }
 }
 
@@ -153,6 +133,5 @@
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.05em;
-    min-height: unset;
   }
 }
