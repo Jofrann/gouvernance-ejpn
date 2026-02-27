@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Mail, Clock, FileText, ArrowRightLeft, Plus, X, CheckCircle, MessageSquare } from "lucide-react";
-import { createPageUrl } from "@/utils";
+import { Mail, Clock, FileText, ArrowRightLeft, Plus, X, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import LiveActivityIndicator from "./LiveActivityIndicator";
@@ -90,21 +89,10 @@ export default function MemberSlideOver({ member, currentUser, open, onClose, al
               <LiveActivityIndicator activity={member?.current_activity} lastSeen={member?.last_seen} />
             </div>
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <a href={`mailto:${member?.email}`} className="flex items-center gap-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
-              <Mail className="w-3 h-3" />
-              {member?.email}
-            </a>
-            {!isSelf && (
-              <a
-                href={createPageUrl(`Messagerie?to=${encodeURIComponent(member?.email || "")}`)}
-                className="flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors bg-blue-500/10 hover:bg-blue-500/20 px-2.5 py-1 rounded-lg border border-blue-500/20"
-              >
-                <MessageSquare className="w-3 h-3" />
-                Envoyer un message
-              </a>
-            )}
-          </div>
+          <a href={`mailto:${member?.email}`} className="flex items-center gap-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+            <Mail className="w-3 h-3" />
+            {member?.email}
+          </a>
         </div>
 
         {/* Tabs */}

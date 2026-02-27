@@ -4,8 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarDays, Save, AlertTriangle, CheckCircle2, Clock, ChevronLeft, ChevronRight } from "lucide-react";
-import { format, startOfWeek, addWeeks, subWeeks, setDay } from "date-fns";
+import { CalendarDays, Save, Lock, AlertTriangle, CheckCircle2, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { format, startOfWeek, addWeeks, subWeeks, isAfter, setDay, endOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import CliniqueGrid from "@/components/fi/CliniqueGrid";
 import AIPastoralInsights from "@/components/ai/AIPastoralInsights";
@@ -15,6 +15,10 @@ import { cn } from "@/lib/utils";
 function getThursdayOfWeek(date) {
   const start = startOfWeek(date, { weekStartsOn: 1 });
   return setDay(start, 4, { weekStartsOn: 1 });
+}
+
+function isLocked(thursdayDate) {
+  return isAfter(new Date(), endOfDay(thursdayDate));
 }
 
 export default function FICliniquePage() {
@@ -28,6 +32,8 @@ export default function FICliniquePage() {
 
   // Load current user
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
+
+  const locked = isLocked(currentWeek);
   const weekLabel = format(currentWeek, "EEEE d MMMM yyyy", { locale: fr });
   const semaineStr = format(currentWeek, "yyyy-MM-dd");
 
@@ -70,10 +76,12 @@ export default function FICliniquePage() {
   }, [saisies]);
 
   const handleUpdateSaisie = (membreId, field, value) => {
+    if (locked) return;
     setLocalSaisies((prev) => ({ ...prev, [membreId]: { ...prev[membreId], [field]: value } }));
   };
 
   const handleSave = async () => {
+    if (locked) return;
     setSaving(true);
     for (const membre of membres) {
       const local = localSaisies[membre.id];
@@ -114,14 +122,16 @@ export default function FICliniquePage() {
           <h1 className="text-2xl font-black text-white tracking-tight">Clinique du Jeudi</h1>
           <p className="text-sm text-zinc-500 mt-0.5">Saisie hebdomadaire des 4 dimensions de vie</p>
         </div>
-        <Button
-          onClick={handleSave}
-          disabled={saving}
-          className="bg-blue-600/80 hover:bg-blue-600 border border-blue-500/30 text-white gap-2 backdrop-blur-sm"
-        >
-          <Save className="w-4 h-4" />
-          {saving ? "Enregistrement..." : "Sauvegarder"}
-        </Button>
+        {!locked && (
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="bg-blue-600/80 hover:bg-blue-600 border border-blue-500/30 text-white gap-2 backdrop-blur-sm"
+          >
+            <Save className="w-4 h-4" />
+            {saving ? "Enregistrement..." : "Sauvegarder"}
+          </Button>
+        )}
       </motion.div>
 
       {/* Controls */}
@@ -146,22 +156,36 @@ export default function FICliniquePage() {
             <CalendarDays className="w-4 h-4 text-zinc-500" />
             <span className="text-sm font-medium text-zinc-300 capitalize whitespace-nowrap">{weekLabel}</span>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10" onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10" onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))} disabled={isAfter(addWeeks(currentWeek, 1), new Date())}>
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
 
         <div className="flex items-center gap-2">
-          <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 gap-1">
-            <CheckCircle2 className="w-3 h-3" /> Éditable
-          </Badge>
+          {locked ? (
+            <Badge className="bg-red-500/10 text-red-400 border border-red-500/30 gap-1">
+              <Lock className="w-3 h-3" /> Verrouillé
+            </Badge>
+          ) : (
+            <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 gap-1">
+              <CheckCircle2 className="w-3 h-3" /> Ouvert
+            </Badge>
+          )}
           <Badge className="bg-white/5 text-zinc-400 border border-white/10 gap-1">
             <Clock className="w-3 h-3" /> {completionCount}/{membres.length} complétés
           </Badge>
         </div>
       </motion.div>
 
-      {/* No lock warning */}
+      {/* Warning */}
+      {!locked && completionCount < membres.length && membres.length > 0 && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-500/20 bg-amber-500/5">
+          <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+          <p className="text-xs text-amber-400">
+            <span className="font-semibold">{membres.length - completionCount} membre(s)</span> n'ont pas encore été évalués cette semaine. Le formulaire se verrouillera automatiquement jeudi soir.
+          </p>
+        </motion.div>
+      )}
 
       {/* AI Pastoral Insights */}
       {membres.length > 0 && saisies.length > 0 && (
@@ -174,7 +198,7 @@ export default function FICliniquePage() {
           <div className="w-6 h-6 border-2 border-blue-500/60 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <CliniqueGrid membres={membres} saisies={localSaisies} onUpdateSaisie={handleUpdateSaisie} locked={false} />
+        <CliniqueGrid membres={membres} saisies={localSaisies} onUpdateSaisie={handleUpdateSaisie} locked={locked} />
       )}
 
       {/* Legend */}

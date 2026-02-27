@@ -85,7 +85,6 @@ import GouvModelisation from './pages/GouvModelisation';
 import GouvRedaction from './pages/GouvRedaction';
 import GouvRoadmap from './pages/GouvRoadmap';
 import Home from './pages/Home';
-import Messagerie from './pages/Messagerie';
 import MonProfil from './pages/MonProfil';
 import Parametres from './pages/Parametres';
 import TroneArchives from './pages/TroneArchives';
@@ -133,7 +132,6 @@ export const PAGES = {
     "GouvRedaction": GouvRedaction,
     "GouvRoadmap": GouvRoadmap,
     "Home": Home,
-    "Messagerie": Messagerie,
     "MonProfil": MonProfil,
     "Parametres": Parametres,
     "TroneArchives": TroneArchives,

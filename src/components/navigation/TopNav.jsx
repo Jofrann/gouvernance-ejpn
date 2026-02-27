@@ -8,7 +8,7 @@ import {
   Eye, GraduationCap, BookOpen, Upload, Award, CheckSquare,
   UserCheck, Globe, Calendar, MessageSquare, Flame, Calculator,
   Megaphone, Kanban, Library, BarChart2, Briefcase, Shield,
-  Settings, LogOut, Search, Bell, ChevronDown, X, Command, Zap, User, MessagesSquare
+  Settings, LogOut, Search, Bell, ChevronDown, X, Command, Zap, User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { base44 } from "@/api/base44Client";
@@ -457,19 +457,6 @@ export default function TopNav({ user, currentPage }) {
               )}
             </AnimatePresence>
           </div>
-
-          {/* Messagerie */}
-          <Link
-            to={createPageUrl("Messagerie")}
-            className={`hidden lg:flex p-2 rounded-lg transition-all relative ${
-              currentPage === "Messagerie"
-                ? "text-blue-400 bg-white/10"
-                : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
-            }`}
-            title="Messagerie"
-          >
-            <MessagesSquare className="w-4 h-4" />
-          </Link>
 
           {/* Mon Profil */}
           <Link
