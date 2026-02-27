@@ -122,7 +122,7 @@ export default function FIManagerPage() {
             {canWrite ? "Création · Attribution des pilotes · Suivi des capacités" : "Statut de votre Famille d'Impact"}
           </p>
         </div>
-        {canWrite && (
+        {(canWriteAll || isPiloteOrCopilote) && (
           <Button onClick={openCreate} className="bg-emerald-600/80 hover:bg-emerald-600 border border-emerald-500/30 text-white gap-2">
             <Plus className="w-4 h-4" /> Créer une FI
           </Button>
