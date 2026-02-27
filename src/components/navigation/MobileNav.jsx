@@ -15,7 +15,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { base44 } from "@/api/base44Client";
 import {
   TRONE_ROLES, GOUV_ROLES, EXEC_ROLES,
-  getAllowedExecPoles, getAllowedGouvGroups
+  getAllowedExecPoles, getAllowedGouvGroups, normalizeRole
 } from "@/components/shared/roleAccess";
 
 const NAVIGATION = {
