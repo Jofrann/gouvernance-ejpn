@@ -99,27 +99,31 @@ export default function FIManagerPage() {
   );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-5">
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <p className="text-[10px] font-bold text-blue-400/80 uppercase tracking-[0.25em] mb-1">Gouvernance</p>
-        <h1 className="text-2xl font-black text-white tracking-tight">Gestion des Familles d'Impact</h1>
-        <p className="text-sm text-zinc-500 mt-0.5">Créer · Modifier · Supprimer des FI</p>
-      </motion.div>
-
-      {/* Controls */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 items-center flex-wrap">
-        <div className="relative flex-1 max-w-xs">
-          <Input
-            placeholder="Rechercher..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
-          />
+        <div className="mb-6">
+          <p className="text-xs font-bold text-blue-400/80 uppercase tracking-widest mb-1">Administration</p>
+          <h1 className="text-3xl font-bold text-foreground">Gestion des Maisons</h1>
+          <p className="text-sm text-muted-foreground mt-2">Créer · Modifier · Supprimer des Familles d'Impact</p>
         </div>
-        <Button onClick={() => handleOpenForm()} className="gap-2 bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Nouvelle FI
-        </Button>
+
+        {/* Controls */}
+        <div className="flex gap-3 items-center flex-wrap">
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Chercher une FI ou un Pilote..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Button onClick={() => handleOpenForm()} className="gap-2">
+            <Plus className="w-4 h-4" />
+            Nouvelle Maison
+          </Button>
+        </div>
       </motion.div>
 
       {/* FI Cards */}
