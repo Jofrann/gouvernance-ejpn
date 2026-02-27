@@ -153,5 +153,11 @@
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.05em;
+    min-height: unset;
+  }
+
+  /* Remove min-height on small chip-like elements */
+  .text-\[10px\], .text-\[9px\], .text-xs {
+    min-height: unset;
   }
 }
