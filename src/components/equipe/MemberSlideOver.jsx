@@ -34,6 +34,8 @@ function TabButton({ active, onClick, children }) {
 export default function MemberSlideOver({ member, currentUser, open, onClose, allUsers }) {
   const qc = useQueryClient();
   const [tab, setTab] = useState("audit");
+  const [showMessageForm, setShowMessageForm] = useState(false);
+  const [messageContent, setMessageContent] = useState("");
   const [showDelegForm, setShowDelegForm] = useState(false);
   const [delegForm, setDelegForm] = useState({ delegataire_email: "", raison: "", date_debut: "", date_fin: "" });
 
