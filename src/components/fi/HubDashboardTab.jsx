@@ -1,8 +1,23 @@
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend } from "recharts";
 import { motion } from "framer-motion";
+
+// Get last 4 Thursdays
+const getLast4Weeks = () => {
+  const weeks = [];
+  const today = new Date();
+  for (let i = 0; i < 4; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - (7 * i));
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1) + 3;
+    d.setDate(diff);
+    weeks.unshift(d.toISOString().split("T")[0]);
+  }
+  return weeks;
+};
 
 export default function HubDashboardTab({ familleImpactId }) {
   const { data: membres = [] } = useQuery({
@@ -31,7 +46,7 @@ export default function HubDashboardTab({ familleImpactId }) {
     return Math.round((present / suivi.length) * 100);
   };
 
-  // Prepare chart data
+  // Prepare chart data for members health
   const chartData = membres.slice(0, 10).map(membre => {
     const memberSuivi = suivi.filter(s => s.ame_crm_id === membre.id);
     const avgScore = memberSuivi.length > 0
@@ -47,6 +62,35 @@ export default function HubDashboardTab({ familleImpactId }) {
       name: membre.nom_complet.split(" ")[0],
       score: avgScore
     };
+  });
+
+  // Prepare chart data for health evolution (4 weeks)
+  const last4Weeks = getLast4Weeks();
+  const healthEvolutionData = last4Weeks.map(week => {
+    const weekSuivi = suivi.filter(s => s.semaine_date === week);
+    const avgHealth = weekSuivi.length > 0
+      ? Math.round(
+          weekSuivi.reduce((acc, s) => {
+            const notes = [s.note_gestion_temps, s.note_finances, s.note_sante_emotionnelle, s.note_maturite_spirituelle].filter(n => n);
+            return acc + (notes.length > 0 ? notes.reduce((a, b) => a + b, 0) / notes.length : 0);
+          }, 0) / weekSuivi.length
+        )
+      : 0;
+    
+    return {
+      week: new Date(week).toLocaleDateString("fr-FR", { month: "2-digit", day: "2-digit" }),
+      santé: avgHealth
+    };
+  });
+
+  // Prepare chart data for member presence (4 weeks)
+  const memberPresenceData = membres.slice(0, 10).map(membre => {
+    const data = { name: membre.nom_complet.split(" ")[0] };
+    last4Weeks.forEach((week, idx) => {
+      const weekSuivi = suivi.find(s => s.ame_crm_id === membre.id && s.semaine_date === week);
+      data[`sem${idx + 1}`] = weekSuivi?.presence ? 1 : 0;
+    });
+    return data;
   });
 
   const healthScore = calculateHealthScore();
