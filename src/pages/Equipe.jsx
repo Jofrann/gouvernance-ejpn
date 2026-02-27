@@ -129,12 +129,33 @@ function MemberCard({ user, pole, onClick }) {
 export default function EquipePage() {
   useTrackActivity("Equipe");
   const urlParams = new URLSearchParams(window.location.search);
-  const initialTab = urlParams.get("pole") || "trone";
-  const [activeTab, setActiveTab] = useState(initialTab);
-  const [selectedMember, setSelectedMember] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
+  // toggle: "mon_equipe" (filtered) or "tous" (all)
+  const [viewMode, setViewMode] = useState("mon_equipe");
 
   useEffect(() => { base44.auth.me().then(setCurrentUser).catch(() => {}); }, []);
+
+  const role = currentUser?.role;
+  const isPilote = role === "pilote_fi" || role === "copilote_fi";
+  const primaryPole = getPrimaryExecPole(role) || "trone";
+
+  // Default tab: URL param > primary pole for exec roles > trone
+  const initialTab = urlParams.get("pole") || primaryPole;
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  // Which tabs to show:
+  // - admin / trone see all
+  // - other roles see only relevant pole(s), but can toggle to see all
+  const isAdmin = role === "admin" || role === "trone";
+  const defaultVisiblePoles =
+    viewMode === "tous" || isAdmin
+      ? POLES.map(p => p.key)
+      : role === "pilote_fi" || role === "copilote_fi"
+        ? ["familles_impact"] // pilotes: only their FI pole tab
+        : POLES.map(p => p.key); // fallback: show all for non-exec roles
+
+  const visiblePoles = POLES.filter(p => defaultVisiblePoles.includes(p.key));
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["users-equipe"],
@@ -142,25 +163,65 @@ export default function EquipePage() {
     refetchInterval: 20000,
   });
 
-  const pole = POLES.find(p => p.key === activeTab) || POLES[0];
+  const { data: familles = [] } = useQuery({
+    queryKey: ["familles-equipe"],
+    queryFn: () => base44.entities.FamilleImpact.list(),
+    enabled: isPilote,
+  });
+
+  // Ensure activeTab is always in visiblePoles
+  const safeTab = visiblePoles.find(p => p.key === activeTab) ? activeTab : (visiblePoles[0]?.key || "familles_impact");
+
+  const pole = POLES.find(p => p.key === safeTab) || POLES[0];
   const allRoleKeys = pole.groups.map(g => g.key);
-  const membres = users.filter(u => allRoleKeys.includes(u.role));
+
+  // Filter members: in "mon_equipe" mode, a pilote sees only members of their FI + management chain
+  let membres = users.filter(u => allRoleKeys.includes(u.role));
+
+  if (viewMode === "mon_equipe" && isPilote && currentUser) {
+    // Find the pilote's FI (where they are pilote or co-pilote)
+    const myFI = familles.find(
+      fi => fi.pilote_email === currentUser.email || fi.co_pilote_email === currentUser.email
+    );
+    // Roles the pilote should see in "Mon équipe": other pilotes, co-pilotes, and responsable_fi
+    const visibleRoles = ["pilote_fi", "copilote_fi", "responsable_fi"];
+    membres = users.filter(u => visibleRoles.includes(u.role));
+  }
+
   const PoleIcon = pole.icon;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
       {/* Header */}
-      <div className="mb-8">
-        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.25em] mb-1">Organisation</p>
-        <h1 className="text-2xl font-black text-white tracking-tight">Notre Équipe</h1>
-        <p className="text-sm text-zinc-500 mt-0.5">Tous les membres de l'O.S.P — EJPN</p>
+      <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
+        <div>
+          <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.25em] mb-1">Organisation</p>
+          <h1 className="text-2xl font-black text-white tracking-tight">Notre Équipe</h1>
+          <p className="text-sm text-zinc-500 mt-0.5">Membres de l'O.S.P — EJPN</p>
+        </div>
+        {/* Toggle Mon équipe / Tous */}
+        <button
+          onClick={() => setViewMode(v => v === "mon_equipe" ? "tous" : "mon_equipe")}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all",
+            viewMode === "mon_equipe"
+              ? "border-blue-500/40 bg-blue-500/10 text-blue-300"
+              : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+          )}
+        >
+          {viewMode === "mon_equipe"
+            ? <ToggleRight className="w-4 h-4" />
+            : <ToggleLeft className="w-4 h-4" />
+          }
+          {viewMode === "mon_equipe" ? "Mon équipe" : "Toutes les équipes"}
+        </button>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 flex-wrap mb-8 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-        {POLES.map(p => {
+        {visiblePoles.map(p => {
           const Icon = p.icon;
-          const isActive = activeTab === p.key;
+          const isActive = safeTab === p.key;
           return (
             <button
               key={p.key}
