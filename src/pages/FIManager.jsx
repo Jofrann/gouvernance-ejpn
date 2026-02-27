@@ -96,8 +96,8 @@ export default function FIManagerPage() {
     setForm(f => ({ ...f, co_pilote_email: email, co_pilote_nom: u?.full_name || "" }));
   };
 
-  // Seuls les utilisateurs avec is_eligible_pilote peuvent être assignés comme Pilote/Co-Pilote
-  const allSelectableUsers = users.filter(u => !!u.email && (u.is_eligible_pilote || userHasRole(u, ["admin", "responsable_fi"])));
+  // Tous les utilisateurs de l'app sont sélectionnables comme pilote/co-pilote
+  const allSelectableUsers = users.filter(u => !!u.email);
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-4 md:space-y-6">
