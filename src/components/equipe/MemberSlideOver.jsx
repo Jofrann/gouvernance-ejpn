@@ -152,12 +152,50 @@ export default function MemberSlideOver({ member, currentUser, open, onClose, al
           </a>
         </div>
 
+        {/* Quick Message Button */}
+         {currentUser?.email !== member?.email && !showMessageForm && (
+           <button
+             onClick={() => setShowMessageForm(true)}
+             className="mx-4 mt-4 w-[calc(100%-2rem)] flex items-center justify-center gap-2 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-xs text-white font-medium transition-all"
+           >
+             <Send className="w-3 h-3" />
+             Envoyer un message
+           </button>
+         )}
+
+        {/* Message Form */}
+         {showMessageForm && (
+           <div className="px-4 pt-3 pb-4 bg-white/5 border-b border-white/10">
+             <textarea
+               value={messageContent}
+               onChange={(e) => setMessageContent(e.target.value)}
+               placeholder="Votre message..."
+               className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 outline-none resize-none h-20"
+             />
+             <div className="flex gap-2 mt-2">
+               <button
+                 onClick={() => setShowMessageForm(false)}
+                 className="flex-1 py-1.5 text-xs text-zinc-500 hover:text-white transition-colors"
+               >
+                 Annuler
+               </button>
+               <button
+                 onClick={() => sendMessage.mutate(messageContent)}
+                 disabled={!messageContent.trim() || sendMessage.isPending}
+                 className="flex-1 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-xs text-white font-medium disabled:opacity-50 transition-all"
+               >
+                 {sendMessage.isPending ? "Envoi..." : "Envoyer"}
+               </button>
+             </div>
+           </div>
+         )}
+
         {/* Tabs */}
-        <div className="flex gap-1 p-4 border-b border-white/5">
-          <TabButton active={tab === "audit"} onClick={() => setTab("audit")}>Historique</TabButton>
-          <TabButton active={tab === "dossiers"} onClick={() => setTab("dossiers")}>Dossiers</TabButton>
-          <TabButton active={tab === "delegations"} onClick={() => setTab("delegations")}>Délégations</TabButton>
-        </div>
+         <div className="flex gap-1 p-4 border-b border-white/5">
+           <TabButton active={tab === "audit"} onClick={() => setTab("audit")}>Historique</TabButton>
+           <TabButton active={tab === "dossiers"} onClick={() => setTab("dossiers")}>Dossiers</TabButton>
+           <TabButton active={tab === "delegations"} onClick={() => setTab("delegations")}>Délégations</TabButton>
+         </div>
 
         <div className="p-4 space-y-3">
           {/* Audit Log */}
