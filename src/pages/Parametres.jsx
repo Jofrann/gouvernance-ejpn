@@ -16,13 +16,13 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const ROLES = [
-  // Niveau I
+  // Niveau I — Direction (Trône)
   { value: "admin", label: "Admin Plateforme", niveau: "I", color: "bg-amber-100 text-amber-800 border-amber-200" },
-  { value: "responsable_general", label: "Responsable Général FIJ", niveau: "I", color: "bg-amber-100 text-amber-800 border-amber-200" },
-  // Niveau II
-  { value: "directrice_execution", label: "Directrice d'Exécution", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
-  { value: "responsable_suivi", label: "Responsable de Suivi", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
-  { value: "analyste_strategique", label: "Analyste Stratégique", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  { value: "trone", label: "Trône / Direction", niveau: "I", color: "bg-amber-100 text-amber-800 border-amber-200" },
+  // Niveau II — Gouvernance
+  { value: "gouvernance_direction", label: "Directrice d'Exécution", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  { value: "gouvernance_suivi", label: "Responsable de Suivi", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  { value: "gouvernance_strategie", label: "Analyste Stratégique", niveau: "II", color: "bg-blue-100 text-blue-800 border-blue-200" },
   // Niveau III — FI
   { value: "responsable_fi", label: "Responsable Pôle FI", niveau: "III", pole: "familles_impact", color: "bg-emerald-100 text-emerald-800 border-emerald-200" },
   { value: "pilote_fi", label: "Pilote de FI", niveau: "III", pole: "familles_impact", color: "bg-emerald-100 text-emerald-800 border-emerald-200" },
