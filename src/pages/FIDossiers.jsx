@@ -170,7 +170,7 @@ export default function FIDossiersPage() {
       </motion.div>
 
       {/* Filters */}
-      <div className="flex gap-3 flex-wrap">
+      <div className="flex gap-3 flex-wrap items-center justify-between">
         <Select value={selectedFI || ""} onValueChange={setSelectedFI}>
           <SelectTrigger className="w-64 bg-white/5 border-white/10 text-white">
             <SelectValue placeholder="Sélectionner une FI" />
