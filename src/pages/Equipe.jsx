@@ -271,6 +271,9 @@ export default function EquipePage() {
                   <group.icon className="w-4 h-4 text-zinc-500" />
                   <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{group.label}</h3>
                   <span className="text-xs text-zinc-700">({groupMembers.length})</span>
+                  {viewMode === "mon_equipe" && isPilote && (
+                    <span className="text-[10px] text-blue-400 bg-blue-400/10 border border-blue-400/20 rounded-md px-2 py-0.5 ml-1">Mon équipe</span>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {groupMembers.map(u => (
