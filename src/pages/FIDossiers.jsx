@@ -225,6 +225,16 @@ export default function FIDossiersPage() {
                       {membre.statut_pipeline}
                     </Badge>
                     {alerte && <ChuteLivreAlert />}
+                    {canManage && (
+                      <div className="flex gap-1 mt-1" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={(e) => openEdit(membre, e)} className="p-1 rounded hover:bg-white/10 text-zinc-500 hover:text-blue-400 transition-colors">
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(membre); }} className="p-1 rounded hover:bg-white/10 text-zinc-500 hover:text-red-400 transition-colors">
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
