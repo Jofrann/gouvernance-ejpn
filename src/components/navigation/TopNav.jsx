@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import MobileNav from "@/components/navigation/MobileNav";
 import {
   TRONE_ROLES, GOUV_ROLES, EXEC_ROLES,
-  getAllowedExecPoles, getAllowedGouvGroups
+  getAllowedExecPoles, getAllowedGouvGroups, normalizeRole
 } from "@/components/shared/roleAccess";
 
 const NOTIF_SAMPLES = [
