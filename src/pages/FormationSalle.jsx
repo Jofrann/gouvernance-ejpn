@@ -71,6 +71,37 @@ export default function FormationSallePage() {
     return Math.round((count / total) * 100);
   };
 
+  const [showForm, setShowForm] = useState(false);
+  const [editingRessource, setEditingRessource] = useState(null);
+  const [formData, setFormData] = useState(EMPTY_RESSOURCE);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const openCreate = () => { setEditingRessource(null); setFormData(EMPTY_RESSOURCE); setShowForm(true); };
+  const openEdit = (r) => { setEditingRessource(r); setFormData({ titre: r.titre, type_ressource: r.type_ressource, url: r.url || "", description: r.description || "", mois_cycle: r.mois_cycle }); setShowForm(true); };
+
+  const handleSave = async () => {
+    setSaving(true);
+    if (editingRessource) {
+      await base44.entities.FormationRessource.update(editingRessource.id, formData);
+    } else {
+      await base44.entities.FormationRessource.create(formData);
+    }
+    qc.invalidateQueries({ queryKey: ["ressources", CURRENT_MONTH] });
+    qc.invalidateQueries({ queryKey: ["ressources-all"] });
+    setSaving(false);
+    setShowForm(false);
+    toast.success(editingRessource ? "Ressource mise à jour" : "Ressource ajoutée");
+  };
+
+  const handleDelete = async () => {
+    await base44.entities.FormationRessource.delete(deleteTarget.id);
+    qc.invalidateQueries({ queryKey: ["ressources", CURRENT_MONTH] });
+    qc.invalidateQueries({ queryKey: ["ressources-all"] });
+    setDeleteTarget(null);
+    toast.success("Ressource supprimée");
+  };
+
   const current = ressources;
   const past = allRessources.filter(r => r.mois_cycle !== CURRENT_MONTH);
   const readCount = lectures.filter(l => current.some(r => r.id === l.ressource_id)).length;
