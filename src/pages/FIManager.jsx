@@ -57,10 +57,10 @@ export default function FIManagerPage() {
         f.pilote_email === user?.email || f.co_pilote_email === user?.email
       );
 
-  // Eligible pilotes: users with any FI-related role
+  // Eligible pilotes: users with any FI-related role OR admin
   const piloteUsers = users.filter(u => {
     const roles = getUserRoles(u);
-    return roles.some(r => ["pilote_fi", "copilote_fi", "responsable_fi"].includes(r));
+    return roles.some(r => ["pilote_fi", "copilote_fi", "responsable_fi", "admin"].includes(r));
   });
 
   const createMutation = useMutation({
