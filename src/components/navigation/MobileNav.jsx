@@ -116,15 +116,7 @@ const NAVIGATION = {
   },
 };
 
-const TRONE_ROLES = ["trone", "admin"];
-const GOUV_ROLES = ["gouvernance_direction", "gouvernance_suivi", "gouvernance_strategie", "admin"];
-const EXEC_ROLES = [
-  "pilote_fi", "copilote_fi", "responsable_fi",
-  "etudiant", "responsable_formation",
-  "agent_terrain", "agent_virtuel", "responsable_evangelisation",
-  "producteur", "createur", "responsable_communication",
-  "admin"
-];
+
 
 function NavLink({ item, currentPage, onClose }) {
   return (
