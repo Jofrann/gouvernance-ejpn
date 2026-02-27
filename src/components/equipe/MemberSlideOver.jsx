@@ -67,6 +67,61 @@ export default function MemberSlideOver({ member, currentUser, open, onClose, al
     onSuccess: () => qc.invalidateQueries({ queryKey: ["delegations"] }),
   });
 
+  const sendMessage = useMutation({
+    mutationFn: async (content) => {
+      const p1 = currentUser.email;
+      const p2 = member.email;
+      const sortedEmails = [p1, p2].sort();
+      const convId = `${sortedEmails[0]}-${sortedEmails[1]}`;
+      
+      let conv = await base44.entities.Conversation.filter({
+        participant1_email: sortedEmails[0],
+        participant2_email: sortedEmails[1],
+      });
+
+      if (conv.length === 0) {
+        conv = await base44.entities.Conversation.create({
+          participant1_email: sortedEmails[0],
+          participant1_nom: currentUser.full_name,
+          participant2_email: sortedEmails[1],
+          participant2_nom: member.full_name,
+          last_message_content: content,
+          last_message_date: new Date().toISOString(),
+          last_message_sender: currentUser.email,
+          unread_count_p1: p1 === sortedEmails[0] ? 0 : 1,
+          unread_count_p2: p1 === sortedEmails[1] ? 0 : 1,
+        });
+      } else {
+        const c = conv[0];
+        const updateData = {
+          last_message_content: content,
+          last_message_date: new Date().toISOString(),
+          last_message_sender: currentUser.email,
+        };
+        if (c.participant1_email === currentUser.email) {
+          updateData.unread_count_p2 = (c.unread_count_p2 || 0) + 1;
+        } else {
+          updateData.unread_count_p1 = (c.unread_count_p1 || 0) + 1;
+        }
+        await base44.entities.Conversation.update(c.id, updateData);
+        conv[0] = { ...c, ...updateData };
+      }
+
+      await base44.entities.Message.create({
+        conversation_id: conv[0].id,
+        sender_email: currentUser.email,
+        sender_nom: currentUser.full_name,
+        recipient_email: member.email,
+        content,
+        status: "delivered",
+      });
+    },
+    onSuccess: () => {
+      setShowMessageForm(false);
+      setMessageContent("");
+    },
+  });
+
   const isSelf = currentUser?.email === member?.email;
   const isAdmin = currentUser?.role === "admin";
   const canDelegate = isSelf || isAdmin;
