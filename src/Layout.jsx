@@ -71,7 +71,7 @@ export default function Layout({ children, currentPageName }) {
           <main className="relative z-10 pt-16 min-h-screen overflow-x-hidden">
             {children}
           </main>
-        </div>
+      </div>
     </QueryClientProvider>
   );
 }
