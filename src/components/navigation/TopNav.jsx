@@ -363,17 +363,27 @@ export default function TopNav({ user, currentPage }) {
             </NavButton>
           )}
 
-          {/* Gouvernance */}
-          {isGouvernance && (
+          {/* Gouvernance — filtered by sub-role */}
+          {isGouvernance && allowedGouvGroups.length > 0 && (
             <NavButton label="Gouvernance" icon={Shield} color={NAVIGATION.gouvernance.color} textColor={NAVIGATION.gouvernance.textColor} currentPage={currentPage} pages={gouvPages}>
-              {(close) => <GroupedDropdown groups={NAVIGATION.gouvernance.groups} onClose={() => close(false)} />}
+              {(close) => {
+                const filteredGroups = Object.fromEntries(
+                  Object.entries(NAVIGATION.gouvernance.groups).filter(([k]) => allowedGouvGroups.includes(k))
+                );
+                return <GroupedDropdown groups={filteredGroups} onClose={() => close(false)} />;
+              }}
             </NavButton>
           )}
 
-          {/* Execution */}
-          {isExecution && (
+          {/* Execution — filtered by pole access */}
+          {isExecution && allowedExecPoles.length > 0 && (
             <NavButton label="Exécution" icon={Briefcase} color={NAVIGATION.execution.color} textColor={NAVIGATION.execution.textColor} currentPage={currentPage} pages={execPages}>
-              {(close) => <PoleDropdown poles={NAVIGATION.execution.poles} onClose={() => close(false)} />}
+              {(close) => {
+                const filteredPoles = Object.fromEntries(
+                  Object.entries(NAVIGATION.execution.poles).filter(([k]) => allowedExecPoles.includes(k))
+                );
+                return <PoleDropdown poles={filteredPoles} onClose={() => close(false)} />;
+              }}
             </NavButton>
           )}
         </nav>
