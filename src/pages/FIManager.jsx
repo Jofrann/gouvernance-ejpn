@@ -101,12 +101,12 @@ export default function FIManagerPage() {
     setForm(f => ({ ...f, co_pilote_email: email, co_pilote_nom: u?.full_name || "" }));
   };
 
-  // Tous les utilisateurs sont sélectionnables comme pilote/co-pilote par le responsable FI ou admin
+  // Tous les membres du pôle Familles d'Impact sont sélectionnables comme pilote/co-pilote
   const allSelectableUsers = users.filter(u => {
     if (!u.email) return false;
     const roles = getUserRoles(u);
-    // inclure les users avec rôles FI, les admins, et l'utilisateur courant lui-même
-    return roles.some(r => ["pilote_fi", "copilote_fi", "responsable_fi", "admin"].includes(r))
+    // Tous ceux qui ont accès au pôle familles_impact + admins
+    return roles.some(r => (ROLE_EXEC_POLES[r] || []).includes("familles_impact"))
       || u.role === "admin"
       || u.email === user?.email;
   });
