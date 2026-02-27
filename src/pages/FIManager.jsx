@@ -97,15 +97,8 @@ export default function FIManagerPage() {
     setForm(f => ({ ...f, co_pilote_email: email, co_pilote_nom: u?.full_name || "" }));
   };
 
-  // Tous les membres du pôle Familles d'Impact sont sélectionnables comme pilote/co-pilote
-  const allSelectableUsers = users.filter(u => {
-    if (!u.email) return false;
-    const roles = getUserRoles(u);
-    // Tous ceux qui ont accès au pôle familles_impact + admins
-    return roles.some(r => (ROLE_EXEC_POLES[r] || []).includes("familles_impact"))
-      || u.role === "admin"
-      || u.email === user?.email;
-  });
+  // Tous les utilisateurs de l'app sont sélectionnables comme pilote/co-pilote
+  const allSelectableUsers = users.filter(u => !!u.email);
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-4 md:space-y-6">
