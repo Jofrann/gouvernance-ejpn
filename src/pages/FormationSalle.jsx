@@ -113,12 +113,19 @@ export default function FormationSallePage() {
           <h1 className="text-lg font-bold text-white">Salle d'Étude</h1>
           <p className="text-xs text-zinc-600">Direction {format(new Date(), "MMMM yyyy", { locale: fr })} · Ressources du mois</p>
         </div>
-        {current.length > 0 && !isResponsable && (
-          <span className={cn("text-xs border rounded-full px-3 py-1",
-            readCount === current.length ? "text-emerald-400 border-emerald-500/30 bg-emerald-900/20" : "text-zinc-500 border-white/10")}>
-            {readCount}/{current.length} lus
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {current.length > 0 && !isResponsable && (
+            <span className={cn("text-xs border rounded-full px-3 py-1",
+              readCount === current.length ? "text-emerald-400 border-emerald-500/30 bg-emerald-900/20" : "text-zinc-500 border-white/10")}>
+              {readCount}/{current.length} lus
+            </span>
+          )}
+          {isResponsable && (
+            <Button onClick={openCreate} className="bg-blue-600 hover:bg-blue-700 text-white gap-2 h-8 text-xs px-3">
+              <Plus className="w-3.5 h-3.5" /> Ajouter une ressource
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
