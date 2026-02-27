@@ -458,6 +458,19 @@ export default function TopNav({ user, currentPage }) {
             </AnimatePresence>
           </div>
 
+          {/* Messagerie */}
+          <Link
+            to={createPageUrl("Messagerie")}
+            className={`hidden lg:flex p-2 rounded-lg transition-all relative ${
+              currentPage === "Messagerie"
+                ? "text-blue-400 bg-white/10"
+                : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+            }`}
+            title="Messagerie"
+          >
+            <MessagesSquare className="w-4 h-4" />
+          </Link>
+
           {/* Mon Profil */}
           <Link
             to={createPageUrl("MonProfil")}
