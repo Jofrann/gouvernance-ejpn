@@ -65,6 +65,7 @@ import EvangelisationROI from './pages/EvangelisationROI';
 import EvangelisationRadar from './pages/EvangelisationRadar';
 import FIDashboard from './pages/FIDashboard';
 import FIHub from './pages/FIHub';
+import FIManager from './pages/FIManager';
 import FITransferts from './pages/FITransferts';
 import FormationAssiduite from './pages/FormationAssiduite';
 import FormationBulletin from './pages/FormationBulletin';
@@ -87,7 +88,6 @@ import Parametres from './pages/Parametres';
 import TroneArchives from './pages/TroneArchives';
 import TroneRadar from './pages/TroneRadar';
 import TroneValidation from './pages/TroneValidation';
-import FIManager from './pages/FIManager';
 import FIDetail from './pages/FIDetail';
 import __Layout from './Layout.jsx';
 
@@ -111,6 +111,7 @@ export const PAGES = {
     "EvangelisationRadar": EvangelisationRadar,
     "FIDashboard": FIDashboard,
     "FIHub": FIHub,
+    "FIManager": FIManager,
     "FITransferts": FITransferts,
     "FormationAssiduite": FormationAssiduite,
     "FormationBulletin": FormationBulletin,
@@ -133,7 +134,6 @@ export const PAGES = {
     "TroneArchives": TroneArchives,
     "TroneRadar": TroneRadar,
     "TroneValidation": TroneValidation,
-    "FIManager": FIManager,
     "FIDetail": FIDetail,
 }
 
