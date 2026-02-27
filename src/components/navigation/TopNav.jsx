@@ -288,9 +288,11 @@ export default function TopNav({ user, currentPage }) {
   }, []);
 
   // Support multi-rôles : tableau `roles` ou fallback sur `role` (string)
-  const userRoles = Array.isArray(user?.roles) && user.roles.length > 0
+  // Normalize legacy role names so navigation access is always correct
+  const rawRoles = Array.isArray(user?.roles) && user.roles.length > 0
     ? user.roles
     : user?.role ? [user.role] : ["admin"];
+  const userRoles = rawRoles.map(normalizeRole);
 
   const isAdmin = userRoles.includes("admin");
 
