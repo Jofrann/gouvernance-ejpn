@@ -171,7 +171,8 @@ export default function ParametresPage() {
 
   const openEdit = (user) => {
     setEditUser(user);
-    setForm({ role: user.role || "pilote_fi", niveau: user.niveau || "execution", pole: user.pole || "" });
+    const existingRoles = getUserRoles(user);
+    setForm({ role: user.role || "pilote_fi", roles: existingRoles.length > 0 ? existingRoles : [user.role || "pilote_fi"], niveau: user.niveau || "execution", pole: user.pole || "" });
     setSheetOpen(true);
   };
 
