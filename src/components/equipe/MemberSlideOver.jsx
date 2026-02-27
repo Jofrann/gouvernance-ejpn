@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Mail, Clock, FileText, ArrowRightLeft, Plus, X, CheckCircle } from "lucide-react";
+import { Mail, Clock, FileText, ArrowRightLeft, Plus, X, CheckCircle, Send } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import LiveActivityIndicator from "./LiveActivityIndicator";
