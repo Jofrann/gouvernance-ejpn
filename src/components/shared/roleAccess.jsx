@@ -42,9 +42,9 @@ export function normalizeRole(role) {
 
 // Gouvernance sub-role visibility
 export const GOUV_GROUP_ROLES = {
-  gouvernance_direction: ["gouvernance_direction", "admin"],
-  gouvernance_suivi:     ["gouvernance_suivi",     "admin"],
-  gouvernance_strategie: ["gouvernance_strategie",  "admin"],
+  gouvernance_direction: ["gouvernance_direction", "directrice_execution", "admin"],
+  gouvernance_suivi:     ["gouvernance_suivi",     "responsable_suivi",    "admin"],
+  gouvernance_strategie: ["gouvernance_strategie", "analyste_strategique", "admin"],
 };
 
 /**
