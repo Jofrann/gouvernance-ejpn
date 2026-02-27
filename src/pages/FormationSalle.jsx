@@ -174,6 +174,8 @@ export default function FormationSallePage() {
                       </div>
                     )}
 
+                    {user && <RessourceComments ressourceId={r.id} user={user} isResponsable={isResponsable} />}
+
                     <div className="flex items-center gap-2 flex-wrap">
                       {r.url && (
                         <button onClick={() => { window.open(r.url, "_blank"); if (!read && !isResponsable) markAsRead.mutate(r.id); }}
