@@ -52,8 +52,9 @@ export const GOUV_GROUP_ROLES = {
  */
 export function getAllowedExecPoles(userRoles = []) {
   if (!Array.isArray(userRoles)) userRoles = [userRoles];
+  const normalized = userRoles.map(normalizeRole);
   const poles = new Set();
-  userRoles.forEach(r => {
+  normalized.forEach(r => {
     (ROLE_EXEC_POLES[r] || []).forEach(p => poles.add(p));
   });
   return Array.from(poles);
