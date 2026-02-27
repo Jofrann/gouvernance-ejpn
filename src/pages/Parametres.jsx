@@ -165,7 +165,7 @@ export default function ParametresPage() {
   const openCreate = () => {
     setEditUser(null);
     setInviteEmail("");
-    setForm({ role: "pilote_fi", niveau: "execution", pole: "familles_impact" });
+    setForm({ role: "pilote_fi", roles: ["pilote_fi"], niveau: "execution", pole: "familles_impact" });
     setSheetOpen(true);
   };
 
