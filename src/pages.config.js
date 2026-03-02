@@ -47,6 +47,10 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import CommunicationBibliotheque from './pages/CommunicationBibliotheque';
+import CommunicationDirectives from './pages/CommunicationDirectives';
+import CommunicationFunnel from './pages/CommunicationFunnel';
+import CommunicationKanban from './pages/CommunicationKanban';
 import Equipe from './pages/Equipe';
 import EquipeCommunication from './pages/EquipeCommunication';
 import EquipeEvangelisation from './pages/EquipeEvangelisation';
@@ -55,46 +59,46 @@ import EquipeFormation from './pages/EquipeFormation';
 import EquipeGouvernance from './pages/EquipeGouvernance';
 import EquipeTrone from './pages/EquipeTrone';
 import EvangelisationAnalyse from './pages/EvangelisationAnalyse';
-import EvangelisationRadar from './pages/EvangelisationRadar';
-import CommunicationDirectives from './pages/CommunicationDirectives';
-import CommunicationKanban from './pages/CommunicationKanban';
-import GouvAllocation from './pages/GouvAllocation';
-import GouvBilan from './pages/GouvBilan';
-import GouvMatrice from './pages/GouvMatrice';
-import GouvModelisation from './pages/GouvModelisation';
-import Home from './pages/Home';
-import MonProfil from './pages/MonProfil';
-import TroneArchives from './pages/TroneArchives';
-import TroneRadar from './pages/TroneRadar';
-import TroneValidation from './pages/TroneValidation';
-import FIHub from './pages/FIHub';
-import FormationAssiduite from './pages/FormationAssiduite';
-import FormationBulletin from './pages/FormationBulletin';
-import FormationCorrection from './pages/FormationCorrection';
-import FormationSalle from './pages/FormationSalle';
 import EvangelisationDebrief from './pages/EvangelisationDebrief';
+import EvangelisationHeatmap from './pages/EvangelisationHeatmap';
 import EvangelisationROI from './pages/EvangelisationROI';
-import CommunicationFunnel from './pages/CommunicationFunnel';
-import Parametres from './pages/Parametres';
-import GouvDonnees from './pages/GouvDonnees';
+import EvangelisationRadar from './pages/EvangelisationRadar';
 import FIClinique from './pages/FIClinique';
 import FIDashboard from './pages/FIDashboard';
 import FIDossiers from './pages/FIDossiers';
+import FIHub from './pages/FIHub';
 import FIManager from './pages/FIManager';
 import FITourControle from './pages/FITourControle';
 import FITransferts from './pages/FITransferts';
+import FormationAssiduite from './pages/FormationAssiduite';
+import FormationBulletin from './pages/FormationBulletin';
+import FormationCorrection from './pages/FormationCorrection';
+import FormationLabo from './pages/FormationLabo';
+import FormationSalle from './pages/FormationSalle';
+import GouvAllocation from './pages/GouvAllocation';
 import GouvAnomalies from './pages/GouvAnomalies';
+import GouvBilan from './pages/GouvBilan';
+import GouvDonnees from './pages/GouvDonnees';
 import GouvMasterPlan from './pages/GouvMasterPlan';
+import GouvMatrice from './pages/GouvMatrice';
+import GouvModelisation from './pages/GouvModelisation';
 import GouvRedaction from './pages/GouvRedaction';
 import GouvRoadmap from './pages/GouvRoadmap';
-import FormationLabo from './pages/FormationLabo';
-import EvangelisationHeatmap from './pages/EvangelisationHeatmap';
-import CommunicationBibliotheque from './pages/CommunicationBibliotheque';
+import Home from './pages/Home';
 import Messagerie from './pages/Messagerie';
+import MonProfil from './pages/MonProfil';
+import Parametres from './pages/Parametres';
+import TroneArchives from './pages/TroneArchives';
+import TroneRadar from './pages/TroneRadar';
+import TroneValidation from './pages/TroneValidation';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "CommunicationBibliotheque": CommunicationBibliotheque,
+    "CommunicationDirectives": CommunicationDirectives,
+    "CommunicationFunnel": CommunicationFunnel,
+    "CommunicationKanban": CommunicationKanban,
     "Equipe": Equipe,
     "EquipeCommunication": EquipeCommunication,
     "EquipeEvangelisation": EquipeEvangelisation,
@@ -103,42 +107,38 @@ export const PAGES = {
     "EquipeGouvernance": EquipeGouvernance,
     "EquipeTrone": EquipeTrone,
     "EvangelisationAnalyse": EvangelisationAnalyse,
-    "EvangelisationRadar": EvangelisationRadar,
-    "CommunicationDirectives": CommunicationDirectives,
-    "CommunicationKanban": CommunicationKanban,
-    "GouvAllocation": GouvAllocation,
-    "GouvBilan": GouvBilan,
-    "GouvMatrice": GouvMatrice,
-    "GouvModelisation": GouvModelisation,
-    "Home": Home,
-    "MonProfil": MonProfil,
-    "TroneArchives": TroneArchives,
-    "TroneRadar": TroneRadar,
-    "TroneValidation": TroneValidation,
-    "FIHub": FIHub,
-    "FormationAssiduite": FormationAssiduite,
-    "FormationBulletin": FormationBulletin,
-    "FormationCorrection": FormationCorrection,
-    "FormationSalle": FormationSalle,
     "EvangelisationDebrief": EvangelisationDebrief,
+    "EvangelisationHeatmap": EvangelisationHeatmap,
     "EvangelisationROI": EvangelisationROI,
-    "CommunicationFunnel": CommunicationFunnel,
-    "Parametres": Parametres,
-    "GouvDonnees": GouvDonnees,
+    "EvangelisationRadar": EvangelisationRadar,
     "FIClinique": FIClinique,
     "FIDashboard": FIDashboard,
     "FIDossiers": FIDossiers,
+    "FIHub": FIHub,
     "FIManager": FIManager,
     "FITourControle": FITourControle,
     "FITransferts": FITransferts,
+    "FormationAssiduite": FormationAssiduite,
+    "FormationBulletin": FormationBulletin,
+    "FormationCorrection": FormationCorrection,
+    "FormationLabo": FormationLabo,
+    "FormationSalle": FormationSalle,
+    "GouvAllocation": GouvAllocation,
     "GouvAnomalies": GouvAnomalies,
+    "GouvBilan": GouvBilan,
+    "GouvDonnees": GouvDonnees,
     "GouvMasterPlan": GouvMasterPlan,
+    "GouvMatrice": GouvMatrice,
+    "GouvModelisation": GouvModelisation,
     "GouvRedaction": GouvRedaction,
     "GouvRoadmap": GouvRoadmap,
-    "FormationLabo": FormationLabo,
-    "EvangelisationHeatmap": EvangelisationHeatmap,
-    "CommunicationBibliotheque": CommunicationBibliotheque,
+    "Home": Home,
     "Messagerie": Messagerie,
+    "MonProfil": MonProfil,
+    "Parametres": Parametres,
+    "TroneArchives": TroneArchives,
+    "TroneRadar": TroneRadar,
+    "TroneValidation": TroneValidation,
 }
 
 export const pagesConfig = {
