@@ -291,7 +291,11 @@ function TabClinique({ fi }) {
     <div className="space-y-4">
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1 rounded-xl border border-white/[0.08] p-1" style={{ background: "rgba(255,255,255,0.03)" }}>
+        <div className="flex items-center gap-1 rounded-xl border border-white/[0.09] p-1" style={{
+          background: "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 100%)",
+          backdropFilter: "blur(24px)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)"
+        }}>
           <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10" onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}>
             <ChevronLeft className="w-4 h-4" />
           </Button>
