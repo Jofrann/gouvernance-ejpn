@@ -105,7 +105,7 @@ function TabMembres({ fi, user }) {
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher un membre..."
-            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-zinc-600 h-9" />
+            className="pl-9 h-9 rounded-xl bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#475569] focus:border-blue-500/40 focus:ring-[3px] focus:ring-blue-500/10 transition-all" />
         </div>
         <Select value={filterStatut} onValueChange={setFilterStatut}>
           <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white h-9">
