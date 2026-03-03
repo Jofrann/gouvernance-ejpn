@@ -138,8 +138,8 @@ export default function TroneDashboard({ user }) {
           <Crown className="w-4 h-4 text-amber-400" />
           <p className="text-[10px] font-bold text-amber-400/80 uppercase tracking-[0.25em]">Direction Souveraine</p>
         </div>
-        <h1 className="text-3xl font-black text-white tracking-tight">Vue Globale du Mouvement</h1>
-        <p className="text-sm text-zinc-500 mt-1">Synthèse stratégique · {new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+        <h1 className="text-3xl font-light text-white tracking-tight">Vue <span className="font-black">Globale</span> du Mouvement</h1>
+        <p className="text-sm text-zinc-500 mt-1 font-light leading-relaxed">Synthèse stratégique · {new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
       </motion.div>
 
       {/* KPIs row 1 */}
