@@ -102,9 +102,9 @@ export default function FITransfertsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p className="text-[10px] font-bold text-amber-400/80 uppercase tracking-[0.25em] mb-1">Familles d'Impact</p>
-          <h1 className="text-2xl font-black text-white tracking-tight">Centre de Transferts</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Mobilités inter-FI · Identifications Formation</p>
+          <p className="page-label text-amber-400/80">Familles d'Impact</p>
+          <h1 className="text-2xl font-light text-white tracking-tight">Centre de <span className="font-black">Transferts</span></h1>
+          <p className="text-sm text-zinc-500 mt-0.5 font-light leading-relaxed">Mobilités inter-FI · Identifications Formation</p>
         </div>
         <button onClick={() => setShowModal(true)} className="btn-glow-gold flex items-center gap-2 px-4 py-2">
           <Plus className="w-4 h-4" /> Nouvelle Demande
