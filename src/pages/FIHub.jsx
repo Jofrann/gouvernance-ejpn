@@ -491,7 +491,8 @@ export default function FIHubPage() {
               className={cn("relative flex items-center gap-2 px-5 py-3 text-sm font-medium transition-all",
                 active ? "text-white" : "text-zinc-500 hover:text-zinc-300")}>
               <Icon className="w-4 h-4" />
-              {t.label}
+              <span className="hidden sm:inline">{t.label}</span>
+              <span className="sm:hidden">{t.label.split(" ")[0]}</span>
               {active && (
                 <motion.div layoutId="fi-tab-indicator"
                   className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-violet-500 rounded-full"
