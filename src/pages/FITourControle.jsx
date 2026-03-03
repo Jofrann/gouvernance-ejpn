@@ -103,15 +103,19 @@ export default function FITourControlePage() {
       </div>
 
       {/* Data Table */}
-      <div className="rounded-2xl border border-white/[0.07] overflow-hidden" style={{ background: "rgba(255,255,255,0.02)", backdropFilter: "blur(24px)" }}>
-        <div className="px-5 py-3 border-b border-white/[0.06]">
-          <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Toutes les Familles d'Impact</p>
+      <div className="rounded-2xl border border-white/[0.09] overflow-hidden" style={{
+        background: "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
+        backdropFilter: "blur(40px)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 32px rgba(0,0,0,0.28)"
+      }}>
+        <div className="px-5 py-3 border-b border-white/[0.07]">
+          <p className="section-title">Toutes les Familles d'Impact</p>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.06]">
+            <tr className="border-b border-white/[0.07]">
               {["Famille d'Impact", "Pilote", "Membres", "Statut Clinique", "Présence", "Alertes", "Potentiels", "Action"].map(h => (
-                <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{h}</th>
+                <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold text-zinc-500 uppercase tracking-[0.15em]">{h}</th>
               ))}
             </tr>
           </thead>
