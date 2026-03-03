@@ -122,8 +122,8 @@ export default function FITourControlePage() {
           <tbody>
             {fiStats.map(({ fi, fiMembres, thisSaisies, presenceRate, alertCount, saisieComplete, potentiels }, i) => (
               <motion.tr key={fi.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-                className={cn("border-b border-white/[0.04] transition-all",
-                  !saisieComplete ? "bg-amber-500/[0.03]" : alertCount > 0 ? "bg-red-500/[0.03]" : "hover:bg-white/[0.02]")}>
+                className={cn("table-row-glass group",
+                  !saisieComplete ? "bg-amber-500/[0.03]" : alertCount > 0 ? "bg-red-500/[0.03]" : "")}>
                 <td className="px-4 py-3">
                   <p className="text-sm font-semibold text-white">{fi.name}</p>
                   <p className="text-xs text-zinc-600">{fi.campus}</p>
