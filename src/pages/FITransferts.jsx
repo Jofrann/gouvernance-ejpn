@@ -18,8 +18,13 @@ const STATUT_COLORS = {
 };
 
 const GlassCard = ({ children, className = "" }) => (
-  <div className={cn("rounded-2xl border border-white/[0.07] p-5", className)}
-    style={{ background: "rgba(255,255,255,0.025)", backdropFilter: "blur(24px)" }}>
+  <div className={cn("rounded-2xl border border-white/[0.09] p-5", className)}
+    style={{
+      background: "linear-gradient(135deg, rgba(255,255,255,0.065) 0%, rgba(255,255,255,0.018) 100%)",
+      backdropFilter: "blur(40px) saturate(1.7) brightness(1.05)",
+      WebkitBackdropFilter: "blur(40px) saturate(1.7) brightness(1.05)",
+      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.12), 0 8px 32px rgba(0,0,0,0.32)"
+    }}>
     {children}
   </div>
 );
