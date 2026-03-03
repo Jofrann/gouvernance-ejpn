@@ -310,8 +310,14 @@ export default function TopNav({ user, currentPage }) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 h-16 flex items-center px-6 gap-4
-        bg-[#080b12]/90 backdrop-blur-xl border-b border-white/[0.06]">
+      <header className="fixed top-0 left-0 right-0 z-40 h-16 flex items-center px-6 gap-4"
+        style={{
+          background: "linear-gradient(180deg, rgba(6,8,18,0.92) 0%, rgba(8,11,22,0.85) 100%)",
+          backdropFilter: "blur(48px) saturate(1.8) brightness(1.02)",
+          WebkitBackdropFilter: "blur(48px) saturate(1.8) brightness(1.02)",
+          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          boxShadow: "0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4)"
+        }}>
         
         {/* Subtle gradient line at bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
