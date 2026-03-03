@@ -120,8 +120,14 @@ export default function DefaultDashboard({ user }) {
       {/* Vision Banner */}
       <motion.div
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.5 }}
-        className="relative rounded-2xl border border-white/10 overflow-hidden p-5"
-        style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.06) 50%, rgba(16,185,129,0.05) 100%)" }}
+        className="relative rounded-2xl overflow-hidden p-5"
+        style={{
+          background: "linear-gradient(135deg, rgba(59,130,246,0.10) 0%, rgba(139,92,246,0.07) 50%, rgba(16,185,129,0.06) 100%)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          backdropFilter: "blur(40px) saturate(1.8)",
+          WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.1), 0 8px 32px rgba(0,0,0,0.28)"
+        }}
       >
         <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ background: "radial-gradient(ellipse at 20% 50%, rgba(59,130,246,0.15) 0%, transparent 60%)" }} />
         <div className="relative flex flex-col lg:flex-row lg:items-center gap-4">
@@ -159,9 +165,13 @@ export default function DefaultDashboard({ user }) {
           { title: "OKR progression", value: `${avgOKR}%`, sub: `${okrsEnCours.length} en cours`, icon: Target, color: "text-amber-400", link: "GouvMasterPlan", delay: 0.24 },
         ].map(({ title, value, sub, icon: Icon, color, link, delay }) => (
           <Link key={title} to={createPageUrl(link)}>
-            <GlassCard delay={delay} className="hover:border-white/[0.14] transition-all group cursor-pointer">
+            <GlassCard delay={delay} className="hover:border-white/[0.18] transition-all group cursor-pointer">
               <div className="flex items-start justify-between mb-3">
-                <div className="p-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
+                <div className="p-2 rounded-lg" style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)"
+                }}>
                   <Icon className={`w-4 h-4 ${color}`} />
                 </div>
                 <ArrowUpRight className="w-3.5 h-3.5 text-zinc-700 group-hover:text-zinc-400 transition-colors" />

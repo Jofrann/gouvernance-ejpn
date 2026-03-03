@@ -26,9 +26,19 @@ const GlassCard = ({ children, className = "", delay = 0 }) => (
 
 const KPICard = ({ label, value, sub, icon: Icon, color, delay, link }) => {
   const content = (
-    <GlassCard delay={delay} className="hover:border-white/[0.14] transition-all cursor-pointer group">
+    <GlassCard delay={delay} className="hover:border-white/[0.18] transition-all cursor-pointer group"
+      style={{
+        background: "linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%)",
+        backdropFilter: "blur(40px) saturate(1.8)",
+        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 32px rgba(0,0,0,0.3)"
+      }}>
       <div className="flex items-start justify-between">
-        <div className={`p-2.5 rounded-xl border`} style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}>
+        <div className="p-2.5 rounded-xl" style={{
+          background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)"
+        }}>
           <Icon className={`w-4 h-4 ${color}`} />
         </div>
         {link && <ArrowUpRight className="w-3.5 h-3.5 text-zinc-700 group-hover:text-zinc-400 transition-colors" />}
