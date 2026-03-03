@@ -151,7 +151,7 @@ function TabMembres({ fi, user }) {
                 const avg = getAvg(m.id);
                 return (
                   <motion.tr key={m.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
-                    className={cn("border-b border-white/[0.04] hover:bg-white/[0.02] transition-all", alerte ? "bg-red-500/[0.03]" : "")}>
+                    className={cn("table-row-glass group", alerte ? "bg-red-500/[0.03]" : "")}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
                         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500/30 to-violet-500/30 border border-white/10 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
