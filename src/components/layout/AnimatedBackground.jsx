@@ -36,10 +36,11 @@ export default function AnimatedBackground() {
 
     // === ENERGY ORBS ===
     const orbs = [
-      { bx: w * 0.1, by: h * 0.15, r: 350, color: "59,130,246", speed: 0.00035, angle: 0, ox: 80, oy: 60 },
-      { bx: w * 0.85, by: h * 0.7, r: 280, color: "139,92,246", speed: 0.00055, angle: Math.PI, ox: 60, oy: 80 },
-      { bx: w * 0.5, by: h * 0.5, r: 200, color: "16,185,129", speed: 0.0004, angle: Math.PI / 3, ox: 50, oy: 40 },
-      { bx: w * 0.75, by: h * 0.1, r: 160, color: "245,158,11", speed: 0.0006, angle: Math.PI * 1.5, ox: 40, oy: 30 },
+      { bx: w * 0.1,  by: h * 0.15, r: 420, color: "59,130,246",  speed: 0.00035, angle: 0,              ox: 100, oy: 80 },
+      { bx: w * 0.85, by: h * 0.70, r: 350, color: "139,92,246",  speed: 0.00055, angle: Math.PI,        ox: 80,  oy: 100 },
+      { bx: w * 0.50, by: h * 0.50, r: 260, color: "16,185,129",  speed: 0.0004,  angle: Math.PI / 3,   ox: 60,  oy: 50 },
+      { bx: w * 0.75, by: h * 0.10, r: 200, color: "245,158,11",  speed: 0.0006,  angle: Math.PI * 1.5, ox: 50,  oy: 40 },
+      { bx: w * 0.20, by: h * 0.80, r: 180, color: "236,72,153",  speed: 0.00045, angle: Math.PI * 0.7, ox: 40,  oy: 35 },
     ];
 
     // === WAVE RINGS ===
@@ -115,10 +116,11 @@ export default function AnimatedBackground() {
         const ox = orb.bx + Math.cos(orb.angle) * orb.ox;
         const oy = orb.by + Math.sin(orb.angle * 1.3) * orb.oy;
         const grad = ctx.createRadialGradient(ox, oy, 0, ox, oy, orb.r);
-        grad.addColorStop(0, `rgba(${orb.color}, 0.12)`);
-        grad.addColorStop(0.35, `rgba(${orb.color}, 0.06)`);
-        grad.addColorStop(0.7, `rgba(${orb.color}, 0.02)`);
-        grad.addColorStop(1, `rgba(${orb.color}, 0)`);
+        grad.addColorStop(0,    `rgba(${orb.color}, 0.18)`);
+        grad.addColorStop(0.25, `rgba(${orb.color}, 0.10)`);
+        grad.addColorStop(0.55, `rgba(${orb.color}, 0.04)`);
+        grad.addColorStop(0.85, `rgba(${orb.color}, 0.01)`);
+        grad.addColorStop(1,    `rgba(${orb.color}, 0)`);
         ctx.beginPath();
         ctx.arc(ox, oy, orb.r, 0, Math.PI * 2);
         ctx.fillStyle = grad;
