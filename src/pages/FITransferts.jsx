@@ -106,9 +106,9 @@ export default function FITransfertsPage() {
           <h1 className="text-2xl font-black text-white tracking-tight">Centre de Transferts</h1>
           <p className="text-sm text-zinc-500 mt-0.5">Mobilités inter-FI · Identifications Formation</p>
         </div>
-        <Button onClick={() => setShowModal(true)} className="bg-amber-600/80 hover:bg-amber-600 border border-amber-500/30 text-white gap-2">
+        <button onClick={() => setShowModal(true)} className="btn-glow-gold flex items-center gap-2 px-4 py-2">
           <Plus className="w-4 h-4" /> Nouvelle Demande
-        </Button>
+        </button>
       </div>
 
       {/* En attente */}
