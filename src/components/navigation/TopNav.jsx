@@ -102,10 +102,10 @@ const NAVIGATION = {
         icon: Home,
         items: [
           { label: "Hub FI", page: "FIHub", icon: Heart },
-          { label: "Suivi Hebdo", page: "FIClinique", icon: ClipboardList },
-          { label: "Membres & Dossiers", page: "FIDossiers", icon: FolderOpen },
+          { label: "Dashboard Santé", page: "FIDashboard", icon: BarChart3 },
           { label: "Transferts", page: "FITransferts", icon: ArrowRightLeft },
           { label: "Tour de Contrôle", page: "FITourControle", icon: Eye },
+          { label: "Gestion des FI", page: "FIManager", icon: Settings },
         ],
       },
       formation: {
