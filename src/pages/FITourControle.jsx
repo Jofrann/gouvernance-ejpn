@@ -77,9 +77,9 @@ export default function FITourControlePage() {
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <p className="text-[10px] font-bold text-blue-400/80 uppercase tracking-[0.25em] mb-1">Familles d'Impact</p>
-        <h1 className="text-2xl font-black text-white tracking-tight">Tour de Contrôle</h1>
-        <p className="text-sm text-zinc-500 mt-0.5">Supervision des Pilotes · Conformité clinique · Alertes</p>
+        <p className="page-label text-blue-400/80">Familles d'Impact</p>
+        <h1 className="text-2xl font-light text-white tracking-tight">Tour de <span className="font-black">Contrôle</span></h1>
+        <p className="text-sm text-zinc-500 mt-0.5 font-light leading-relaxed">Supervision des Pilotes · Conformité clinique · Alertes</p>
       </div>
 
       {/* KPIs */}
