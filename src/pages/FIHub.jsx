@@ -192,14 +192,16 @@ function TabMembres({ fi, user }) {
                       </button>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-zinc-500 hover:text-white hover:bg-white/10" onClick={() => setSelectedMembre(m)}>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                        <button className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
+                          onClick={() => setSelectedMembre(m)}>
                           <Eye className="w-3.5 h-3.5" />
-                        </Button>
+                        </button>
                         {canWrite && (
-                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500/50 hover:text-red-400 hover:bg-red-500/10" onClick={() => setDeleteMembre(m)}>
+                          <button className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-red-500/50 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                            onClick={() => setDeleteMembre(m)}>
                             <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
+                          </button>
                         )}
                       </div>
                     </td>
