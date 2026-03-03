@@ -139,9 +139,9 @@ function TabMembres({ fi, user }) {
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.06]">
+              <tr className="border-b border-white/[0.07]">
                 {["Membre", "Statut Pipeline", "Santé", "Potentiel", "Actions"].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{h}</th>
+                  <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold text-zinc-500 uppercase tracking-[0.15em]">{h}</th>
                 ))}
               </tr>
             </thead>
