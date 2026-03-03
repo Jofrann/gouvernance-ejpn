@@ -126,7 +126,11 @@ function TabMembres({ fi, user }) {
       </div>
 
       {/* Tableau */}
-      <div className="rounded-2xl border border-white/[0.07] overflow-hidden" style={{ background: "rgba(255,255,255,0.02)", backdropFilter: "blur(24px)" }}>
+      <div className="rounded-2xl border border-white/[0.09] overflow-hidden" style={{
+        background: "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
+        backdropFilter: "blur(40px)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 32px rgba(0,0,0,0.28)"
+      }}>
         {filtered.length === 0 ? (
           <div className="py-16 text-center">
             <Users className="w-8 h-8 mx-auto mb-2 text-zinc-700" />
