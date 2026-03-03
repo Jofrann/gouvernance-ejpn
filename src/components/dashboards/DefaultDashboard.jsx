@@ -113,8 +113,8 @@ export default function DefaultDashboard({ user }) {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <p className="text-[10px] font-bold text-blue-500/80 uppercase tracking-[0.25em] mb-2">O.S.P — Vision 2026</p>
-        <h1 className="text-3xl font-black text-white tracking-tight">Mouvement des Familles d'Impact</h1>
-        <p className="text-sm text-zinc-500 mt-1">{format(new Date(), "EEEE d MMMM yyyy", { locale: fr })} · Structuration · Conquête · Multiplication</p>
+        <h1 className="text-3xl font-light text-white tracking-tight">Mouvement des <span className="font-black">Familles d'Impact</span></h1>
+        <p className="text-sm text-zinc-500 mt-1 font-light leading-relaxed">{format(new Date(), "EEEE d MMMM yyyy", { locale: fr })} · Structuration · Conquête · Multiplication</p>
       </motion.div>
 
       {/* Vision Banner */}
