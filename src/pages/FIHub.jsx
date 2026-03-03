@@ -458,9 +458,9 @@ export default function FIHubPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] font-bold text-emerald-400/80 uppercase tracking-[0.25em] mb-1">Familles d'Impact</p>
-          <h1 className="text-2xl font-black text-white tracking-tight">Hub FI</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Bureau de commandement de votre maison</p>
+          <p className="page-label text-emerald-400/80">Familles d'Impact</p>
+          <h1 className="text-2xl font-light text-white tracking-tight">Hub <span className="font-black">FI</span></h1>
+          <p className="text-sm text-zinc-500 mt-0.5 font-light leading-relaxed">Bureau de commandement de votre maison</p>
         </div>
 
         {/* FI Selector + Info */}
