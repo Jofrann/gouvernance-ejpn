@@ -132,8 +132,8 @@ export default function PiloteDashboard({ user }) {
         <p className="text-[10px] font-bold text-emerald-400/80 uppercase tracking-[0.25em] mb-1">
           {mesFamilles.length > 0 ? mesFamilles.map(f => f.name).join(" · ") : "Familles d'Impact"}
         </p>
-        <h1 className="text-3xl font-black text-white tracking-tight">Tableau de Bord Pastoral</h1>
-        <p className="text-sm text-zinc-500 mt-1">Santé · Présence · Alertes · {format(new Date(), "EEEE d MMMM yyyy", { locale: fr })}</p>
+        <h1 className="text-3xl font-light text-white tracking-tight">Tableau de <span className="font-black">Bord</span> Pastoral</h1>
+        <p className="text-sm text-zinc-500 mt-1 font-light leading-relaxed">Santé · Présence · Alertes · {format(new Date(), "EEEE d MMMM yyyy", { locale: fr })}</p>
       </motion.div>
 
       {/* KPIs */}
