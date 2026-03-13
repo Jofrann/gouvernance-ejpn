@@ -222,6 +222,16 @@ export default function PiloteDashboard({ user }) {
               </div>
               <div className={cn("w-2 h-2 rounded-full", interactionsSuivi.length > 0 ? "bg-amber-400" : "bg-emerald-400")} />
             </Link>
+            <Link to={createPageUrl("FIHub")} className="flex items-center justify-between p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.03] hover:border-emerald-500/40 hover:bg-emerald-500/[0.06] transition-all group">
+              <div className="flex items-center gap-2.5">
+                <BarChart2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <div>
+                  <p className="text-xs font-medium text-emerald-300 group-hover:text-white">Compte Rendu FI</p>
+                  <p className="text-[10px] text-zinc-500">Clinique · CRM · Workspace</p>
+                </div>
+              </div>
+              <div className="w-2 h-2 rounded-full bg-emerald-400" />
+            </Link>
             {alertes.length > 0 && (
               <div className="flex items-center gap-2.5 p-3 rounded-xl border border-red-500/20 bg-red-500/5">
                 <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
