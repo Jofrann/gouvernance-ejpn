@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import {
   Heart, Users, TrendingDown, ClipboardList, ArrowUpRight,
   AlertTriangle, Activity, MessageSquare, Clock, CheckCircle2,
-  Calendar, Phone, UserCheck, BarChart2
+  Calendar, Phone, UserCheck, BarChart2, Home
 } from "lucide-react";
 import { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
 import { format, setDay, startOfWeek, subWeeks } from "date-fns";
