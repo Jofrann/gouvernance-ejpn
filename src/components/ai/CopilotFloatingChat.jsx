@@ -138,13 +138,13 @@ export default function CopilotFloatingChat({ user }) {
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.07]">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
                   style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.3), rgba(139,92,246,0.3))", border: "1px solid rgba(99,155,255,0.2)" }}>
-                  <Sparkles className="w-4 h-4 text-blue-400" />
+                  {agent.icon}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-white">EJP Copilot</p>
-                  <p className="text-[10px] text-zinc-500">{getRoleLabel(user)} · {TONE_LABELS[prefs.tone] || "Empathique"}</p>
+                  <p className="text-xs font-semibold text-white">Agent {agent.name}</p>
+                  <p className="text-[10px] text-zinc-500">{agent.tagline} · {TONE_LABELS[prefs.tone] || "Empathique"}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
