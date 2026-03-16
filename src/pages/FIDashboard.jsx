@@ -183,6 +183,29 @@ export default function FIDashboardPage() {
         </GlassCard>
       </div>
 
+      {/* Chute Libre Alerts */}
+      {alertes > 0 && (
+        <GlassCard className="border-red-500/20" style={{ background: "linear-gradient(135deg, rgba(239,68,68,0.07) 0%, rgba(255,255,255,0.01) 100%)" }}>
+          <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" /> {alertes} Alerte(s) Chute Libre — Intervention requise
+          </p>
+          <div className="space-y-1.5">
+            {membres.filter(m => detectChuteLivre(m.id, saisies)).map(m => (
+              <div key={m.id} className="flex items-center gap-2.5 p-2.5 rounded-xl border border-red-500/15 bg-red-500/5">
+                <div className="w-6 h-6 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center text-xs font-bold text-red-300 flex-shrink-0">
+                  {m.nom_complet?.[0]?.toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-zinc-200">{m.nom_complet}</p>
+                  <p className="text-[10px] text-red-400">3 semaines consécutives en baisse · Suivi pastoral urgent</p>
+                </div>
+                <span className="ml-auto text-[10px] font-semibold uppercase tracking-wider text-red-400/60 px-2 py-0.5 rounded-md bg-red-500/10 border border-red-500/20">{m.statut_pipeline}</span>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      )}
+
       {/* Members table with alerts */}
       <GlassCard>
         <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Vue des Membres ({membres.length})</p>
