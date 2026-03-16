@@ -279,61 +279,64 @@ export default function ParametresPage() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
+    <div className="px-6 py-10 max-w-6xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Gestion des Utilisateurs</h1>
+          <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.25em] mb-1">Administration</p>
+          <h1 className="text-2xl font-black text-white tracking-tight">Gestion des Utilisateurs</h1>
           <p className="text-sm text-zinc-500 mt-0.5">{users.length} compte{users.length !== 1 ? "s" : ""} · Hiérarchie à 3 niveaux</p>
         </div>
-        <Button className="bg-zinc-900 hover:bg-zinc-800 gap-2" onClick={openCreate}>
+        <button className="btn-glow-blue px-4 py-2.5 flex items-center gap-2" onClick={openCreate}>
           <Plus className="w-4 h-4" /> Inviter un utilisateur
-        </Button>
+        </button>
       </div>
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-        <Input className="pl-9 bg-white border-zinc-200" placeholder="Rechercher par nom, email ou rôle…" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+        <input className="input-glass pl-9" placeholder="Rechercher par nom, email ou rôle…" value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-3">
-        {[["I", "amber", Crown], ["II", "blue", Shield], ["III", "emerald", Briefcase]].map(([n, c, Icon]) => (
-          <Card key={n} className={`border-${c}-200 bg-${c}-50/40`}>
-            <CardContent className="p-4 flex items-center gap-3">
-              <Icon className={`w-5 h-5 text-${c}-600`} />
-              <div>
-                <p className={`text-xs font-bold text-${c}-700`}>Niveau {n}</p>
-                <p className="text-xl font-bold text-zinc-900">{byNiveau[n].length}</p>
-              </div>
-            </CardContent>
-          </Card>
+        {[
+          { n: "I", Icon: Crown, color: "text-amber-400", border: "border-amber-500/20", bg: "bg-amber-500/5" },
+          { n: "II", Icon: Shield, color: "text-blue-400", border: "border-blue-500/20", bg: "bg-blue-500/5" },
+          { n: "III", Icon: Briefcase, color: "text-emerald-400", border: "border-emerald-500/20", bg: "bg-emerald-500/5" },
+        ].map(({ n, Icon, color, border, bg }) => (
+          <div key={n} className={cn("rounded-xl border p-4 flex items-center gap-3", bg, border)}>
+            <Icon className={cn("w-5 h-5", color)} />
+            <div>
+              <p className={cn("text-[10px] font-bold uppercase tracking-wider", color)}>Niveau {n}</p>
+              <p className="text-xl font-bold text-white">{byNiveau[n].length}</p>
+            </div>
+          </div>
         ))}
       </div>
 
       {/* Table */}
-      <Card className="border-zinc-200 bg-white overflow-hidden">
+      <div className="ai-card rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-zinc-50 border-b border-zinc-200">
+            <thead className="border-b border-white/[0.06]">
               <tr>
                 {["Utilisateur", "Rôle", "Pôle", "Niveau", ""].map((h) => (
-                  <th key={h} className="text-left py-2.5 px-4 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{h}</th>
+                  <th key={h} className="text-left py-2.5 px-4 text-[10px] font-bold text-zinc-600 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
-                <tr><td colSpan={5} className="py-16 text-center text-sm text-zinc-400">Chargement…</td></tr>
+                <tr><td colSpan={5} className="py-16 text-center text-sm text-zinc-600">Chargement…</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={5} className="py-16 text-center text-sm text-zinc-400"><Users className="w-8 h-8 text-zinc-200 mx-auto mb-2" />Aucun utilisateur trouvé</td></tr>
+                <tr><td colSpan={5} className="py-16 text-center text-sm text-zinc-600"><Users className="w-8 h-8 text-zinc-700 mx-auto mb-2" />Aucun utilisateur trouvé</td></tr>
               ) : filtered.map((u) => (
                 <UserRow key={u.id} user={u} onEdit={openEdit} onDelete={setDeleteTarget} isCurrentUser={u.id === me?.id} />
               ))}
             </tbody>
           </table>
         </div>
-      </Card>
+      </div>
 
       {/* Edit / Create Sheet */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
