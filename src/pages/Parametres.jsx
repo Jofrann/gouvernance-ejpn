@@ -183,7 +183,14 @@ export default function ParametresPage() {
 
   const openEdit = (user) => {
     setEditUser(user);
-    setForm({ role: user.role || "pilote_fi", niveau: user.niveau || "execution", pole: user.pole || "" });
+    const existingRoles = Array.isArray(user.roles) && user.roles.length > 0
+      ? user.roles
+      : Array.isArray(user?.data?.roles) && user.data.roles.length > 0
+      ? user.data.roles
+      : user.role ? [user.role] : ["pilote_fi"];
+    const primaryRoleInfo = getRoleInfo(existingRoles[0]);
+    const niveauMap = { "I": "trone", "II": "gouvernance", "III": "execution" };
+    setForm({ roles: existingRoles, niveau: niveauMap[primaryRoleInfo.niveau] || "execution", pole: user.pole || primaryRoleInfo.pole || "" });
     setSheetOpen(true);
   };
 
