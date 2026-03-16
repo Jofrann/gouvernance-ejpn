@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Check, X, Shield, Crown, Briefcase, Bell, BellOff, Monitor, Smartphone, LogOut, Radar, Star, Zap, Phone, Mail, User, MapPin } from "lucide-react";
+import { Pencil, Check, X, Shield, Crown, Briefcase, Bell, Monitor, Smartphone, LogOut, Radar, Star, Zap, Phone, Mail, User, MapPin, Sparkles } from "lucide-react";
+import CopilotPreferences from "@/components/ai/CopilotPreferences";
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar as RechartsRadar, ResponsiveContainer } from "recharts";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";

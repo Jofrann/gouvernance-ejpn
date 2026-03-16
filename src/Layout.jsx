@@ -74,6 +74,9 @@ export default function Layout({ children, currentPageName }) {
       <main className="relative z-10 pt-16 min-h-screen">
         {children}
       </main>
+
+      {/* EJP Copilot — Floating Agent */}
+      {user && <CopilotFloatingChat user={user} />}
     </div>
   );
 }
