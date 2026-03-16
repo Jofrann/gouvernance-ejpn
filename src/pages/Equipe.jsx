@@ -190,6 +190,7 @@ function PoleSection({ pole, users, onSelect }) {
 
 export default function EquipePage() {
   useTrackActivity("Equipe");
+  const queryClient = useQueryClient();
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
   const [viewMode, setViewMode] = useState("mon_equipe");
