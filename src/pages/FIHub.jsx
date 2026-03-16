@@ -466,22 +466,17 @@ export default function FIHubPage() {
         {/* FI Selector + Info */}
         {fi && (
           <div className="flex flex-col items-end gap-2">
-            <Select value={selectedFI || ""} onValueChange={setSelectedFI}>
-              <SelectTrigger className="w-56 bg-white/5 border-white/10 text-white">
-                <SelectValue placeholder="Choisir une FI" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableFIs.map(f => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <div className="text-right space-y-0.5">
-              {fi.campus && <p className="text-[10px] text-zinc-500 uppercase tracking-widest">{fi.campus}</p>}
-              {fi.pilote_nom && <p className="text-xs text-zinc-400">👤 {fi.pilote_nom}</p>}
-              {fi.co_pilote_nom && <p className="text-xs text-zinc-500">Co-pilote : {fi.co_pilote_nom}</p>}
-              <span className={`inline-block text-[10px] px-2 py-0.5 rounded-full border ${fi.status === "active" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"}`}>
-                {fi.status === "active" ? "Active" : fi.status === "en_pause" ? "En pause" : "Fermée"}
-              </span>
-            </div>
+            {availableFIs.length > 1 && (
+              <Select value={selectedFI || ""} onValueChange={setSelectedFI}>
+                <SelectTrigger className="w-56 bg-white/5 border-white/10 text-white">
+                  <SelectValue placeholder="Choisir une FI" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableFIs.map(f => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
+            <FIHeaderInfo fi={fi} />
           </div>
         )}
       </div>
