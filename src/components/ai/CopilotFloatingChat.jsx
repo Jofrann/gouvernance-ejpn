@@ -94,23 +94,28 @@ export default function CopilotFloatingChat({ user }) {
     messages[messages.length - 1]?.content === "";
 
   const prefs = user?.ai_preferences || {};
+  const agent = getAgentIdentity(user);
 
   return (
     <>
       {/* FAB Button */}
       <motion.button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl"
+        className="fixed bottom-6 right-6 z-[60] h-12 px-4 rounded-2xl flex items-center gap-2.5 shadow-2xl"
         style={{
           background: "linear-gradient(135deg, rgba(59,130,246,0.9) 0%, rgba(99,102,241,0.85) 100%)",
           border: "1px solid rgba(99,155,255,0.35)",
           boxShadow: "0 0 30px rgba(59,130,246,0.35), 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15)"
         }}
-        whileHover={{ scale: 1.08, boxShadow: "0 0 48px rgba(59,130,246,0.5), 0 8px 32px rgba(0,0,0,0.4)" }}
+        whileHover={{ scale: 1.04, boxShadow: "0 0 48px rgba(59,130,246,0.5), 0 8px 32px rgba(0,0,0,0.4)" }}
         whileTap={{ scale: 0.95 }}
         animate={open ? { scale: 0, opacity: 0, pointerEvents: "none" } : { scale: 1, opacity: 1 }}
       >
-        <Sparkles className="w-5 h-5 text-white" />
+        <span className="text-base leading-none">{agent.icon}</span>
+        <div className="text-left">
+          <p className="text-[11px] font-bold text-white leading-tight">{agent.name}</p>
+          <p className="text-[9px] text-blue-200/70 leading-tight">{agent.tagline}</p>
+        </div>
       </motion.button>
 
       {/* Chat Panel */}
