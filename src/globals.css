@@ -77,6 +77,32 @@
   p, span, .content {
     @apply select-text;
   }
+
+  /* Minimum touch target size (44x44px for mobile accessibility) */
+  button, [role="button"], a[href], input[type="checkbox"], input[type="radio"] {
+    min-height: 2.75rem; /* 44px */
+    min-width: 2.75rem; /* 44px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Maintain visual consistency while respecting touch targets */
+  .small-button, .icon-button {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    padding: 0.5rem;
+  }
+
+  /* Minimum readable text size (12px minimum, 14px for body) */
+  body, p, span, div {
+    font-size: clamp(0.75rem, 1vw, 1rem);
+  }
+
+  /* Enforce 12px minimum for small text (was text-[10px]) */
+  .text-xs {
+    @apply text-sm;
+  }
 }
 
 @layer components {
