@@ -7,6 +7,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Users, Plus, Pencil, Trash2, Crown, Shield, Briefcase, Search } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
