@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import BackButton from "@/components/navigation/BackButton";
 import { createPageUrl } from "@/utils";
 import {
   Crown, BarChart3, FileCheck, Archive, Target, Users, MapPin,
@@ -313,18 +314,24 @@ export default function TopNav({ user, currentPage, onWorkspaceSwitch }) {
           backdropFilter: "blur(48px) saturate(1.8) brightness(1.02)",
           WebkitBackdropFilter: "blur(48px) saturate(1.8) brightness(1.02)",
           borderBottom: "1px solid rgba(255,255,255,0.07)",
-          boxShadow: "0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4)"
+          boxShadow: "0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4)",
+          paddingTop: 'var(--safe-area-inset-top, 0)',
+          paddingLeft: 'calc(1.5rem + var(--safe-area-inset-left, 0))',
+          paddingRight: 'calc(1.5rem + var(--safe-area-inset-right, 0))',
         }}>
         
         {/* Subtle gradient line at bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
-        {/* Mobile hamburger */}
-        <MobileNav user={user} currentPage={currentPage} userRoles={userRoles} />
+        {/* Mobile hamburger + Back Button */}
+        <div className="flex items-center gap-2">
+          <MobileNav user={user} currentPage={currentPage} userRoles={userRoles} />
+          <BackButton />
+        </div>
 
         {/* Logo */}
 
-        <Link to={createPageUrl("Home")} className="flex items-center gap-3 mr-4 flex-shrink-0 group">
+        <Link to={createPageUrl("Home")} className="flex items-center gap-3 mr-4 flex-shrink-0 group hidden sm:flex">
           <div className="relative w-8 h-8">
             <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 opacity-80 group-hover:opacity-100 transition-opacity" />
             <div className="relative flex items-center justify-center w-full h-full">
