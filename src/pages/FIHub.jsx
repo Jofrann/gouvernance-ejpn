@@ -229,6 +229,9 @@ function TabMembres({ fi, user }) {
 
       <AjouterAmeModal open={showAjouter} onClose={() => setShowAjouter(false)} familleImpactId={fi?.id} familleNom={fi?.name} />
 
+      {/* Modale Modifier */}
+      <EditMembreModal membre={editMembre} onClose={() => setEditMembre(null)} onSave={(id, data) => { base44.entities.Membre.update(id, data).then(() => { queryClient.invalidateQueries({ queryKey: ["membres", fi?.id] }); setEditMembre(null); }); }} />
+
       <AlertDialog open={!!deleteMembre} onOpenChange={() => setDeleteMembre(null)}>
         <AlertDialogContent className="bg-[#0a0d14] border border-white/10 text-white">
           <AlertDialogHeader>
