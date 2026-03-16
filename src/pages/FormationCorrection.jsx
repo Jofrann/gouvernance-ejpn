@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { CheckCircle2, XCircle, Clock, FileText, ExternalLink, History } from "lucide-react";
 import { format } from "date-fns";
@@ -13,12 +9,13 @@ import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import AILivrableGrader from "@/components/ai/AILivrableGrader";
+import { motion } from "framer-motion";
 
 const STATUT_CONFIG = {
-  soumis: { label: "À corriger", class: "bg-blue-50 text-blue-700 border-blue-200" },
-  valide: { label: "Validé", class: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  rejete: { label: "Rejeté", class: "bg-red-50 text-red-700 border-red-200" },
-  en_attente: { label: "En attente", class: "bg-zinc-50 text-zinc-500 border-zinc-200" },
+  soumis: { label: "À corriger", class: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  valide: { label: "Validé", class: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+  rejete: { label: "Rejeté", class: "bg-red-500/10 text-red-400 border-red-500/20" },
+  en_attente: { label: "En attente", class: "bg-zinc-500/10 text-zinc-500 border-zinc-500/20" },
 };
 
 export default function FormationCorrectionPage() {
@@ -41,11 +38,7 @@ export default function FormationCorrectionPage() {
 
   const filtered = livrables.filter((l) => filterStatut === "all" ? true : l.statut === filterStatut);
 
-  const openLivrable = (l) => {
-    setSelected(l);
-    setNote(l.note?.toString() || "");
-    setCommentaire(l.commentaire_responsable || "");
-  };
+  const openLivrable = (l) => { setSelected(l); setNote(l.note?.toString() || ""); setCommentaire(l.commentaire_responsable || ""); };
 
   const handleSave = async (statut) => {
     setSaving(true);
@@ -61,19 +54,26 @@ export default function FormationCorrectionPage() {
     setSaving(false);
   };
 
-  const counts = { soumis: livrables.filter((l) => l.statut === "soumis").length, valide: livrables.filter((l) => l.statut === "valide").length, rejete: livrables.filter((l) => l.statut === "rejete").length };
+  const counts = {
+    soumis: livrables.filter((l) => l.statut === "soumis").length,
+    valide: livrables.filter((l) => l.statut === "valide").length,
+    rejete: livrables.filter((l) => l.statut === "rejete").length,
+  };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Correction des Livrables</h1>
+    <div className="px-6 py-10 max-w-5xl mx-auto space-y-5">
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        <p className="text-[10px] font-bold text-violet-400/80 uppercase tracking-[0.25em] mb-1">Formation</p>
+        <h1 className="text-2xl font-black text-white tracking-tight">Correction des Livrables</h1>
         <p className="text-sm text-zinc-500 mt-0.5">Kanban de correction · Notes & Feedback</p>
-      </div>
+      </motion.div>
 
       {/* Filters */}
       <div className="flex gap-2 flex-wrap">
         {[["soumis", `À corriger (${counts.soumis})`], ["valide", `Validés (${counts.valide})`], ["rejete", `Rejetés (${counts.rejete})`], ["all", "Tous"]].map(([v, l]) => (
-          <button key={v} onClick={() => setFilterStatut(v)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium border transition-all", filterStatut === v ? "bg-zinc-900 text-white border-zinc-900" : "bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50")}>
+          <button key={v} onClick={() => setFilterStatut(v)}
+            className={cn("px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+              filterStatut === v ? "bg-white/10 text-white border-white/20" : "bg-white/[0.03] text-zinc-500 border-white/[0.07] hover:bg-white/[0.06]")}>
             {l}
           </button>
         ))}
@@ -81,51 +81,57 @@ export default function FormationCorrectionPage() {
 
       {/* List */}
       <div className="space-y-2">
-        {filtered.length === 0 && <Card className="border-zinc-200 bg-white"><CardContent className="py-12 text-center text-sm text-zinc-400">Aucun livrable {filterStatut !== "all" ? `"${filterStatut}"` : ""}</CardContent></Card>}
+        {filtered.length === 0 && (
+          <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] py-12 text-center text-sm text-zinc-600">
+            Aucun livrable {filterStatut !== "all" ? `"${filterStatut}"` : ""}
+          </div>
+        )}
         {filtered.map((l) => {
           const cfg = STATUT_CONFIG[l.statut] || STATUT_CONFIG.soumis;
           return (
-            <Card key={l.id} className={cn("border cursor-pointer hover:shadow-sm transition-all", l.statut === "soumis" ? "border-blue-200 bg-blue-50/10" : "border-zinc-200 bg-white")} onClick={() => openLivrable(l)}>
-              <CardContent className="p-4 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <FileText className="w-4 h-4 text-zinc-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-semibold text-zinc-900">{l.titre_livrable}</p>
-                    <p className="text-xs text-zinc-400">{l.pilote_nom || l.pilote_email} · {l.mois_cycle} · V{l.version || 1} · soumis {l.date_soumission}</p>
-                  </div>
+            <div key={l.id}
+              className={cn("rounded-xl border cursor-pointer hover:border-white/[0.14] transition-all p-4 flex items-center justify-between gap-3",
+                l.statut === "soumis" ? "border-blue-500/20 bg-blue-500/5" : "border-white/[0.07] bg-white/[0.025]")}
+              onClick={() => openLivrable(l)}>
+              <div className="flex items-center gap-3">
+                <FileText className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-white">{l.titre_livrable}</p>
+                  <p className="text-xs text-zinc-500">{l.pilote_nom || l.pilote_email} · {l.mois_cycle} · V{l.version || 1} · soumis {l.date_soumission}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  {l.note != null && <Badge variant="outline" className="text-xs font-bold">{l.note}/20</Badge>}
-                  <Badge className={cn("text-[10px] border", cfg.class)}>{cfg.label}</Badge>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+              <div className="flex items-center gap-2">
+                {l.note != null && <Badge variant="outline" className="text-xs font-bold border-white/20 text-zinc-400">{l.note}/20</Badge>}
+                <Badge className={cn("text-[10px] border", cfg.class)}>{cfg.label}</Badge>
+              </div>
+            </div>
           );
         })}
       </div>
 
       {/* Detail Sheet */}
       <Sheet open={!!selected} onOpenChange={() => setSelected(null)}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto bg-[#0d1018] border-white/10 text-white">
           {selected && (
             <>
-              <SheetHeader className="pb-4 border-b">
-                <SheetTitle>{selected.titre_livrable}</SheetTitle>
-                <p className="text-xs text-zinc-400">{selected.pilote_nom || selected.pilote_email} · {selected.mois_cycle} · V{selected.version || 1}</p>
+              <SheetHeader className="pb-4 border-b border-white/10">
+                <SheetTitle className="text-white">{selected.titre_livrable}</SheetTitle>
+                <p className="text-xs text-zinc-500">{selected.pilote_nom || selected.pilote_email} · {selected.mois_cycle} · V{selected.version || 1}</p>
               </SheetHeader>
               <div className="py-5 space-y-5">
-                <Button variant="outline" className="w-full gap-2" onClick={() => window.open(selected.file_url, "_blank")}>
+                <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10 transition-all text-sm"
+                  onClick={() => window.open(selected.file_url, "_blank")}>
                   <ExternalLink className="w-4 h-4" /> Ouvrir le livrable
-                </Button>
+                </button>
 
                 {(selected.historique_versions?.length > 0) && (
                   <div>
                     <p className="text-xs font-semibold text-zinc-500 uppercase mb-2 flex items-center gap-1.5"><History className="w-3.5 h-3.5" /> Versions précédentes</p>
                     {selected.historique_versions.map((v) => (
-                      <div key={v.version} className="flex items-center gap-2 p-2 rounded border border-zinc-100 bg-zinc-50 mb-1 text-xs">
-                        <span className="text-zinc-400">V{v.version}</span>
-                        <span className={cn("px-1.5 py-0.5 rounded", STATUT_CONFIG[v.statut]?.class || "bg-zinc-100 text-zinc-500")}>{v.statut}</span>
-                        {v.file_url && <button className="text-blue-500 ml-auto" onClick={() => window.open(v.file_url, "_blank")}>voir</button>}
+                      <div key={v.version} className="flex items-center gap-2 p-2 rounded border border-white/[0.07] bg-white/[0.02] mb-1 text-xs">
+                        <span className="text-zinc-500">V{v.version}</span>
+                        <Badge className={cn("text-[10px] border", STATUT_CONFIG[v.statut]?.class || "bg-zinc-500/10 text-zinc-500 border-zinc-500/20")}>{v.statut}</Badge>
+                        {v.file_url && <button className="text-blue-400 ml-auto" onClick={() => window.open(v.file_url, "_blank")}>voir</button>}
                       </div>
                     ))}
                   </div>
@@ -133,43 +139,38 @@ export default function FormationCorrectionPage() {
 
                 {selected.statut === "soumis" && (
                   <div className="space-y-3">
-                    {/* AI Pre-grader */}
                     <AILivrableGrader
                       livrable={selected}
                       ressources={ressources}
-                      onApplyGrade={(preNote, preComment) => {
-                        setNote(preNote.toString());
-                        setCommentaire(preComment);
-                      }}
+                      onApplyGrade={(preNote, preComment) => { setNote(preNote.toString()); setCommentaire(preComment); }}
                     />
-
-                    <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Correction finale</p>
+                    <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Correction finale</p>
                     <div>
                       <label className="text-xs text-zinc-500">Note sur 20</label>
-                      <Input type="number" min="0" max="20" step="0.5" className="mt-1 bg-white border-zinc-200" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex: 15.5" />
+                      <input type="number" min="0" max="20" step="0.5" className="input-glass mt-1" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex: 15.5" />
                     </div>
                     <div>
                       <label className="text-xs text-zinc-500">Commentaire pour le pilote</label>
-                      <Textarea className="mt-1 bg-white border-zinc-200 h-24" value={commentaire} onChange={(e) => setCommentaire(e.target.value)} placeholder="Feedback détaillé : points forts, axes d'amélioration..." />
+                      <textarea className="input-glass mt-1 h-24 resize-none" value={commentaire} onChange={(e) => setCommentaire(e.target.value)} placeholder="Feedback détaillé : points forts, axes d'amélioration..." />
                     </div>
                     <div className="flex gap-2">
-                      <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700 gap-2" disabled={saving} onClick={() => handleSave("valide")}>
+                      <button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/30 transition-all text-sm" disabled={saving} onClick={() => handleSave("valide")}>
                         <CheckCircle2 className="w-4 h-4" /> Valider
-                      </Button>
-                      <Button variant="outline" className="flex-1 text-red-600 border-red-200 hover:bg-red-50 gap-2" disabled={saving} onClick={() => handleSave("rejete")}>
+                      </button>
+                      <button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all text-sm" disabled={saving} onClick={() => handleSave("rejete")}>
                         <XCircle className="w-4 h-4" /> Rejeter
-                      </Button>
+                      </button>
                     </div>
                   </div>
                 )}
 
                 {selected.statut !== "soumis" && (
-                  <div className={cn("p-3 rounded-lg border", selected.statut === "valide" ? "bg-emerald-50 border-emerald-200" : "bg-red-50 border-red-200")}>
-                    <p className={cn("text-xs font-semibold mb-1", selected.statut === "valide" ? "text-emerald-700" : "text-red-700")}>
+                  <div className={cn("p-3 rounded-lg border", selected.statut === "valide" ? "bg-emerald-500/10 border-emerald-500/20" : "bg-red-500/10 border-red-500/20")}>
+                    <p className={cn("text-xs font-semibold mb-1", selected.statut === "valide" ? "text-emerald-400" : "text-red-400")}>
                       {selected.statut === "valide" ? "✓ Validé" : "✗ Rejeté"} {selected.date_correction ? `le ${selected.date_correction}` : ""}
                     </p>
-                    {selected.note != null && <p className="text-sm font-bold text-zinc-900 mb-1">Note : {selected.note}/20</p>}
-                    {selected.commentaire_responsable && <p className="text-xs text-zinc-700">{selected.commentaire_responsable}</p>}
+                    {selected.note != null && <p className="text-sm font-bold text-white mb-1">Note : {selected.note}/20</p>}
+                    {selected.commentaire_responsable && <p className="text-xs text-zinc-400">{selected.commentaire_responsable}</p>}
                   </div>
                 )}
               </div>
