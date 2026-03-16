@@ -70,6 +70,7 @@ export default function FIDashboardPage() {
     ? Math.round((lastWeekSaisies.filter(s => s.presence).length / Math.max(membres.length, 1)) * 100) : null;
 
   const alertes = membres.filter(m => detectChuteLivre(m.id, saisies)).length;
+  const alertesEmotions = membres.filter(m => detectAlerteEmotions(m.id, saisies));
 
   const radarData = [
     { axe: "Temps", value: lastWeekSaisies.reduce((a, s) => a + (s.note_temps || 0), 0) / Math.max(lastWeekSaisies.length, 1) },
