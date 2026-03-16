@@ -138,6 +138,16 @@ export default function MessageriePage() {
 
   return (
     <div className="min-h-screen bg-[#060810] pt-20">
+      <AnimatePresence>
+        {showNewConv && (
+          <NewConversationModal
+            users={allUsers}
+            currentUserEmail={user.email}
+            onStart={startNewConversation}
+            onClose={() => setShowNewConv(false)}
+          />
+        )}
+      </AnimatePresence>
       <div className="max-w-6xl mx-auto h-[calc(100vh-120px)] flex gap-4 px-4">
         {/* Conversations List */}
         <div className="w-full md:w-80 rounded-xl ai-card overflow-hidden flex flex-col">
