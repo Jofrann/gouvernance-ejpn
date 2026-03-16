@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Download, Users, Home, Activity, Zap, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,7 @@ const TABS = [
 ];
 
 export default function GouvDonneesPage() {
+  const queryClient = useQueryClient();
   const [tab, setTab] = useState("membres");
   const [search, setSearch] = useState("");
 
@@ -21,6 +22,15 @@ export default function GouvDonneesPage() {
   const { data: familles = [] } = useQuery({ queryKey: ["familles"], queryFn: () => base44.entities.FamilleImpact.list() });
   const { data: saisies = [] } = useQuery({ queryKey: ["all-saisies"], queryFn: () => base44.entities.CliniqueSaisie.list("-semaine", 1000) });
   const { data: actions = [] } = useQuery({ queryKey: ["actions"], queryFn: () => base44.entities.ActionEvangelisation.list("-date_action", 200) });
+
+  // Real-time subscriptions
+  useEffect(() => {
+    const unsub1 = base44.entities.Membre.subscribe(() => queryClient.invalidateQueries({ queryKey: ["membres-all"] }));
+    const unsub2 = base44.entities.FamilleImpact.subscribe(() => queryClient.invalidateQueries({ queryKey: ["familles"] }));
+    const unsub3 = base44.entities.CliniqueSaisie.subscribe(() => queryClient.invalidateQueries({ queryKey: ["all-saisies"] }));
+    const unsub4 = base44.entities.ActionEvangelisation.subscribe(() => queryClient.invalidateQueries({ queryKey: ["actions"] }));
+    return () => { unsub1(); unsub2(); unsub3(); unsub4(); };
+  }, [queryClient]);
 
   const getFI = (id) => familles.find((f) => f.id === id);
   const q = search.toLowerCase();

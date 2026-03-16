@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { Flame, Target, Zap, Clock, Calculator, TrendingUp, Award } from "lucide-react";
@@ -21,12 +21,19 @@ const GlassCard = ({ children, className = "" }) => (
 
 export default function EvangelisationAnalysePage() {
   useTrackActivity("EvangelisationAnalyse");
+  const queryClient = useQueryClient();
   const [tab, setTab] = useState("impact");
 
   const { data: actions = [] } = useQuery({
     queryKey: ["actions-analyse"],
     queryFn: () => base44.entities.ActionEvangelisation.list("-date_action", 200),
   });
+
+  // Real-time subscriptions
+  useEffect(() => {
+    const unsub = base44.entities.ActionEvangelisation.subscribe(() => queryClient.invalidateQueries({ queryKey: ["actions-analyse"] }));
+    return unsub;
+  }, [queryClient]);
 
   const debriefed = actions.filter(a => a.debrief_complete);
   const debriefedWithTime = debriefed.filter(a => a.temps_investi_heures > 0);

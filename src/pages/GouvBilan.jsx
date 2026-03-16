@@ -23,6 +23,16 @@ export default function GouvBilanPage() {
   const { data: actions = [] } = useQuery({ queryKey: ["actions"], queryFn: () => base44.entities.ActionEvangelisation.list("-date_action", 100) });
   const { data: livrables = [] } = useQuery({ queryKey: ["all-livrables-bilan"], queryFn: () => base44.entities.FormationLivrable.list("-date_soumission", 100) });
 
+  // Real-time subscriptions
+  React.useEffect(() => {
+    const unsub1 = base44.entities.Membre.subscribe(() => queryClient.invalidateQueries({ queryKey: ["membres-all"] }));
+    const unsub2 = base44.entities.FamilleImpact.subscribe(() => queryClient.invalidateQueries({ queryKey: ["familles"] }));
+    const unsub3 = base44.entities.OKR.subscribe(() => queryClient.invalidateQueries({ queryKey: ["okrs"] }));
+    const unsub4 = base44.entities.ActionEvangelisation.subscribe(() => queryClient.invalidateQueries({ queryKey: ["actions"] }));
+    const unsub5 = base44.entities.FormationLivrable.subscribe(() => queryClient.invalidateQueries({ queryKey: ["all-livrables-bilan"] }));
+    return () => { unsub1(); unsub2(); unsub3(); unsub4(); unsub5(); };
+  }, [queryClient]);
+
   const stats = useMemo(() => ({
     membres: membres.length, fiActives: familles.filter((f) => f.status === "active").length,
     okrAtteints: okrs.filter((o) => o.statut === "atteint").length, okrTotal: okrs.length,
