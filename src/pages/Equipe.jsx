@@ -111,8 +111,8 @@ const ROLE_TO_POLE = {
   responsable_communication: "communication", producteur: "communication", createur: "communication",
 };
 
-function MemberCard({ user, pole, onClick }) {
-  const group = pole.groups.find(g => g.key === user.role);
+function MemberCard({ user, pole, onClick, groupKey }) {
+  const group = pole.groups.find(g => g.key === (groupKey || user.role));
   const initials = user.full_name?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "?";
   const gradient = group?.color || pole.gradient;
   const isOnline = user.current_activity && (Date.now() - new Date(user.last_seen).getTime()) < 600000;
@@ -142,7 +142,11 @@ function MemberCard({ user, pole, onClick }) {
 // Renders members grouped by their pole groups
 function PoleSection({ pole, users, onSelect }) {
   const allRoleKeys = pole.groups.map(g => g.key);
-  const membres = users.filter(u => allRoleKeys.includes(u.role));
+  // Support multi-rôles : un utilisateur peut apparaître dans plusieurs groupes
+  const membres = users.filter(u => {
+    const uRoles = Array.isArray(u.roles) && u.roles.length > 0 ? u.roles : [u.role];
+    return uRoles.some(r => allRoleKeys.includes(r));
+  });
   if (membres.length === 0) return null;
   const PoleIcon = pole.icon;
   return (
