@@ -245,8 +245,15 @@ export default function CopilotFloatingChat({ user }) {
 }
 
 function WelcomeState({ user, onSuggestion }) {
+  const agent = getAgentIdentity(user);
+
   const roleBasedSuggestions = {
     pilote_fi: [
+      "Quels membres sont en chute libre cette semaine ?",
+      "Génère un bilan de santé de ma FI",
+      "Qui n'a pas été contacté depuis 2 semaines ?",
+    ],
+    copilote_fi: [
       "Quels membres sont en chute libre cette semaine ?",
       "Génère un bilan de santé de ma FI",
       "Qui n'a pas été contacté depuis 2 semaines ?",
@@ -256,10 +263,35 @@ function WelcomeState({ user, onSuggestion }) {
       "Génère un rapport stratégique global",
       "Quels sont les OKR en retard ?",
     ],
+    admin: [
+      "Compare les métriques des FI ce mois-ci",
+      "Génère un rapport stratégique global",
+      "Quels sont les OKR en retard ?",
+    ],
     gouvernance_direction: [
       "Quelle FI a le meilleur taux de présence ?",
       "Liste les recommandations en attente",
-      "Analyse les tendances d'évangélisation",
+      "Planifie les actions du prochain cycle",
+    ],
+    responsable_fi: [
+      "Aucune donnée manquante dans les registres ?",
+      "Génère le bilan mensuel de toutes les FI",
+      "Quelles âmes sont sans FI assignée ?",
+    ],
+    responsable_evangelisation: [
+      "Calcule le ROI de la dernière sortie terrain",
+      "Quelles zones ont le moins été couvertes ?",
+      "Génère une fiche de mission pour ce jeudi",
+    ],
+    responsable_communication: [
+      "Relis ce post pour vérifier le ton",
+      "Quel est le thème de communication ce mois ?",
+      "Quels assets sont encore en révision ?",
+    ],
+    responsable_formation: [
+      "Quels pilotes n'ont pas soumis leur livrable ?",
+      "Génère des commentaires pour ce livrable",
+      "Résume le contenu du mois de formation",
     ],
     default: [
       "Résume l'activité de la semaine",
@@ -272,16 +304,17 @@ function WelcomeState({ user, onSuggestion }) {
 
   return (
     <div className="py-4">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg"
           style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2))", border: "1px solid rgba(99,155,255,0.15)" }}>
-          <Sparkles className="w-4 h-4 text-blue-400" />
+          {agent.icon}
         </div>
         <div>
-          <p className="text-sm font-semibold text-white">Bonjour, {user?.full_name?.split(" ")[0]} 👋</p>
-          <p className="text-[10px] text-zinc-500">Comment puis-je vous aider aujourd'hui ?</p>
+          <p className="text-sm font-semibold text-white">Agent {agent.name} 👋</p>
+          <p className="text-[10px] text-zinc-500">{agent.tagline}</p>
         </div>
       </div>
+      <p className="text-xs text-zinc-500 mb-4 pl-1">Bonjour {user?.full_name?.split(" ")[0]}, comment puis-je vous aider ?</p>
       <div className="space-y-2">
         {suggestions.map((s, i) => (
           <button
