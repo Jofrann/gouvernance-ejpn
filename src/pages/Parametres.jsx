@@ -56,9 +56,9 @@ const NIVEAUX = [
 
 const NIVEAU_ICONS = { I: Crown, II: Shield, III: Briefcase };
 const NIVEAU_COLORS = {
-  I: "text-amber-700",
-  II: "text-blue-700",
-  III: "text-emerald-700",
+  I: "text-amber-400",
+  II: "text-blue-400",
+  III: "text-emerald-400",
 };
 
 function getRoleInfo(roleValue) {
