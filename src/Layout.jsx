@@ -10,6 +10,7 @@ export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeWorkspace, setActiveWorkspace] = useState(null);
+  const isMobile = useIsMobile(768);
 
   useEffect(() => {
     const loadUser = async () => {
