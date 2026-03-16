@@ -161,11 +161,18 @@ export default function ParametresPage() {
     );
   }
 
-  const filtered = users.filter((u) =>
-    (u.full_name || "").toLowerCase().includes(search.toLowerCase()) ||
-    (u.email || "").toLowerCase().includes(search.toLowerCase()) ||
-    (u.role || "").toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = users.filter((u) => {
+    const uRoles = Array.isArray(u.roles) && u.roles.length > 0
+      ? u.roles
+      : Array.isArray(u?.data?.roles) && u.data.roles.length > 0
+      ? u.data.roles
+      : u.role ? [u.role] : [];
+    return (
+      (u.full_name || "").toLowerCase().includes(search.toLowerCase()) ||
+      (u.email || "").toLowerCase().includes(search.toLowerCase()) ||
+      uRoles.some(r => r.toLowerCase().includes(search.toLowerCase()))
+    );
+  });
 
   const openCreate = () => {
     setEditUser(null);
