@@ -211,6 +211,14 @@ export default function EquipePage() {
     refetchInterval: 20000,
   });
 
+  // Real-time sync for users
+  useEffect(() => {
+    const unsubUser = base44.entities.User.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["users-equipe"] });
+    });
+    return unsubUser;
+  }, [queryClient]);
+
   // ── MON ÉQUIPE mode ──
   // Show only the members of the user's own pole
   // Multi-rôles : on prend le premier rôle non-admin pour déterminer le pôle principal
