@@ -123,7 +123,7 @@ export default function ParametresPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [saving, setSaving] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [form, setForm] = useState({ role: "pilote_fi", niveau: "execution", pole: "familles_impact" });
+  const [form, setForm] = useState({ roles: ["pilote_fi"], niveau: "execution", pole: "familles_impact" });
 
   const { data: me } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
   const meRoles = Array.isArray(me?.roles) && me.roles.length > 0
