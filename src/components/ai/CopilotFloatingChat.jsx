@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Bot, X, Send, Loader2, Sparkles, ChevronDown, AlertTriangle } from "lucide-react";
-import MessageBubble from "@/components/messaging/MessageBubble";
+import { X, Send, Loader2, Sparkles } from "lucide-react";
+import CopilotMessageBubble from "@/components/ai/CopilotMessageBubble";
 
 const TONE_LABELS = { direct: "Direct", empathique: "Empathique", soutenu: "Soutenu" };
 const FORMAT_LABELS = { bullet_points: "Listes", paragraphes: "Paragraphes", synthese_courte: "Synthèse" };
