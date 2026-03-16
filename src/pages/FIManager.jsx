@@ -56,7 +56,10 @@ export default function FIManagerPage() {
         f.pilote_email === user?.email || f.co_pilote_email === user?.email
       );
 
-  const piloteUsers = users.filter(u => ["pilote_fi", "copilote_fi", "responsable_fi"].includes(u.role));
+  const piloteUsers = users.filter(u => {
+    const userRoles = Array.isArray(u.roles) && u.roles.length > 0 ? u.roles : [u.role];
+    return userRoles.some(r => ["pilote_fi", "copilote_fi", "responsable_fi"].includes(r));
+  });
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.FamilleImpact.create(data),
