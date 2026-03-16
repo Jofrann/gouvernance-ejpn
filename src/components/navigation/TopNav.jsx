@@ -272,6 +272,7 @@ export default function TopNav({ user, currentPage }) {
   const [showSearch, setShowSearch] = useState(false);
   const [showNotifs, setShowNotifs] = useState(false);
   const [notifs, setNotifs] = useState(NOTIF_SAMPLES);
+  const [activeWorkspace, setActiveWorkspace] = useState(null);
   const searchRef = useRef(null);
   const notifRef = useRef(null);
 
