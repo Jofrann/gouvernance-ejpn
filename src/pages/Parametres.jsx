@@ -88,7 +88,6 @@ function getRoleInfo(roleValue) {
 }
 
 function UserRow({ user, onEdit, onDelete, isCurrentUser }) {
-  // Support multi-rôles
   const userRoles = Array.isArray(user.roles) && user.roles.length > 0
     ? user.roles
     : Array.isArray(user?.data?.roles) && user.data.roles.length > 0
@@ -97,15 +96,15 @@ function UserRow({ user, onEdit, onDelete, isCurrentUser }) {
   const primaryRole = getRoleInfo(userRoles[0]);
   const NiveauIcon = NIVEAU_ICONS[primaryRole.niveau] || Briefcase;
   return (
-    <tr className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
+    <tr className="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
       <td className="py-3 px-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-bold text-zinc-600">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/40 to-violet-600/40 border border-white/10 flex items-center justify-center text-xs font-bold text-white">
             {(user.full_name || user.email || "?")[0].toUpperCase()}
           </div>
           <div>
-            <p className="text-sm font-medium text-zinc-900">{user.full_name || "—"}</p>
-            <p className="text-xs text-zinc-400">{user.email}</p>
+            <p className="text-sm font-medium text-white">{user.full_name || "—"}</p>
+            <p className="text-xs text-zinc-500">{user.email}</p>
           </div>
         </div>
       </td>
@@ -120,24 +119,24 @@ function UserRow({ user, onEdit, onDelete, isCurrentUser }) {
       </td>
       <td className="py-3 px-4">
         {user.pole ? (
-          <span className="text-xs text-zinc-600">{POLES.find((p) => p.value === user.pole)?.label?.replace("Pôle ", "") || user.pole}</span>
+          <span className="text-xs text-zinc-400">{POLES.find((p) => p.value === user.pole)?.label?.replace("Pôle ", "") || user.pole}</span>
         ) : (
-          <span className="text-xs text-zinc-300">—</span>
+          <span className="text-xs text-zinc-700">—</span>
         )}
       </td>
       <td className="py-3 px-4">
-        <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+        <span className="text-[10px] font-semibold text-zinc-600 uppercase tracking-wider">
           {NIVEAUX.find((n) => n.value === user.niveau)?.label?.split("—")[0]?.trim() || "—"}
         </span>
       </td>
       <td className="py-3 px-4">
         <div className="flex items-center gap-1 justify-end">
-          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onEdit(user)}>
-            <Pencil className="w-3.5 h-3.5 text-zinc-400" />
+          <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-white/10" onClick={() => onEdit(user)}>
+            <Pencil className="w-3.5 h-3.5 text-zinc-500" />
           </Button>
           {!isCurrentUser && (
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onDelete(user)}>
-              <Trash2 className="w-3.5 h-3.5 text-red-400" />
+            <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-red-500/10" onClick={() => onDelete(user)}>
+              <Trash2 className="w-3.5 h-3.5 text-red-500/70" />
             </Button>
           )}
         </div>
