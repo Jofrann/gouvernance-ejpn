@@ -164,7 +164,7 @@ export default function CopilotFloatingChat({ user }) {
                 <WelcomeState user={user} onSuggestion={(s) => setInput(s)} />
               ) : (
                 messages.map((msg, i) => (
-                  <MessageBubble key={i} message={msg} />
+                  <CopilotMessageBubble key={i} message={msg} />
                 ))
               )}
               {isTyping && (
