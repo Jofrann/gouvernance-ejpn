@@ -115,7 +115,7 @@ export default function FITourControlePage() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.07]">
-              {["Famille d'Impact", "Pilote", "Membres", "Statut Clinique", "Présence", "Alertes", "Potentiels", "Action"].map(h => (
+              {["Famille d'Impact", "Pilote", "Membres / Objectif", "Statut Clinique", "Présence", "Alertes", "Potentiels", "Actions"].map(h => (
                 <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold text-zinc-500 uppercase tracking-[0.15em]">{h}</th>
               ))}
             </tr>
@@ -130,7 +130,20 @@ export default function FITourControlePage() {
                   <p className="text-xs text-zinc-600">{fi.campus}</p>
                 </td>
                 <td className="px-4 py-3 text-xs text-zinc-400">{fi.pilote_nom || fi.pilote_email}</td>
-                <td className="px-4 py-3 text-sm font-bold text-zinc-300">{fiMembres.length}</td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-zinc-300">{fiMembres.length}</span>
+                    {fi.objectif_membres && (
+                      <>
+                        <span className="text-zinc-600">/</span>
+                        <span className="text-xs text-zinc-500">{fi.objectif_membres}</span>
+                        <div className="w-12 h-1 bg-white/5 rounded-full overflow-hidden ml-1">
+                          <div className="h-full rounded-full bg-blue-500/60" style={{ width: `${Math.min((fiMembres.length / fi.objectif_membres) * 100, 100)}%` }} />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </td>
                 <td className="px-4 py-3">
                   {saisieComplete ? (
                     <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px] gap-1">
@@ -158,13 +171,20 @@ export default function FITourControlePage() {
                 </td>
                 <td className="px-4 py-3 text-sm font-bold text-violet-400">{potentiels > 0 ? potentiels : <span className="text-zinc-600">—</span>}</td>
                 <td className="px-4 py-3">
-                  {!saisieComplete && fi.pilote_email && (
-                    <Button size="sm" variant="ghost" className="h-7 gap-1.5 text-xs text-amber-400 hover:bg-amber-500/10 border border-amber-500/20"
-                      onClick={() => handleNudge(fi)} disabled={nudging[fi.id]}>
-                      <Bell className="w-3 h-3" />
-                      {nudging[fi.id] ? "Envoi..." : "Relancer"}
-                    </Button>
-                  )}
+                  <div className="flex items-center gap-1.5">
+                    {!saisieComplete && fi.pilote_email && (
+                      <Button size="sm" variant="ghost" className="h-7 gap-1.5 text-xs text-amber-400 hover:bg-amber-500/10 border border-amber-500/20"
+                        onClick={() => handleNudge(fi)} disabled={nudging[fi.id]}>
+                        <Bell className="w-3 h-3" />
+                        {nudging[fi.id] ? "Envoi..." : "Relancer"}
+                      </Button>
+                    )}
+                    <Link to={`/FIHub`}>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-zinc-600 hover:text-blue-400 hover:bg-blue-500/10">
+                        <ExternalLink className="w-3 h-3" />
+                      </Button>
+                    </Link>
+                  </div>
                 </td>
               </motion.tr>
             ))}
