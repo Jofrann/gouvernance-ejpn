@@ -223,17 +223,40 @@ export default function ParametresPage() {
     setDeleteTarget(null);
   };
 
-  const handleRoleChange = (value) => {
-    const roleInfo = getRoleInfo(value);
+  const handleRoleToggle = (value) => {
+    const currentRoles = form.roles || [];
+    let newRoles;
+    if (currentRoles.includes(value)) {
+      newRoles = currentRoles.filter(r => r !== value);
+      if (newRoles.length === 0) return; // Au moins 1 rôle requis
+    } else {
+      newRoles = [...currentRoles, value];
+    }
+    // Auto-update niveau and pole from primary role
+    const primaryRoleInfo = getRoleInfo(newRoles[0]);
     const niveauMap = { "I": "trone", "II": "gouvernance", "III": "execution" };
-    setForm({ role: value, niveau: niveauMap[roleInfo.niveau] || "execution", pole: roleInfo.pole || "" });
+    setForm(prev => ({
+      ...prev,
+      roles: newRoles,
+      niveau: niveauMap[primaryRoleInfo.niveau] || "execution",
+      pole: primaryRoleInfo.pole || prev.pole || "",
+    }));
   };
 
-  // Group by niveau for display
+  // Group by niveau for display (based on primary role)
   const byNiveau = {
-    I: filtered.filter((u) => getRoleInfo(u.role).niveau === "I"),
-    II: filtered.filter((u) => getRoleInfo(u.role).niveau === "II"),
-    III: filtered.filter((u) => getRoleInfo(u.role).niveau === "III"),
+    I: filtered.filter((u) => {
+      const uRoles = Array.isArray(u.roles) && u.roles.length > 0 ? u.roles : u.role ? [u.role] : [];
+      return getRoleInfo(uRoles[0]).niveau === "I";
+    }),
+    II: filtered.filter((u) => {
+      const uRoles = Array.isArray(u.roles) && u.roles.length > 0 ? u.roles : u.role ? [u.role] : [];
+      return getRoleInfo(uRoles[0]).niveau === "II";
+    }),
+    III: filtered.filter((u) => {
+      const uRoles = Array.isArray(u.roles) && u.roles.length > 0 ? u.roles : u.role ? [u.role] : [];
+      return getRoleInfo(uRoles[0]).niveau === "III";
+    }),
   };
 
   return (
