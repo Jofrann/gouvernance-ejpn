@@ -4,6 +4,7 @@ import TopNav from "@/components/navigation/TopNav";
 import BottomTabNav from "@/components/navigation/BottomTabNav";
 import AnimatedBackground from "@/components/layout/AnimatedBackground";
 import CopilotFloatingChat from "@/components/ai/CopilotFloatingChat";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
