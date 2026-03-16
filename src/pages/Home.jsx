@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import TroneDashboard from "@/components/dashboards/TroneDashboard";
 import PiloteDashboard from "@/components/dashboards/PiloteDashboard";
 import DefaultDashboard from "@/components/dashboards/DefaultDashboard";
@@ -8,10 +8,20 @@ import OnboardingWalkthrough from "@/components/onboarding/OnboardingWalkthrough
 import CopiloteInsights from "@/components/ai/CopiloteInsights";
 
 export default function HomePage() {
+  const queryClient = useQueryClient();
   const { data: user, isLoading } = useQuery({
     queryKey: ["me"],
     queryFn: () => base44.auth.me(),
   });
+
+  // Real-time subscriptions for critical entities
+  useEffect(() => {
+    const unsubUser = base44.entities.User.subscribe(() => queryClient.invalidateQueries({ queryKey: ["me"] }));
+    const unsubFI = base44.entities.FamilleImpact.subscribe(() => queryClient.invalidateQueries({ queryKey: ["familles"] }));
+    const unsubMembres = base44.entities.Membre.subscribe(() => queryClient.invalidateQueries({ queryKey: ["membres-all"] }));
+    const unsubSaisies = base44.entities.CliniqueSaisie.subscribe(() => queryClient.invalidateQueries({ queryKey: ["saisies-dash"] }));
+    return () => { unsubUser(); unsubFI(); unsubMembres(); unsubSaisies(); };
+  }, [queryClient]);
 
   if (isLoading) {
     return (
