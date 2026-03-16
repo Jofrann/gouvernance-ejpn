@@ -3,22 +3,18 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer as RC } from "recharts";
-import { Users, Heart, TrendingUp, AlertTriangle, Calendar } from "lucide-react";
+import { RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
+import { Users, Heart, TrendingUp, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format, setDay, startOfWeek, subWeeks } from "date-fns";
+import { format, setDay, startOfWeek } from "date-fns";
 import { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
 import { detectAlerteEmotions } from "@/components/fi/AlerteEmotions";
 import { motion } from "framer-motion";
 
-function getThursday(date = new Date()) {
-  const start = startOfWeek(date, { weekStartsOn: 1 });
+function getThisThursday() {
+  const now = new Date();
+  const start = startOfWeek(now, { weekStartsOn: 1 });
   return setDay(start, 4, { weekStartsOn: 1 });
-}
-
-// Retourne les 8 jeudis passés (semaines disponibles pour l'historique)
-function getLast8Thursdays() {
-  return Array.from({ length: 8 }, (_, i) => format(getThursday(subWeeks(new Date(), i)), "yyyy-MM-dd")).reverse();
 }
 
 const PIPELINE_STEPS = ["passif", "regulier", "disciple", "serviteur", "reproducteur"];
