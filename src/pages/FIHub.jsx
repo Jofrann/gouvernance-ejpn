@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
-import { Users, Search, Plus, Pencil, Trash2, Star, Eye, Kanban, CalendarDays, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Users, Search, Plus, Pencil, Trash2, Star, Eye, Kanban, CalendarDays, ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { format, startOfWeek, setDay, addWeeks, subWeeks, isAfter, endOfDay } from "date-fns";
