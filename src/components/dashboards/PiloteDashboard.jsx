@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
 import { format, setDay, startOfWeek, subWeeks } from "date-fns";
+import BilanMensuelGenerator from "@/components/ai/BilanMensuelGenerator";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, LineChart, Line, XAxis, Tooltip } from "recharts";
@@ -129,11 +130,16 @@ export default function PiloteDashboard({ user }) {
     <div className="space-y-6">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <p className="text-[10px] font-bold text-emerald-400/80 uppercase tracking-[0.25em] mb-1">
-          {mesFamilles.length > 0 ? mesFamilles.map(f => f.name).join(" · ") : "Familles d'Impact"}
-        </p>
-        <h1 className="text-3xl font-light text-white tracking-tight">Tableau de <span className="font-black">Bord</span> Pastoral</h1>
-        <p className="text-sm text-zinc-500 mt-1 font-light leading-relaxed">Santé · Présence · Alertes · {format(new Date(), "EEEE d MMMM yyyy", { locale: fr })}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-bold text-emerald-400/80 uppercase tracking-[0.25em] mb-1">
+              {mesFamilles.length > 0 ? mesFamilles.map(f => f.name).join(" · ") : "Familles d'Impact"}
+            </p>
+            <h1 className="text-3xl font-light text-white tracking-tight">Tableau de <span className="font-black">Bord</span> Pastoral</h1>
+            <p className="text-sm text-zinc-500 mt-1 font-light leading-relaxed">Santé · Présence · Alertes · {format(new Date(), "EEEE d MMMM yyyy", { locale: fr })}</p>
+          </div>
+          {firstFI && <BilanMensuelGenerator user={user} familleImpactId={firstFI.id} />}
+        </div>
       </motion.div>
 
       {/* KPIs */}
