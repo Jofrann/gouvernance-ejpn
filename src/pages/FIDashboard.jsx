@@ -11,10 +11,14 @@ import { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
 import { detectAlerteEmotions } from "@/components/fi/AlerteEmotions";
 import { motion } from "framer-motion";
 
-function getThisThursday() {
-  const now = new Date();
-  const start = startOfWeek(now, { weekStartsOn: 1 });
+function getThursday(date = new Date()) {
+  const start = startOfWeek(date, { weekStartsOn: 1 });
   return setDay(start, 4, { weekStartsOn: 1 });
+}
+
+// Retourne les 8 jeudis passés (semaines disponibles pour l'historique)
+function getLast8Thursdays() {
+  return Array.from({ length: 8 }, (_, i) => format(getThursday(subWeeks(new Date(), i)), "yyyy-MM-dd")).reverse();
 }
 
 const PIPELINE_STEPS = ["passif", "regulier", "disciple", "serviteur", "reproducteur"];
