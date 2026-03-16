@@ -3,6 +3,24 @@
  * Import from here in TopNav, MobileNav and pages.
  */
 
+/**
+ * Extracts the roles array from a user object.
+ * Supports both new (roles[]) and legacy (role string) formats.
+ */
+export function getUserRoles(user) {
+  if (Array.isArray(user?.roles) && user.roles.length > 0) return user.roles;
+  if (Array.isArray(user?.data?.roles) && user.data.roles.length > 0) return user.data.roles;
+  if (user?.role) return [user.role];
+  return [];
+}
+
+/**
+ * Returns true if the user has at least one of the given roles.
+ */
+export function hasRole(user, ...roles) {
+  return getUserRoles(user).some(r => roles.includes(r));
+}
+
 // Which "execution poles" each role can see in the nav
 export const ROLE_EXEC_POLES = {
   pilote_fi:               ["familles_impact"],
