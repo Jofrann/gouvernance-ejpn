@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import TroneDashboard from "@/components/dashboards/TroneDashboard";
 import PiloteDashboard from "@/components/dashboards/PiloteDashboard";
 import DefaultDashboard from "@/components/dashboards/DefaultDashboard";
+import OnboardingWalkthrough from "@/components/onboarding/OnboardingWalkthrough";
 
 export default function HomePage() {
   const { data: user, isLoading } = useQuery({

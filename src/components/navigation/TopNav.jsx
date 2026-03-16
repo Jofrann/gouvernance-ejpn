@@ -268,6 +268,7 @@ function NavButton({ label, icon: Icon, color, textColor, children, currentPage,
   );
 }
 
+// data-joyride attr added for onboarding walkthrough
 export default function TopNav({ user, currentPage }) {
   const [showSearch, setShowSearch] = useState(false);
   const [showNotifs, setShowNotifs] = useState(false);
