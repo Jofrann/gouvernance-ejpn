@@ -71,14 +71,14 @@ export default function Layout({ children, currentPageName }) {
         style={{ background: "linear-gradient(90deg, transparent 0%, rgba(99,155,255,0.3) 30%, rgba(139,92,246,0.3) 60%, transparent 100%)" }}
       />
 
-      <TopNav user={user} currentPage={currentPageName} />
+      <TopNav user={user} currentPage={currentPageName} onWorkspaceSwitch={setActiveWorkspace} />
 
       <main className="relative z-10 pt-16 min-h-screen">
         {children}
       </main>
 
-      {/* EJP Copilot — Floating Agent */}
-      {user && <CopilotFloatingChat user={user} />}
+      {/* EJP Copilot — Floating Agent (workspace-aware) */}
+      {user && <CopilotFloatingChat user={user} activeWorkspace={activeWorkspace} />}
     </div>
   );
 }
