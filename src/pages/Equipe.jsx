@@ -285,7 +285,10 @@ export default function EquipePage() {
           ) : (
             <div className="space-y-8">
               {myPole.groups.map(group => {
-                const groupMembers = myTeamMembers.filter(u => u.role === group.key);
+                const groupMembers = myTeamMembers.filter(u => {
+                  const uRoles = Array.isArray(u.roles) && u.roles.length > 0 ? u.roles : [u.role];
+                  return uRoles.includes(group.key);
+                });
                 if (groupMembers.length === 0) return null;
                 return (
                   <div key={group.key}>
@@ -296,7 +299,7 @@ export default function EquipePage() {
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {groupMembers.map(u => (
-                        <MemberCard key={u.id} user={u} pole={myPole} onClick={() => setSelectedMember(u)} />
+                        <MemberCard key={`${u.id}-${group.key}`} user={u} pole={myPole} groupKey={group.key} onClick={() => setSelectedMember(u)} />
                       ))}
                     </div>
                   </div>
