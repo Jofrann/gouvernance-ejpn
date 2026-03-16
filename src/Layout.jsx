@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import TopNav from "@/components/navigation/TopNav";
 import AnimatedBackground from "@/components/layout/AnimatedBackground";
+import CopilotFloatingChat from "@/components/ai/CopilotFloatingChat";
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
