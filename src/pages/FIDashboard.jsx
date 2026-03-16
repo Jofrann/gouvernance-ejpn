@@ -208,6 +208,36 @@ export default function FIDashboardPage() {
         </GlassCard>
       )}
 
+      {/* Alertes Émotions */}
+      {alertesEmotions.length > 0 && (
+        <GlassCard className="border-orange-500/20" style={{ background: "linear-gradient(135deg, rgba(249,115,22,0.07) 0%, rgba(255,255,255,0.01) 100%)" }}>
+          <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" /> {alertesEmotions.length} Alerte(s) Émotionnelle(s) — Baisse critique détectée
+          </p>
+          <div className="space-y-1.5">
+            {alertesEmotions.map(m => {
+              const saisiesMembre = saisies
+                .filter(s => s.membre_id === m.id && s.presence && s.note_emotions != null)
+                .sort((a, b) => new Date(b.semaine) - new Date(a.semaine));
+              const last2 = saisiesMembre.slice(0, 2);
+              const drop = last2.length === 2 ? (last2[1].note_emotions - last2[0].note_emotions).toFixed(1) : "?";
+              return (
+                <div key={m.id} className="flex items-center gap-2.5 p-2.5 rounded-xl border border-orange-500/15 bg-orange-500/5">
+                  <div className="w-6 h-6 rounded-full bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-xs font-bold text-orange-300 flex-shrink-0">
+                    {m.nom_complet?.[0]?.toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-zinc-200">{m.nom_complet}</p>
+                    <p className="text-[10px] text-orange-400">Note Émotions : -{Math.abs(drop)} pts en 2 semaines · Suivi pastoral recommandé</p>
+                  </div>
+                  <span className="ml-auto text-[10px] font-semibold uppercase tracking-wider text-orange-400/60 px-2 py-0.5 rounded-md bg-orange-500/10 border border-orange-500/20">💭 Émotions</span>
+                </div>
+              );
+            })}
+          </div>
+        </GlassCard>
+      )}
+
       {/* Members table with alerts */}
       <GlassCard>
         <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Vue des Membres ({membres.length})</p>
