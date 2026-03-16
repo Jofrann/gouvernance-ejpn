@@ -30,6 +30,7 @@ export default function HomePage() {
 
   // Context for onboarding walkthrough
   const isPilote = roles.some(r => ["pilote_fi", "copilote_fi"].includes(r));
+  const familleImpactId = user?.famille_impact_id || user?.data?.famille_impact_id || null;
 
   const renderDashboard = () => {
     // Direction / Trône / Admin / Responsable général / Responsable FI
