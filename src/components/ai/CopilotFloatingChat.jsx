@@ -207,7 +207,7 @@ export default function CopilotFloatingChat({ user }) {
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Pose une question ou demande une action…"
+                  placeholder={agent.placeholder}
                   rows={1}
                   className="flex-1 resize-none rounded-xl px-3 py-2.5 text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all"
                   style={{
