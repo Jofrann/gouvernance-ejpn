@@ -5,7 +5,6 @@ import TroneDashboard from "@/components/dashboards/TroneDashboard";
 import PiloteDashboard from "@/components/dashboards/PiloteDashboard";
 import DefaultDashboard from "@/components/dashboards/DefaultDashboard";
 import OnboardingWalkthrough from "@/components/onboarding/OnboardingWalkthrough";
-import AICommandPalette from "@/components/ai/AICommandPalette";
 import CopiloteInsights from "@/components/ai/CopiloteInsights";
 
 export default function HomePage() {
