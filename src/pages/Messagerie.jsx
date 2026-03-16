@@ -50,6 +50,17 @@ export default function MessageriePage() {
     refetchInterval: 3000,
   });
 
+  // Real-time subscriptions
+  useEffect(() => {
+    const unsub1 = base44.entities.Conversation.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    });
+    const unsub2 = base44.entities.Message.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+    });
+    return () => { unsub1(); unsub2(); };
+  }, [queryClient]);
+
   const sendMessageMutation = useMutation({
     mutationFn: async ({ content, fileUrls }) => {
       const message = await base44.entities.Message.create({
