@@ -143,7 +143,7 @@ export default function TroneDashboard({ user }) {
       </motion.div>
 
       {/* KPIs row 1 */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" data-joyride="kpi-membres">
         <KPICard label="Âmes suivies" value={membres.length} sub={`${engagesPct}% engagés`} icon={Users} color="text-blue-400" delay={0.05} link="FIDossiers" />
         <KPICard label="FI Actives" value={fIActives.length} sub={fIEnPause.length > 0 ? `${fIEnPause.length} en pause` : `${familles.length} au total`} icon={Home} color="text-emerald-400" delay={0.1} link="FIManager" />
         <KPICard label="OKR en cours" value={okrsEnCours.length} sub={`${okrs.filter(o => o.statut === "atteint").length} atteints`} icon={Target} color="text-violet-400" delay={0.15} link="GouvMasterPlan" />
@@ -151,7 +151,7 @@ export default function TroneDashboard({ user }) {
       </div>
 
       {/* KPIs row 2 */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" data-joyride="kpi-okr">
         <KPICard label="Santé globale" value={avgGlobale ? `${avgGlobale}/10` : "—"} sub="Moyenne clinique" icon={Heart} color={avgGlobale && parseFloat(avgGlobale) >= 7 ? "text-emerald-400" : "text-amber-400"} delay={0.25} />
         <KPICard label="Personnes touchées" value={totalPersonnes} sub={`${totalConversions} conversions`} icon={Globe} color="text-cyan-400" delay={0.28} link="EvangelisationROI" />
         <KPICard label="Livrables soumis" value={livrablesEnAttente} sub={`${livrablesValides} validés`} icon={GraduationCap} color={livrablesEnAttente > 0 ? "text-amber-400" : "text-zinc-500"} delay={0.31} link="FormationCorrection" />
