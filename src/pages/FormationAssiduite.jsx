@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { UserCheck, AlertTriangle, TrendingUp, Users } from "lucide-react";
 import { format, subMonths } from "date-fns";
@@ -17,6 +17,8 @@ const GlassCard = ({ children, className = "" }) => (
 );
 
 export default function FormationAssiduitePage() {
+  const queryClient = useQueryClient();
+  
   const { data: livrables = [] } = useQuery({
     queryKey: ["livrables-assiduite"],
     queryFn: () => base44.entities.FormationLivrable.list("-date_soumission", 500),
@@ -25,6 +27,13 @@ export default function FormationAssiduitePage() {
     queryKey: ["users"],
     queryFn: () => base44.entities.User.list(),
   });
+
+  // Real-time subscriptions
+  useEffect(() => {
+    const unsub1 = base44.entities.FormationLivrable.subscribe(() => queryClient.invalidateQueries({ queryKey: ["livrables-assiduite"] }));
+    const unsub2 = base44.entities.User.subscribe(() => queryClient.invalidateQueries({ queryKey: ["users"] }));
+    return () => { unsub1(); unsub2(); };
+  }, [queryClient]);
 
   const pilotes = users.filter((u) => ["pilote_fi", "copilote_fi", "etudiant"].includes(u.role));
 
