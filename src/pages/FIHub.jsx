@@ -103,28 +103,31 @@ function TabMembres({ fi, user }) {
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex flex-wrap gap-2 items-center">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher un membre..."
-            className="pl-9 h-9 rounded-xl bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#475569] focus:border-blue-500/40 focus:ring-[3px] focus:ring-blue-500/10 transition-all" />
+      <div className="space-y-2.5">
+        <div className="flex flex-wrap gap-2 items-center">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher un membre..."
+              className="pl-9 h-9 rounded-xl bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#475569] focus:border-blue-500/40 focus:ring-[3px] focus:ring-blue-500/10 transition-all" />
+          </div>
+          {canWrite && (
+            <button onClick={() => setShowAjouter(true)} className="btn-glow-blue flex items-center gap-2 px-4 py-2 h-9">
+              <Plus className="w-4 h-4" /> Ajouter une Âme
+            </button>
+          )}
         </div>
-        <Select value={filterStatut} onValueChange={setFilterStatut}>
-          <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white h-9">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="tous">Tous les statuts</SelectItem>
-            {["passif", "regulier", "disciple", "serviteur", "reproducteur"].map(s => (
-              <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {canWrite && (
-          <button onClick={() => setShowAjouter(true)} className="btn-glow-blue flex items-center gap-2 px-4 py-2 h-9">
-            <Plus className="w-4 h-4" /> Ajouter une Âme
-          </button>
-        )}
+        {/* Quick filter pills */}
+        <div className="flex flex-wrap gap-1.5">
+          {["tous", "passif", "regulier", "disciple", "serviteur", "reproducteur"].map(s => (
+            <button key={s} onClick={() => setFilterStatut(s)}
+              className={cn("px-3 py-1 rounded-full text-xs font-medium transition-all capitalize border",
+                filterStatut === s
+                  ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
+                  : "bg-white/[0.03] text-zinc-500 border-white/[0.06] hover:text-zinc-300 hover:border-white/10")}>
+              {s === "tous" ? "Tous" : s}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Tableau */}
