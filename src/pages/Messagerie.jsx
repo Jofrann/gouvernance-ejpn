@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Plus } from "lucide-react";
 import ConversationList from "@/components/messaging/ConversationList";
 import MessageBubble from "@/components/messaging/MessageBubble";
 import MessageInput from "@/components/messaging/MessageInput";
+import NewConversationModal from "@/components/messaging/NewConversationModal";
+import { AnimatePresence } from "framer-motion";
 
 export default function MessageriePage() {
   const [user, setUser] = useState(null);
   const [selectedConversation, setSelectedConversation] = useState(null);
+  const [showNewConv, setShowNewConv] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
