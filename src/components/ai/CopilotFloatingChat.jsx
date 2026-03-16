@@ -6,16 +6,27 @@ import CopilotMessageBubble from "@/components/ai/CopilotMessageBubble";
 
 const TONE_LABELS = { direct: "Direct", empathique: "Empathique", soutenu: "Soutenu" };
 const FORMAT_LABELS = { bullet_points: "Listes", paragraphes: "Paragraphes", synthese_courte: "Synthèse" };
-const PROACTIVITY_LABELS = { silencieux: "Silencieux", alertes_uniquement: "Alertes seulement", proactif_total: "Proactif total" };
 
-function getRoleLabel(user) {
-  const roleMap = {
-    pilote_fi: "Pilote FI", copilote_fi: "Co-Pilote FI", responsable_fi: "Responsable FI",
-    trone: "Trône", gouvernance_direction: "Gouvernance", analyste_strategique: "Analyste",
-    responsable_formation: "Formation", responsable_evangelisation: "Évangélisation",
-    responsable_communication: "Communication", admin: "Admin"
-  };
-  return roleMap[user?.role] || user?.role || "Membre";
+// ─── Nomenclature Prophétique des Agents ──────────────────────────────────────
+const AGENT_IDENTITY = {
+  trone:                    { name: "Issacar",   icon: "👑", tagline: "Analyste Stratégique",      placeholder: "Issacar analyse les temps… tapez votre requête stratégique" },
+  admin:                    { name: "Issacar",   icon: "👑", tagline: "Analyste Stratégique",      placeholder: "Issacar analyse les temps… tapez votre requête stratégique" },
+  responsable_general:      { name: "Issacar",   icon: "👑", tagline: "Analyste Stratégique",      placeholder: "Issacar analyse les temps… tapez votre requête stratégique" },
+  gouvernance_direction:    { name: "Néhémie",   icon: "🏗️", tagline: "Planification Stratégique", placeholder: "Néhémie est prêt… tapez votre objectif ou tâche" },
+  directrice_execution:     { name: "Néhémie",   icon: "🏗️", tagline: "Planification Stratégique", placeholder: "Néhémie est prêt… tapez votre objectif ou tâche" },
+  responsable_fi:           { name: "Esdras",    icon: "📜", tagline: "Suivi & Données",           placeholder: "Esdras recense… tapez votre requête de données" },
+  analyste_strategique:     { name: "Esdras",    icon: "📜", tagline: "Suivi & Données",           placeholder: "Esdras recense… tapez votre requête de données" },
+  pilote_fi:                { name: "Barnabas",  icon: "🔥", tagline: "Copilote Pastoral",         placeholder: "Barnabas est à l'écoute… tapez votre demande pastorale" },
+  copilote_fi:              { name: "Barnabas",  icon: "🔥", tagline: "Copilote Pastoral",         placeholder: "Barnabas est à l'écoute… tapez votre demande pastorale" },
+  responsable_evangelisation:{ name: "Josué",   icon: "⚔️", tagline: "Stratège de Conquête",      placeholder: "Josué prépare la mission… tapez votre requête d'évangélisation" },
+  responsable_communication: { name: "Bétsaleel",icon: "✨", tagline: "Directeur Artistique",      placeholder: "Bétsaleel crée… tapez votre demande de communication" },
+  responsable_formation:    { name: "Élisée",   icon: "📖", tagline: "Tuteur & Formation",        placeholder: "Élisée enseigne… tapez votre question de formation" },
+};
+
+const DEFAULT_AGENT = { name: "EJP Copilot", icon: "✦", tagline: "Assistant IA", placeholder: "Posez votre question ou demandez une action…" };
+
+function getAgentIdentity(user) {
+  return AGENT_IDENTITY[user?.role] || DEFAULT_AGENT;
 }
 
 export default function CopilotFloatingChat({ user }) {
