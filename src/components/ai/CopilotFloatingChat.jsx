@@ -29,7 +29,7 @@ function getAgentIdentity(user) {
   return AGENT_IDENTITY[user?.role] || DEFAULT_AGENT;
 }
 
-export default function CopilotFloatingChat({ user }) {
+export default function CopilotFloatingChat({ user, activeWorkspace }) {
   const [open, setOpen] = useState(false);
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -94,7 +94,10 @@ export default function CopilotFloatingChat({ user }) {
     messages[messages.length - 1]?.content === "";
 
   const prefs = user?.ai_preferences || {};
-  const agent = getAgentIdentity(user);
+  // Si un workspace est actif (via WorkspaceSwitcher), on l'utilise pour déterminer l'agent
+  const effectiveRole = activeWorkspace || user?.role;
+  const effectiveUser = effectiveRole !== user?.role ? { ...user, role: effectiveRole } : user;
+  const agent = getAgentIdentity(effectiveUser);
 
   return (
     <>
