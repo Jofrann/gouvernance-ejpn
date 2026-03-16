@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Library, Search, ExternalLink, FileImage, Video, Tag } from "lucide-react";
@@ -24,6 +24,7 @@ const STATUT_COLORS = {
 };
 
 export default function CommunicationBibliothequePage() {
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatut, setFilterStatut] = useState("valide");
@@ -33,6 +34,12 @@ export default function CommunicationBibliothequePage() {
     queryKey: ["assets"],
     queryFn: () => base44.entities.CommunicationAsset.list("-created_date", 500),
   });
+
+  // Real-time subscriptions
+  useEffect(() => {
+    const unsub = base44.entities.CommunicationAsset.subscribe(() => queryClient.invalidateQueries({ queryKey: ["assets"] }));
+    return unsub;
+  }, [queryClient]);
 
   const campaigns = useMemo(() => ["all", ...new Set(assets.map((a) => a.campagne_tag).filter(Boolean))], [assets]);
 

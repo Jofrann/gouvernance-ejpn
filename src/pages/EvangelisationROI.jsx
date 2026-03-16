@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Calculator, TrendingUp, Clock, Award } from "lucide-react";
@@ -16,10 +16,17 @@ const GlassCard = ({ children, className = "" }) => (
 );
 
 export default function EvangelisationROIPage() {
+  const queryClient = useQueryClient();
   const { data: actions = [] } = useQuery({
     queryKey: ["actions"],
     queryFn: () => base44.entities.ActionEvangelisation.list("-date_action", 200),
   });
+
+  // Real-time subscriptions
+  useEffect(() => {
+    const unsub = base44.entities.ActionEvangelisation.subscribe(() => queryClient.invalidateQueries({ queryKey: ["actions"] }));
+    return unsub;
+  }, [queryClient]);
 
   const debriefed = actions.filter((a) => a.debrief_complete && a.temps_investi_heures > 0);
 
