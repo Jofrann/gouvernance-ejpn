@@ -342,6 +342,13 @@ export default function TopNav({ user, currentPage }) {
           </div>
         </Link>
 
+        {/* Workspace Switcher — affiché si multi-rôles */}
+        <WorkspaceSwitcher
+          userRoles={userRoles}
+          activeWorkspace={activeWorkspace || userRoles[0]}
+          onSwitch={setActiveWorkspace}
+        />
+
         {/* Divider */}
         <div className="w-px h-5 bg-white/10 flex-shrink-0 hidden lg:block" />
 
