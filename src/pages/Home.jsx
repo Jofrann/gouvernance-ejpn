@@ -44,6 +44,14 @@ export default function HomePage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
+      {user && (
+        <OnboardingWalkthrough
+          user={user}
+          roles={roles}
+          membres={isPilote ? undefined : 0}
+          saisiesAujourdhui={0}
+        />
+      )}
       {renderDashboard()}
     </div>
   );
