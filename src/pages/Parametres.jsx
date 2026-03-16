@@ -126,13 +126,20 @@ export default function ParametresPage() {
   const [form, setForm] = useState({ role: "pilote_fi", niveau: "execution", pole: "familles_impact" });
 
   const { data: me } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
+  const meRoles = Array.isArray(me?.roles) && me.roles.length > 0
+    ? me.roles
+    : Array.isArray(me?.data?.roles) && me.data.roles.length > 0
+    ? me.data.roles
+    : me?.role ? [me.role] : [];
+  const isAdmin = meRoles.includes("admin");
+
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: () => base44.entities.User.list(),
-    enabled: me?.role === "admin",
+    enabled: isAdmin,
   });
 
-  if (me?.role !== "admin") {
+  if (!isAdmin) {
     return (
       <div className="p-6 max-w-7xl mx-auto">
         <Card className="border-zinc-200 bg-white">
