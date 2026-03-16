@@ -264,7 +264,7 @@ function NavButton({ label, icon: Icon, color, textColor, children, currentPage,
 }
 
 // data-joyride attr added for onboarding walkthrough
-export default function TopNav({ user, currentPage }) {
+export default function TopNav({ user, currentPage, onWorkspaceSwitch }) {
   const [showSearch, setShowSearch] = useState(false);
   const [showNotifs, setShowNotifs] = useState(false);
   const [activeWorkspace, setActiveWorkspace] = useState(null);
@@ -341,7 +341,7 @@ export default function TopNav({ user, currentPage }) {
         <WorkspaceSwitcher
           userRoles={userRoles}
           activeWorkspace={activeWorkspace || userRoles[0]}
-          onSwitch={setActiveWorkspace}
+          onSwitch={(ws) => { setActiveWorkspace(ws); onWorkspaceSwitch?.(ws); }}
         />
 
         {/* Divider */}
