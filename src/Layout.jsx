@@ -70,9 +70,20 @@ export default function Layout({ children, currentPageName }) {
         style={{ background: "linear-gradient(90deg, transparent 0%, rgba(99,155,255,0.3) 30%, rgba(139,92,246,0.3) 60%, transparent 100%)" }}
       />
 
-      <TopNav user={user} currentPage={currentPageName} onWorkspaceSwitch={setActiveWorkspace} />
+      {/* TopNav with safe area padding */}
+      <div style={{ paddingTop: 'var(--safe-area-inset-top, 0)' }}>
+        <TopNav user={user} currentPage={currentPageName} onWorkspaceSwitch={setActiveWorkspace} />
+      </div>
 
-      <main className="relative z-10 pt-16 min-h-screen">
+      {/* Main content with safe area */}
+      <main 
+        className="relative z-10 pt-16 min-h-screen scrollable-safe"
+        style={{ 
+          paddingLeft: 'var(--safe-area-inset-left, 0)',
+          paddingRight: 'var(--safe-area-inset-right, 0)',
+          paddingBottom: 'var(--safe-area-inset-bottom, 0)',
+        }}
+      >
         {children}
       </main>
 
