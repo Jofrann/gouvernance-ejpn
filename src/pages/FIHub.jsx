@@ -49,6 +49,7 @@ function TabMembres({ fi, user }) {
   const [search, setSearch] = useState("");
   const [filterStatut, setFilterStatut] = useState("tous");
   const [selectedMembre, setSelectedMembre] = useState(null);
+  const [editMembre, setEditMembre] = useState(null);
   const [showAjouter, setShowAjouter] = useState(false);
   const [deleteMembre, setDeleteMembre] = useState(null);
 
