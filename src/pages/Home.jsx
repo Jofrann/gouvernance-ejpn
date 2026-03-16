@@ -26,6 +26,9 @@ export default function HomePage() {
     ? user.data.roles
     : user?.role ? [user.role] : [];
 
+  // Context for onboarding walkthrough
+  const isPilote = roles.some(r => ["pilote_fi", "copilote_fi"].includes(r));
+
   const renderDashboard = () => {
     // Direction / Trône / Admin / Responsable général / Responsable FI
     if (roles.some(r => ["trone", "admin", "responsable_general", "responsable_fi"].includes(r))) {

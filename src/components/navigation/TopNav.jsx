@@ -313,7 +313,7 @@ export default function TopNav({ user, currentPage }) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 h-16 flex items-center px-6 gap-4"
+      <header data-joyride="top-nav" className="fixed top-0 left-0 right-0 z-40 h-16 flex items-center px-6 gap-4"
         style={{
           background: "linear-gradient(180deg, rgba(6,8,18,0.92) 0%, rgba(8,11,22,0.85) 100%)",
           backdropFilter: "blur(48px) saturate(1.8) brightness(1.02)",
