@@ -171,13 +171,11 @@ export default function ParametresPage() {
 
   if (!isAdmin) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
-        <Card className="border-zinc-200 bg-white">
-          <CardContent className="py-20 text-center">
-            <Shield className="w-10 h-10 text-zinc-300 mx-auto mb-3" />
-            <p className="text-sm font-medium text-zinc-700">Accès réservé aux administrateurs</p>
-          </CardContent>
-        </Card>
+      <div className="px-6 py-10 max-w-7xl mx-auto">
+        <div className="ai-card flex flex-col items-center justify-center py-24 rounded-2xl">
+          <Shield className="w-10 h-10 text-zinc-600 mb-3" />
+          <p className="text-sm font-semibold text-zinc-400">Accès réservé aux administrateurs</p>
+        </div>
       </div>
     );
   }
