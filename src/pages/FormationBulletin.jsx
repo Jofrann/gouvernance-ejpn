@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Award, CheckCircle2, XCircle, Clock, TrendingUp, Star } from "lucide-react";
 import { format } from "date-fns";
@@ -23,6 +23,7 @@ const GlassCard = ({ children, className = "" }) => (
 );
 
 export default function FormationBulletinPage() {
+  const queryClient = useQueryClient();
   const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
   const isResponsable = user?.role === "admin" || user?.role === "responsable_formation";
 
@@ -37,6 +38,15 @@ export default function FormationBulletinPage() {
     queryFn: () => user ? base44.entities.FormationLivrable.filter({ pilote_email: user.email }) : Promise.resolve([]),
     enabled: !!user && !isResponsable,
   });
+
+  // Real-time subscriptions
+  useEffect(() => {
+    const unsub1 = base44.entities.FormationLivrable.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["all-livrables-bulletin"] });
+      queryClient.invalidateQueries({ queryKey: ["my-livrables"] });
+    });
+    return unsub1;
+  }, [queryClient]);
 
   const livrables = isResponsable ? allLivrables : myLivrables;
   const validated = livrables.filter((l) => l.statut === "valide");
