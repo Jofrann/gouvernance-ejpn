@@ -340,29 +340,29 @@ export default function ParametresPage() {
 
       {/* Edit / Create Sheet */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-          <SheetHeader className="pb-4 border-b">
-            <SheetTitle>{editUser ? `Modifier — ${editUser.full_name || editUser.email}` : "Inviter un utilisateur"}</SheetTitle>
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto bg-[#0d1018] border-white/10 text-white">
+          <SheetHeader className="pb-4 border-b border-white/10">
+            <SheetTitle className="text-white">{editUser ? `Modifier — ${editUser.full_name || editUser.email}` : "Inviter un utilisateur"}</SheetTitle>
           </SheetHeader>
           <div className="py-5 space-y-5">
             {!editUser && (
               <div>
                 <label className="text-xs font-medium text-zinc-500">Adresse email *</label>
-                <Input className="mt-1 bg-white border-zinc-200" type="email" placeholder="prenom.nom@ejpn.org" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} />
+                <input className="input-glass mt-1" type="email" placeholder="prenom.nom@ejpn.org" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} />
               </div>
             )}
 
             {/* Roles — multi-sélection */}
             <div>
-              <label className="text-xs font-medium text-zinc-500">Rôles * <span className="text-zinc-400 font-normal">(cochez un ou plusieurs)</span></label>
+              <label className="text-xs font-medium text-zinc-500">Rôles * <span className="text-zinc-600 font-normal">(cochez un ou plusieurs)</span></label>
               <div className="mt-2 space-y-3 max-h-72 overflow-y-auto pr-1">
                 {[
-                  { label: "Niveau I — Direction", color: "text-amber-600", roles: ROLES.filter(r => r.niveau === "I") },
-                  { label: "Niveau II — Gouvernance", color: "text-blue-600", roles: ROLES.filter(r => r.niveau === "II") },
-                  { label: "Niveau III — FI", color: "text-emerald-600", roles: ROLES.filter(r => r.pole === "familles_impact") },
-                  { label: "Niveau III — Formation", color: "text-violet-600", roles: ROLES.filter(r => r.pole === "formation") },
-                  { label: "Niveau III — Évangélisation", color: "text-rose-600", roles: ROLES.filter(r => r.pole === "evangelisation") },
-                  { label: "Niveau III — Communication", color: "text-orange-600", roles: ROLES.filter(r => r.pole === "communication") },
+                  { label: "Niveau I — Direction", color: "text-amber-400", roles: ROLES.filter(r => r.niveau === "I") },
+                  { label: "Niveau II — Gouvernance", color: "text-blue-400", roles: ROLES.filter(r => r.niveau === "II") },
+                  { label: "Niveau III — FI", color: "text-emerald-400", roles: ROLES.filter(r => r.pole === "familles_impact") },
+                  { label: "Niveau III — Formation", color: "text-violet-400", roles: ROLES.filter(r => r.pole === "formation") },
+                  { label: "Niveau III — Évangélisation", color: "text-rose-400", roles: ROLES.filter(r => r.pole === "evangelisation") },
+                  { label: "Niveau III — Communication", color: "text-orange-400", roles: ROLES.filter(r => r.pole === "communication") },
                 ].map(section => (
                   <div key={section.label}>
                     <p className={cn("text-[10px] font-bold uppercase tracking-wider mb-1.5", section.color)}>{section.label}</p>
@@ -372,17 +372,17 @@ export default function ParametresPage() {
                         return (
                           <label key={r.value} className={cn(
                             "flex items-center gap-2.5 px-3 py-2 rounded-lg border cursor-pointer transition-all",
-                            checked ? "bg-zinc-100 border-zinc-300" : "border-zinc-100 hover:bg-zinc-50"
+                            checked ? "bg-white/10 border-white/20" : "border-white/[0.06] hover:bg-white/5"
                           )}>
                             <input
                               type="checkbox"
                               checked={checked}
                               onChange={() => handleRoleToggle(r.value)}
-                              className="rounded border-zinc-300 accent-zinc-800"
+                              className="rounded accent-blue-500"
                             />
-                            <span className="text-sm text-zinc-700">{r.label}</span>
+                            <span className="text-sm text-zinc-300">{r.label}</span>
                             {checked && (form.roles || [])[0] === r.value && (
-                              <span className="ml-auto text-[10px] font-semibold text-zinc-400">Principal</span>
+                              <span className="ml-auto text-[10px] font-semibold text-zinc-500">Principal</span>
                             )}
                           </label>
                         );
@@ -395,7 +395,7 @@ export default function ParametresPage() {
 
             {/* Preview badges */}
             {(form.roles || []).length > 0 && (
-              <div className="flex flex-wrap items-center gap-1.5 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
+              <div className="flex flex-wrap items-center gap-1.5 p-3 bg-white/5 rounded-lg border border-white/10">
                 <span className="text-xs text-zinc-500 mr-1">Accès accordés :</span>
                 {(form.roles || []).map(r => (
                   <Badge key={r} variant="outline" className={cn("text-[10px] border", getRoleInfo(r).color)}>
@@ -405,12 +405,12 @@ export default function ParametresPage() {
               </div>
             )}
 
-            <Button className="w-full bg-zinc-900 hover:bg-zinc-800" disabled={saving} onClick={handleSave}>
+            <button className="btn-glow-blue w-full py-2.5" disabled={saving} onClick={handleSave}>
               {saving ? "Enregistrement…" : editUser ? "Enregistrer les modifications" : "Envoyer l'invitation"}
-            </Button>
+            </button>
 
             {editUser && (
-              <p className="text-[11px] text-zinc-400 text-center">
+              <p className="text-[11px] text-zinc-600 text-center">
                 L'utilisateur verra ses nouveaux accès dès sa prochaine connexion.
               </p>
             )}
