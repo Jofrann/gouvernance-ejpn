@@ -66,8 +66,14 @@ function getRoleInfo(roleValue) {
 }
 
 function UserRow({ user, onEdit, onDelete, isCurrentUser }) {
-  const role = getRoleInfo(user.role);
-  const NiveauIcon = NIVEAU_ICONS[role.niveau] || Briefcase;
+  // Support multi-rôles
+  const userRoles = Array.isArray(user.roles) && user.roles.length > 0
+    ? user.roles
+    : Array.isArray(user?.data?.roles) && user.data.roles.length > 0
+    ? user.data.roles
+    : user.role ? [user.role] : ["user"];
+  const primaryRole = getRoleInfo(userRoles[0]);
+  const NiveauIcon = NIVEAU_ICONS[primaryRole.niveau] || Briefcase;
   return (
     <tr className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
       <td className="py-3 px-4">
@@ -82,9 +88,12 @@ function UserRow({ user, onEdit, onDelete, isCurrentUser }) {
         </div>
       </td>
       <td className="py-3 px-4">
-        <div className="flex items-center gap-1.5">
-          <NiveauIcon className={cn("w-3.5 h-3.5", NIVEAU_COLORS[role.niveau])} />
-          <Badge variant="outline" className={cn("text-[10px] border", role.color)}>{role.label}</Badge>
+        <div className="flex flex-wrap items-center gap-1">
+          <NiveauIcon className={cn("w-3.5 h-3.5 flex-shrink-0", NIVEAU_COLORS[primaryRole.niveau])} />
+          {userRoles.map(r => {
+            const info = getRoleInfo(r);
+            return <Badge key={r} variant="outline" className={cn("text-[10px] border", info.color)}>{info.label}</Badge>;
+          })}
         </div>
       </td>
       <td className="py-3 px-4">
