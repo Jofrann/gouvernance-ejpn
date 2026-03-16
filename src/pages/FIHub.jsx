@@ -54,7 +54,12 @@ function TabMembres({ fi, user }) {
   const [showAjouter, setShowAjouter] = useState(false);
   const [deleteMembre, setDeleteMembre] = useState(null);
 
-  const canWrite = ["admin", "responsable_fi", "pilote_fi", "copilote_fi"].includes(user?.role);
+  const userRoles = Array.isArray(user?.roles) && user.roles.length > 0
+    ? user.roles
+    : Array.isArray(user?.data?.roles) && user.data.roles.length > 0
+    ? user.data.roles
+    : user?.role ? [user.role] : [];
+  const canWrite = userRoles.some(r => ["admin", "responsable_fi", "pilote_fi", "copilote_fi"].includes(r));
 
   const { data: membres = [] } = useQuery({
     queryKey: ["membres", fi?.id],
@@ -458,10 +463,15 @@ export default function FIHubPage() {
 
   const fi = familles.find((f) => f.id === selectedFI);
 
-  // Filter FIs by role
-  const availableFIs = user?.role === "admin" || user?.role === "responsable_fi" ?
-  familles :
-  familles.filter((f) => f.pilote_email === user?.email || f.co_pilote_email === user?.email);
+  // Filter FIs by role (multi-rôles)
+  const hubUserRoles = Array.isArray(user?.roles) && user.roles.length > 0
+    ? user.roles
+    : Array.isArray(user?.data?.roles) && user.data.roles.length > 0
+    ? user.data.roles
+    : user?.role ? [user.role] : [];
+  const availableFIs = hubUserRoles.some(r => ["admin", "responsable_fi"].includes(r))
+    ? familles
+    : familles.filter((f) => f.pilote_email === user?.email || f.co_pilote_email === user?.email);
 
   const TABS = [
   { key: "membres", label: "Membres & CRM", icon: Users },

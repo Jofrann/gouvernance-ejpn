@@ -36,7 +36,12 @@ export default function FISlideOver({ membre, saisies = [], famillId, user, onCl
   const [noteContent, setNoteContent] = useState("");
   const [pipelineEdit, setPipelineEdit] = useState(false);
 
-  const canWrite = ["admin", "responsable_fi", "pilote_fi", "copilote_fi"].includes(user?.role);
+  const userRoles = Array.isArray(user?.roles) && user.roles.length > 0
+    ? user.roles
+    : Array.isArray(user?.data?.roles) && user.data.roles.length > 0
+    ? user.data.roles
+    : user?.role ? [user.role] : [];
+  const canWrite = userRoles.some(r => ["admin", "responsable_fi", "pilote_fi", "copilote_fi"].includes(r));
 
   const { data: objectifs = [] } = useQuery({
     queryKey: ["objectifs", membre?.id],
