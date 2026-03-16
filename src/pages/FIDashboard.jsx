@@ -8,6 +8,7 @@ import { Users, Heart, TrendingUp, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, setDay, startOfWeek } from "date-fns";
 import { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
+import { detectAlerteEmotions } from "@/components/fi/AlerteEmotions";
 import { motion } from "framer-motion";
 
 function getThisThursday() {
