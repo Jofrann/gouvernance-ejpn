@@ -61,8 +61,30 @@ const NIVEAU_COLORS = {
   III: "text-emerald-400",
 };
 
+// Dark-theme role colors
+const ROLES_DARK = [
+  { value: "admin", color: "bg-amber-500/15 text-amber-300 border-amber-500/30" },
+  { value: "responsable_general", color: "bg-amber-500/15 text-amber-300 border-amber-500/30" },
+  { value: "directrice_execution", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+  { value: "responsable_suivi", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+  { value: "analyste_strategique", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+  { value: "responsable_fi", color: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" },
+  { value: "pilote_fi", color: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" },
+  { value: "copilote_fi", color: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" },
+  { value: "responsable_formation", color: "bg-violet-500/15 text-violet-300 border-violet-500/30" },
+  { value: "etudiant", color: "bg-violet-500/15 text-violet-300 border-violet-500/30" },
+  { value: "responsable_evangelisation", color: "bg-rose-500/15 text-rose-300 border-rose-500/30" },
+  { value: "agent_terrain", color: "bg-rose-500/15 text-rose-300 border-rose-500/30" },
+  { value: "agent_virtuel", color: "bg-rose-500/15 text-rose-300 border-rose-500/30" },
+  { value: "responsable_communication", color: "bg-orange-500/15 text-orange-300 border-orange-500/30" },
+  { value: "producteur", color: "bg-orange-500/15 text-orange-300 border-orange-500/30" },
+  { value: "createur", color: "bg-orange-500/15 text-orange-300 border-orange-500/30" },
+];
+
 function getRoleInfo(roleValue) {
-  return ROLES.find((r) => r.value === roleValue) || { label: roleValue, niveau: "III", color: "bg-zinc-100 text-zinc-700 border-zinc-200" };
+  const base = ROLES.find((r) => r.value === roleValue) || { label: roleValue, niveau: "III" };
+  const dark = ROLES_DARK.find((r) => r.value === roleValue) || { color: "bg-white/10 text-zinc-300 border-white/20" };
+  return { ...base, color: dark.color };
 }
 
 function UserRow({ user, onEdit, onDelete, isCurrentUser }) {
