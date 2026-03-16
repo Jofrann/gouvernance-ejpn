@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
 import MobileNav from "@/components/navigation/MobileNav";
+import WorkspaceSwitcher from "@/components/navigation/WorkspaceSwitcher";
 import {
   TRONE_ROLES, GOUV_ROLES, EXEC_ROLES,
   getAllowedExecPoles, getAllowedGouvGroups
