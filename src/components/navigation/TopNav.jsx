@@ -328,6 +328,7 @@ export default function TopNav({ user, currentPage }) {
         <MobileNav user={user} currentPage={currentPage} userRoles={userRoles} />
 
         {/* Logo */}
+
         <Link to={createPageUrl("Home")} className="flex items-center gap-3 mr-4 flex-shrink-0 group">
           <div className="relative w-8 h-8">
             <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 opacity-80 group-hover:opacity-100 transition-opacity" />
