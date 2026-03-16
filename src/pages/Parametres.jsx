@@ -330,35 +330,56 @@ export default function ParametresPage() {
               </div>
             )}
 
-            {/* Role */}
+            {/* Roles — multi-sélection */}
             <div>
-              <label className="text-xs font-medium text-zinc-500">Rôle *</label>
-              <Select value={form.role} onValueChange={handleRoleChange}>
-                <SelectTrigger className="mt-1 bg-white border-zinc-200"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <div className="px-2 py-1 text-[10px] font-bold text-amber-600 uppercase tracking-wider">Niveau I — Direction</div>
-                  {ROLES.filter((r) => r.niveau === "I").map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
-                  <div className="px-2 py-1 mt-1 text-[10px] font-bold text-blue-600 uppercase tracking-wider">Niveau II — Gouvernance</div>
-                  {ROLES.filter((r) => r.niveau === "II").map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
-                  <div className="px-2 py-1 mt-1 text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Niveau III — FI</div>
-                  {ROLES.filter((r) => r.pole === "familles_impact").map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
-                  <div className="px-2 py-1 mt-1 text-[10px] font-bold text-violet-600 uppercase tracking-wider">Niveau III — Formation</div>
-                  {ROLES.filter((r) => r.pole === "formation").map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
-                  <div className="px-2 py-1 mt-1 text-[10px] font-bold text-rose-600 uppercase tracking-wider">Niveau III — Évangélisation</div>
-                  {ROLES.filter((r) => r.pole === "evangelisation").map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
-                  <div className="px-2 py-1 mt-1 text-[10px] font-bold text-orange-600 uppercase tracking-wider">Niveau III — Communication</div>
-                  {ROLES.filter((r) => r.pole === "communication").map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <label className="text-xs font-medium text-zinc-500">Rôles * <span className="text-zinc-400 font-normal">(cochez un ou plusieurs)</span></label>
+              <div className="mt-2 space-y-3 max-h-72 overflow-y-auto pr-1">
+                {[
+                  { label: "Niveau I — Direction", color: "text-amber-600", roles: ROLES.filter(r => r.niveau === "I") },
+                  { label: "Niveau II — Gouvernance", color: "text-blue-600", roles: ROLES.filter(r => r.niveau === "II") },
+                  { label: "Niveau III — FI", color: "text-emerald-600", roles: ROLES.filter(r => r.pole === "familles_impact") },
+                  { label: "Niveau III — Formation", color: "text-violet-600", roles: ROLES.filter(r => r.pole === "formation") },
+                  { label: "Niveau III — Évangélisation", color: "text-rose-600", roles: ROLES.filter(r => r.pole === "evangelisation") },
+                  { label: "Niveau III — Communication", color: "text-orange-600", roles: ROLES.filter(r => r.pole === "communication") },
+                ].map(section => (
+                  <div key={section.label}>
+                    <p className={cn("text-[10px] font-bold uppercase tracking-wider mb-1.5", section.color)}>{section.label}</p>
+                    <div className="space-y-1">
+                      {section.roles.map(r => {
+                        const checked = (form.roles || []).includes(r.value);
+                        return (
+                          <label key={r.value} className={cn(
+                            "flex items-center gap-2.5 px-3 py-2 rounded-lg border cursor-pointer transition-all",
+                            checked ? "bg-zinc-100 border-zinc-300" : "border-zinc-100 hover:bg-zinc-50"
+                          )}>
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() => handleRoleToggle(r.value)}
+                              className="rounded border-zinc-300 accent-zinc-800"
+                            />
+                            <span className="text-sm text-zinc-700">{r.label}</span>
+                            {checked && (form.roles || [])[0] === r.value && (
+                              <span className="ml-auto text-[10px] font-semibold text-zinc-400">Principal</span>
+                            )}
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Preview badge */}
-            {form.role && (
-              <div className="flex items-center gap-2 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
-                <span className="text-xs text-zinc-500">Accès accordé :</span>
-                <Badge variant="outline" className={cn("text-[10px] border", getRoleInfo(form.role).color)}>
-                  {getRoleInfo(form.role).label}
-                </Badge>
+            {/* Preview badges */}
+            {(form.roles || []).length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
+                <span className="text-xs text-zinc-500 mr-1">Accès accordés :</span>
+                {(form.roles || []).map(r => (
+                  <Badge key={r} variant="outline" className={cn("text-[10px] border", getRoleInfo(r).color)}>
+                    {getRoleInfo(r).label}
+                  </Badge>
+                ))}
               </div>
             )}
 
