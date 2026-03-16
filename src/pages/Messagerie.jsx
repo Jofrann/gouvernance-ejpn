@@ -101,6 +101,39 @@ export default function MessageriePage() {
     queryClient.invalidateQueries({ queryKey: ["conversations"] });
   };
 
+  // Fetch all users for new conversation modal
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ["users-for-messaging"],
+    queryFn: async () => {
+      const res = await base44.functions.invoke("listUsers", {});
+      return res.data?.users || [];
+    },
+    enabled: !!user,
+  });
+
+  const startNewConversation = async (targetUser) => {
+    // Check if conversation already exists
+    const existing = conversations.find(c =>
+      (c.participant1_email === user.email && c.participant2_email === targetUser.email) ||
+      (c.participant2_email === user.email && c.participant1_email === targetUser.email)
+    );
+    if (existing) {
+      setSelectedConversation(existing);
+      setShowNewConv(false);
+      return;
+    }
+    const conv = await base44.entities.Conversation.create({
+      participant1_email: user.email,
+      participant1_nom: user.full_name,
+      participant2_email: targetUser.email,
+      participant2_nom: targetUser.full_name,
+      last_message_date: new Date().toISOString(),
+    });
+    queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    setSelectedConversation(conv);
+    setShowNewConv(false);
+  };
+
   if (!user) return <div>Chargement...</div>;
 
   return (
