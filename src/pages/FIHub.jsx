@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { format, startOfWeek, setDay, addWeeks, subWeeks, isAfter, endOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import FISlideOver from "@/components/fi/FISlideOver";
+import FIHeaderInfo from "@/components/fi/FIHeaderInfo";
 import AjouterAmeModal from "@/components/fi/AjouterAmeModal";
 import CliniqueGrid from "@/components/fi/CliniqueGrid";
 import { detectChuteLivre } from "@/components/fi/ChuteLivreAlert";
