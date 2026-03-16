@@ -198,16 +198,23 @@ function TabMembres({ fi, user }) {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                        <button className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
+                        <button title="Voir le dossier"
+                          className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
                           onClick={() => setSelectedMembre(m)}>
                           <Eye className="w-3.5 h-3.5" />
                         </button>
-                        {canWrite && (
-                          <button className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-red-500/50 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                        {canWrite && (<>
+                          <button title="Modifier"
+                            className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-amber-400 hover:bg-amber-500/10 transition-all"
+                            onClick={() => setEditMembre(m)}>
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button title="Désaffecter"
+                            className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-red-500/50 hover:text-red-400 hover:bg-red-500/10 transition-all"
                             onClick={() => setDeleteMembre(m)}>
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
-                        )}
+                        </>)}
                       </div>
                     </td>
                   </motion.tr>
