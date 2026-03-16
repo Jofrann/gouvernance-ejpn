@@ -1,23 +1,21 @@
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Construction } from "lucide-react";
 
 export default function PlaceholderPage({ title, description, icon: Icon = Construction }) {
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">{title}</h1>
+    <div className="px-6 py-10 max-w-7xl mx-auto">
+      <div className="mb-8">
+        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.25em] mb-1">Module</p>
+        <h1 className="text-2xl font-black text-white tracking-tight">{title}</h1>
         {description && <p className="text-sm text-zinc-500 mt-0.5">{description}</p>}
       </div>
-      <Card className="border border-zinc-200 bg-white">
-        <CardContent className="flex flex-col items-center justify-center py-20">
-          <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-100 mb-4">
-            <Icon className="w-8 h-8 text-zinc-400" />
-          </div>
-          <p className="text-sm font-medium text-zinc-700">Module en construction</p>
-          <p className="text-xs text-zinc-400 mt-1">Cette fonctionnalité sera bientôt disponible</p>
-        </CardContent>
-      </Card>
+      <div className="ai-card flex flex-col items-center justify-center py-24 rounded-2xl">
+        <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+          <Icon className="w-7 h-7 text-zinc-500" />
+        </div>
+        <p className="text-sm font-semibold text-zinc-400">Module en construction</p>
+        <p className="text-xs text-zinc-600 mt-1">Cette fonctionnalité sera bientôt disponible</p>
+      </div>
     </div>
   );
 }
