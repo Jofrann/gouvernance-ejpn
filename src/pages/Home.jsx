@@ -19,20 +19,20 @@ export default function HomePage() {
     );
   }
 
-  const role = user?.role;
+  const roles = Array.isArray(user?.roles) && user.roles.length > 0
+    ? user.roles
+    : Array.isArray(user?.data?.roles) && user.data.roles.length > 0
+    ? user.data.roles
+    : user?.role ? [user.role] : [];
 
   const renderDashboard = () => {
-    // Direction / Trône
-    if (role === "trone" || role === "admin") {
+    // Direction / Trône / Admin / Responsable général / Responsable FI
+    if (roles.some(r => ["trone", "admin", "responsable_general", "responsable_fi"].includes(r))) {
       return <TroneDashboard user={user} />;
     }
-    // Pilotes / Co-pilotes FI
-    if (role === "pilote_fi" || role === "copilote_fi") {
+    // Pilotes / Co-pilotes FI (seulement si pas déjà Trône)
+    if (roles.some(r => ["pilote_fi", "copilote_fi"].includes(r))) {
       return <PiloteDashboard user={user} />;
-    }
-    // Responsable FI — gets the global view too (admin-like)
-    if (role === "responsable_fi") {
-      return <TroneDashboard user={user} />;
     }
     // Default for all other roles
     return <DefaultDashboard user={user} />;
