@@ -137,7 +137,7 @@ export default function PiloteDashboard({ user }) {
       </motion.div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" data-joyride="kpi-membres">
         {[
           { label: "Membres", value: membres.length, sub: `${membres.filter(m => m.potentiel_formation).length} potentiel formation`, icon: Users, color: "text-blue-400" },
           { label: "Présence ce jeudi", value: presenceRate != null ? `${presenceRate}%` : "—", sub: `${presenceThisWeek}/${membres.length} présents`, icon: Heart, color: presenceRate != null && presenceRate >= 70 ? "text-emerald-400" : "text-amber-400" },
@@ -202,7 +202,7 @@ export default function PiloteDashboard({ user }) {
           <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Priorités</p>
           <p className="text-sm font-semibold text-white mb-3">Cette semaine</p>
           <div className="space-y-2">
-            <Link to={createPageUrl("FIClinique")} className="flex items-center justify-between p-3 rounded-xl border border-white/[0.07] hover:border-white/[0.14] hover:bg-white/[0.03] transition-all group">
+            <Link data-joyride="task-clinique" to={createPageUrl("FIClinique")} className="flex items-center justify-between p-3 rounded-xl border border-white/[0.07] hover:border-white/[0.14] hover:bg-white/[0.03] transition-all group">
               <div className="flex items-center gap-2.5">
                 <ClipboardList className="w-4 h-4 text-blue-400 flex-shrink-0" />
                 <div>
@@ -222,7 +222,7 @@ export default function PiloteDashboard({ user }) {
               </div>
               <div className={cn("w-2 h-2 rounded-full", interactionsSuivi.length > 0 ? "bg-amber-400" : "bg-emerald-400")} />
             </Link>
-            <Link to={createPageUrl("FIHub")} className="flex items-center justify-between p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.03] hover:border-emerald-500/40 hover:bg-emerald-500/[0.06] transition-all group">
+            <Link data-joyride="task-hub-fi" to={createPageUrl("FIHub")} className="flex items-center justify-between p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.03] hover:border-emerald-500/40 hover:bg-emerald-500/[0.06] transition-all group">
               <div className="flex items-center gap-2.5">
                 <BarChart2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                 <div>
