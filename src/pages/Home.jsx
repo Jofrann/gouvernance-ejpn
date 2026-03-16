@@ -62,16 +62,7 @@ export default function HomePage() {
 
       {renderDashboard()}
 
-      {/* Agent IA flottant (Cmd+K) — disponible sur toutes les vues */}
-      {user && (
-        <AICommandPalette
-          user={user}
-          onAction={(fn, params) => {
-            // Dispatch NLP actions — à connecter aux modales existantes
-            console.log("[Agent IA] Action déclenchée :", fn, params);
-          }}
-        />
-      )}
+
     </div>
   );
 }
