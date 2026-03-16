@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import TopNav from "@/components/navigation/TopNav";
+import BottomTabNav from "@/components/navigation/BottomTabNav";
 import AnimatedBackground from "@/components/layout/AnimatedBackground";
 import CopilotFloatingChat from "@/components/ai/CopilotFloatingChat";
 
@@ -77,15 +78,17 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main content with safe area */}
       <main 
-        className="relative z-10 pt-16 min-h-screen scrollable-safe"
+        className="relative z-10 pt-16 pb-20 min-h-screen scrollable-safe"
         style={{ 
           paddingLeft: 'var(--safe-area-inset-left, 0)',
           paddingRight: 'var(--safe-area-inset-right, 0)',
-          paddingBottom: 'var(--safe-area-inset-bottom, 0)',
         }}
       >
         {children}
       </main>
+
+      {/* Bottom Tab Navigation for Mobile */}
+      <BottomTabNav />
 
       {/* EJP Copilot — Floating Agent (workspace-aware) */}
       {user && <CopilotFloatingChat user={user} activeWorkspace={activeWorkspace} />}
