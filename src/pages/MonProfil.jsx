@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Check, X, Shield, Crown, Briefcase, Bell, Monitor, Smartphone, LogOut, Radar, Star, Zap, Phone, Mail, User, MapPin, Sparkles } from "lucide-react";
+import { Pencil, Check, X, Shield, Crown, Briefcase, Bell, Monitor, Smartphone, LogOut, Radar, Star, Zap, Phone, Mail, User, MapPin, Sparkles, Trash2 } from "lucide-react";
 import CopilotPreferences from "@/components/ai/CopilotPreferences";
+import AccountDeletionDialog from "@/components/shared/AccountDeletionDialog";
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar as RechartsRadar, ResponsiveContainer } from "recharts";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -177,6 +178,7 @@ function GlassCard({ children, className }) {
 export default function MonProfilPage() {
   const qc = useQueryClient();
   const [notifs, setNotifs] = useState(DEFAULT_NOTIFS);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const currentDevice = detectDevice();
 
@@ -360,12 +362,28 @@ export default function MonProfilPage() {
             <CopilotPreferences user={user} onSave={() => qc.invalidateQueries({ queryKey: ["me-profil"] })} />
           </GlassCard>
 
+          {/* Danger Zone - Account Deletion */}
+          <GlassCard className="p-5 border-red-500/20">
+           <div className="flex items-center gap-2 mb-4">
+             <Trash2 className="w-4 h-4 text-red-400" />
+             <h3 className="text-xs font-bold text-red-400 uppercase tracking-widest">Zone Dangereuse</h3>
+           </div>
+           <p className="text-sm text-zinc-400 mb-4">Supprimer votre compte de manière permanente et irréversible.</p>
+           <button
+             onClick={() => setShowDeleteDialog(true)}
+             className="w-full h-10 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 font-medium transition-all flex items-center justify-center gap-2"
+           >
+             <Trash2 className="w-4 h-4" />
+             Supprimer mon compte
+           </button>
+          </GlassCard>
+
           {/* Centre de notifications */}
           <GlassCard className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Bell className="w-4 h-4 text-violet-400" />
-              <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Centre de notifications</h3>
-            </div>
+           <div className="flex items-center gap-2 mb-4">
+             <Bell className="w-4 h-4 text-violet-400" />
+             <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Centre de notifications</h3>
+           </div>
             <NotifToggle
               label="Anniversaires FI"
               description="Quand un membre de votre FI a son anniversaire"
@@ -399,6 +417,13 @@ export default function MonProfilPage() {
           </GlassCard>
         </div>
       </div>
+
+      {/* Account Deletion Dialog */}
+      <AccountDeletionDialog 
+        user={user} 
+        isOpen={showDeleteDialog} 
+        onClose={() => setShowDeleteDialog(false)} 
+      />
     </div>
   );
 }
