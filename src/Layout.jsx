@@ -80,7 +80,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main content with safe area */}
       <main 
-        className="relative z-10 pt-16 pb-20 min-h-screen scrollable-safe"
+        className={`relative z-10 pt-16 min-h-screen scrollable-safe ${isMobile ? 'pb-20' : 'pb-0'}`}
         style={{ 
           paddingLeft: 'var(--safe-area-inset-left, 0)',
           paddingRight: 'var(--safe-area-inset-right, 0)',
@@ -89,8 +89,8 @@ export default function Layout({ children, currentPageName }) {
         {children}
       </main>
 
-      {/* Bottom Tab Navigation for Mobile */}
-      <BottomTabNav />
+      {/* Bottom Tab Navigation for Mobile Only */}
+      {isMobile && <BottomTabNav />}
 
       {/* EJP Copilot — Floating Agent (workspace-aware) */}
       {user && <CopilotFloatingChat user={user} activeWorkspace={activeWorkspace} />}
