@@ -1,14 +1,19 @@
 import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { FlaskConical, TrendingUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+
+const GlassCard = ({ children, className = "" }) => (
+  <div className={`rounded-2xl border border-white/[0.07] p-5 ${className}`}
+    style={{ background: "rgba(255,255,255,0.025)", backdropFilter: "blur(24px)" }}>
+    {children}
+  </div>
+);
 
 export default function GouvModelisationPage() {
   const [tauxPresence, setTauxPresence] = useState([70]);
@@ -45,31 +50,8 @@ export default function GouvModelisationPage() {
   const handleProject = async () => {
     setProjecting(true);
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `En tant qu'analyste stratégique d'un mouvement de jeunesse chrétienne (EJPN), analyse ces projections et fournis 3 scénarios d'ajustement:
-
-Données actuelles:
-- ${membres.length} membres suivis
-- ${familles.filter((f) => f.status === "active").length} Familles d'Impact actives
-- Taux de conversion évangélisation: ${(avgConversionRate * 100).toFixed(1)}%
-
-Paramètres simulés (sur 6 mois):
-- Taux de présence cible: ${tauxPresence[0]}%
-- Taux de formation continue: ${tauxFormation[0]}%
-- Actions d'évangélisation/mois: ${actionsEvange[0]}
-- Nouvelles FI prévues: ${nouvFI[0]}
-
-Projection M+6: ${simData[5]?.membres || 0} membres · ${simData[5]?.disciples || 0} disciples potentiels
-
-Fournis 3 scénarios stratégiques d'ajustement (optimiste, réaliste, conservateur) avec des recommandations concrètes.`,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          optimiste: { type: "string" },
-          realiste: { type: "string" },
-          conservateur: { type: "string" },
-          recommandation_principale: { type: "string" }
-        }
-      }
+      prompt: `En tant qu'analyste stratégique d'un mouvement de jeunesse chrétienne (EJPN), analyse ces projections et fournis 3 scénarios : Données: ${membres.length} membres, ${familles.filter((f) => f.status === "active").length} FI actives, taux de conversion: ${(avgConversionRate * 100).toFixed(1)}%. Paramètres simulés: présence ${tauxPresence[0]}%, formation ${tauxFormation[0]}%, ${actionsEvange[0]} actions/mois, ${nouvFI[0]} nouvelles FI. Projection M+6: ${simData[5]?.membres || 0} membres.`,
+      response_json_schema: { type: "object", properties: { optimiste: { type: "string" }, realiste: { type: "string" }, conservateur: { type: "string" }, recommandation_principale: { type: "string" } } }
     });
     setProjection(result);
     setProjecting(false);
@@ -84,77 +66,73 @@ Fournis 3 scénarios stratégiques d'ajustement (optimiste, réaliste, conservat
   ];
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
+    <div className="px-6 py-10 max-w-6xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Scénarios d'Ajustement</h1>
+          <p className="text-[10px] font-bold text-blue-400/80 uppercase tracking-[0.25em] mb-1">Gouvernance</p>
+          <h1 className="text-2xl font-black text-white tracking-tight">Scénarios d'Ajustement</h1>
           <p className="text-sm text-zinc-500 mt-0.5">Simulation What-If · Projection 6 mois</p>
         </div>
-        <Button className="bg-zinc-900 hover:bg-zinc-800 gap-2" onClick={handleProject} disabled={projecting}>
+        <button className="btn-glow-blue flex items-center gap-2 px-4 py-2.5" onClick={handleProject} disabled={projecting}>
           {projecting ? <><Loader2 className="w-4 h-4 animate-spin" />Analyse...</> : <>✨ Analyser avec l'IA</>}
-        </Button>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Sliders */}
-        <Card className="border-zinc-200 bg-white">
-          <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold flex items-center gap-2"><FlaskConical className="w-4 h-4" /> Paramètres de Simulation</CardTitle></CardHeader>
-          <CardContent className="space-y-5">
+        <GlassCard>
+          <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2"><FlaskConical className="w-4 h-4" /> Paramètres de Simulation</p>
+          <div className="space-y-5">
             {SLIDERS.map(({ label, value, set, suffix, max }) => (
               <div key={label}>
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-zinc-600">{label}</span>
-                  <span className="font-bold text-zinc-900">{value[0]}{suffix}</span>
+                  <span className="text-zinc-400">{label}</span>
+                  <span className="font-bold text-white">{value[0]}{suffix}</span>
                 </div>
                 <Slider value={value} onValueChange={set} min={0} max={max || 100} step={max === 20 || max === 10 ? 1 : 5} className="w-full" />
               </div>
             ))}
-            <div className="pt-2 border-t border-zinc-100 text-xs text-zinc-400">
+            <div className="pt-2 border-t border-white/[0.07] text-xs text-zinc-500">
               Taux de conversion évangélisation actuel: {(avgConversionRate * 100).toFixed(1)}%
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </GlassCard>
 
-        {/* Chart */}
-        <Card className="border-zinc-200 bg-white">
-          <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Projection sur 6 mois</CardTitle></CardHeader>
-          <CardContent>
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={simData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
-                  <XAxis dataKey="mois" tick={{ fontSize: 11, fill: "#71717a" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: "#71717a" }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ border: "1px solid #e4e4e7", borderRadius: "8px", fontSize: "12px" }} />
-                  <Bar dataKey="membres" fill="#2563eb" radius={[4, 4, 0, 0]} name="Membres" />
-                  <Bar dataKey="disciples" fill="#10b981" radius={[4, 4, 0, 0]} name="Disciples" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex justify-center gap-4 mt-2 text-xs">
-              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-500 inline-block" />Membres</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-500 inline-block" />Disciples</span>
-            </div>
-          </CardContent>
-        </Card>
+        <GlassCard>
+          <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Projection sur 6 mois</p>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={simData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                <XAxis dataKey="mois" tick={{ fontSize: 11, fill: "#71717a" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "#71717a" }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ background: "#0f1117", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: "12px", color: "#fff" }} />
+                <Bar dataKey="membres" fill="#2563eb" radius={[4, 4, 0, 0]} name="Membres" />
+                <Bar dataKey="disciples" fill="#10b981" radius={[4, 4, 0, 0]} name="Disciples" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex justify-center gap-4 mt-2 text-xs">
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-500 inline-block" />Membres</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-500 inline-block" />Disciples</span>
+          </div>
+        </GlassCard>
       </div>
 
-      {/* AI Scenarios */}
       {projection && (
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider">Scénarios Stratégiques — Analyse IA</h2>
+          <h2 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Scénarios Stratégiques — Analyse IA</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {[["Optimiste 🚀", projection.optimiste, "border-emerald-200 bg-emerald-50/40"], ["Réaliste ✓", projection.realiste, "border-blue-200 bg-blue-50/40"], ["Conservateur ⚡", projection.conservateur, "border-amber-200 bg-amber-50/40"]].map(([label, content, style]) => (
+            {[["Optimiste 🚀", projection.optimiste, "border-emerald-500/20 bg-emerald-500/5"], ["Réaliste ✓", projection.realiste, "border-blue-500/20 bg-blue-500/5"], ["Conservateur ⚡", projection.conservateur, "border-amber-500/20 bg-amber-500/5"]].map(([label, content, style]) => (
               <div key={label} className={cn("p-4 rounded-xl border", style)}>
-                <p className="text-xs font-bold text-zinc-700 mb-2">{label}</p>
-                <p className="text-xs text-zinc-600 leading-relaxed">{content}</p>
+                <p className="text-xs font-bold text-zinc-300 mb-2">{label}</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">{content}</p>
               </div>
             ))}
           </div>
           {projection.recommandation_principale && (
-            <div className="p-4 rounded-xl bg-zinc-900 text-white">
-              <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Recommandation Principale</p>
-              <p className="text-sm leading-relaxed">{projection.recommandation_principale}</p>
+            <div className="p-4 rounded-xl border border-white/[0.07] bg-white/[0.02]">
+              <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Recommandation Principale</p>
+              <p className="text-sm text-zinc-300 leading-relaxed">{projection.recommandation_principale}</p>
             </div>
           )}
         </div>
