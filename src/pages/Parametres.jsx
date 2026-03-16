@@ -420,16 +420,16 @@ export default function ParametresPage() {
 
       {/* Delete Confirm */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-[#0d1018] border-white/10 text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer cet utilisateur ?</AlertDialogTitle>
-            <AlertDialogDescription>
-              <strong>{deleteTarget?.full_name || deleteTarget?.email}</strong> perdra immédiatement tout accès à la plateforme. Cette action est irréversible.
+            <AlertDialogTitle className="text-white">Supprimer cet utilisateur ?</AlertDialogTitle>
+            <AlertDialogDescription className="text-zinc-400">
+              <strong className="text-zinc-300">{deleteTarget?.full_name || deleteTarget?.email}</strong> perdra immédiatement tout accès à la plateforme. Cette action est irréversible.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDelete}>Supprimer</AlertDialogAction>
+            <AlertDialogCancel className="border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10">Annuler</AlertDialogCancel>
+            <AlertDialogAction className="bg-red-500/20 border border-red-500/40 text-red-300 hover:bg-red-500/30" onClick={handleDelete}>Supprimer</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
