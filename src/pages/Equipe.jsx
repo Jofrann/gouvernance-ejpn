@@ -163,19 +163,22 @@ function PoleSection({ pole, users, onSelect }) {
       </div>
       <div className="space-y-6 pl-2 border-l border-white/[0.04]">
         {pole.groups.map(group => {
-          const groupMembers = membres.filter(u => u.role === group.key);
-          if (groupMembers.length === 0) return null;
-          return (
-            <div key={group.key}>
-              <div className="flex items-center gap-2 mb-3">
-                <group.icon className="w-3.5 h-3.5 text-zinc-500" />
-                <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{group.label}</h3>
-                <span className="text-xs text-zinc-700">({groupMembers.length})</span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {groupMembers.map(u => (
-                  <MemberCard key={u.id} user={u} pole={pole} onClick={() => onSelect(u)} />
-                ))}
+        const groupMembers = membres.filter(u => {
+          const uRoles = Array.isArray(u.roles) && u.roles.length > 0 ? u.roles : [u.role];
+          return uRoles.includes(group.key);
+        });
+        if (groupMembers.length === 0) return null;
+        return (
+          <div key={group.key}>
+            <div className="flex items-center gap-2 mb-3">
+              <group.icon className="w-3.5 h-3.5 text-zinc-500" />
+              <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{group.label}</h3>
+              <span className="text-xs text-zinc-700">({groupMembers.length})</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {groupMembers.map(u => (
+                <MemberCard key={`${u.id}-${group.key}`} user={u} pole={pole} groupKey={group.key} onClick={() => onSelect(u)} />
+              ))}
               </div>
             </div>
           );
@@ -210,10 +213,19 @@ export default function EquipePage() {
 
   // ── MON ÉQUIPE mode ──
   // Show only the members of the user's own pole
-  const myPoleKey = ROLE_TO_POLE[role] || "trone";
+  // Multi-rôles : on prend le premier rôle non-admin pour déterminer le pôle principal
+  const userRolesArr = Array.isArray(currentUser?.roles) && currentUser.roles.length > 0
+    ? currentUser.roles
+    : currentUser?.role ? [currentUser.role] : ["admin"];
+  const primaryRole = userRolesArr.find(r => r !== "admin") || userRolesArr[0] || "admin";
+  const myPoleKey = ROLE_TO_POLE[primaryRole] || ROLE_TO_POLE[role] || "trone";
   const myPole = POLES.find(p => p.key === myPoleKey) || POLES[0];
   const myPoleRoleKeys = myPole.groups.map(g => g.key);
-  const myTeamMembers = users.filter(u => myPoleRoleKeys.includes(u.role));
+  // Inclure user si au moins un de ses rôles appartient au pôle
+  const myTeamMembers = users.filter(u => {
+    const uRoles = Array.isArray(u.roles) && u.roles.length > 0 ? u.roles : [u.role];
+    return uRoles.some(r => myPoleRoleKeys.includes(r));
+  });
 
   // ── TOUTES LES ÉQUIPES mode ──
   const execPoles = POLES.filter(p => EXEC_POLES.includes(p.key));
