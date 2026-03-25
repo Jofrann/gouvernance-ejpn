@@ -7,7 +7,8 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import PageTransition from '@/components/layout/PageTransition';
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
+import EvangelisationSuivi from './pages/EvangelisationSuivi';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -61,6 +62,11 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/EvangelisationSuivi" element={
+        <LayoutWrapper currentPageName="EvangelisationSuivi">
+          <EvangelisationSuivi />
+        </LayoutWrapper>
+      } />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

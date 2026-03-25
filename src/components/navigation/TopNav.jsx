@@ -121,7 +121,8 @@ const NAVIGATION = {
         icon: Globe,
         items: [
           { label: "Agenda & Actions", page: "EvangelisationRadar", icon: Calendar },
-          { label: "Debrief", page: "EvangelisationDebrief", icon: MessageSquare },
+          { label: "Sorties & CR", page: "EvangelisationDebrief", icon: MessageSquare },
+          { label: "Suivi Digital", page: "EvangelisationSuivi", icon: UserCheck },
           { label: "Analyse des Résultats", page: "EvangelisationAnalyse", icon: Flame },
         ],
       },
