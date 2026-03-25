@@ -35,7 +35,6 @@ export default function MessageriePage() {
       return [...p1, ...p2];
     },
     enabled: !!user?.email,
-    refetchInterval: 5000,
   });
 
   const { data: messages = [] } = useQuery({
@@ -47,7 +46,6 @@ export default function MessageriePage() {
           }, "created_date")
         : [],
     enabled: !!selectedConversation?.id,
-    refetchInterval: 3000,
   });
 
   // Real-time subscriptions

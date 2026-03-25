@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,13 @@ export default function CommunicationKanbanPage() {
     queryKey: ["assets"],
     queryFn: () => base44.entities.CommunicationAsset.list("-created_date", 200),
   });
+
+  useEffect(() => {
+    const unsub = base44.entities.CommunicationAsset.subscribe(() =>
+      queryClient.invalidateQueries({ queryKey: ["assets"] })
+    );
+    return unsub;
+  }, [queryClient]);
 
   const handleCreate = async (e) => {
     const file = e.target.files?.[0];

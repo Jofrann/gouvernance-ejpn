@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
@@ -128,6 +128,13 @@ export default function TroneValidationPage() {
     queryKey: ["recommandations"],
     queryFn: () => base44.entities.Recommandation.list("-created_date", 100),
   });
+
+  useEffect(() => {
+    const unsub = base44.entities.Recommandation.subscribe(() =>
+      qc.invalidateQueries({ queryKey: ["recommandations"] })
+    );
+    return unsub;
+  }, [qc]);
 
   const updateReco = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Recommandation.update(id, data),

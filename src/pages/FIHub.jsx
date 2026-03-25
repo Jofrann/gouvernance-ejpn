@@ -363,6 +363,13 @@ function TabWorkspace({ fi }) {
     enabled: !!fi?.id
   });
 
+  useEffect(() => {
+    const unsub = base44.entities.TacheWorkspace.subscribe(() =>
+      queryClient.invalidateQueries({ queryKey: ["taches", fi?.id] })
+    );
+    return unsub;
+  }, [fi?.id, queryClient]);
+
   const createTache = useMutation({
     mutationFn: (statut) => base44.entities.TacheWorkspace.create({ famille_impact_id: fi.id, titre: newTache, statut }),
     onSuccess: () => {queryClient.invalidateQueries({ queryKey: ["taches", fi?.id] });setNewTache("");setAddingCol(null);}

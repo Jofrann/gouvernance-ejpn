@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +47,19 @@ export default function FormationSallePage() {
   const [form, setForm] = useState(EMPTY_FORM);
 
   const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
+
+  useEffect(() => {
+    const u1 = base44.entities.FormationRessource.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["ressources", CURRENT_MONTH] });
+      queryClient.invalidateQueries({ queryKey: ["ressources-all"] });
+    });
+    const u2 = base44.entities.FormationLecture.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["lectures"] });
+      queryClient.invalidateQueries({ queryKey: ["all-lectures"] });
+    });
+    return () => { u1(); u2(); };
+  }, [queryClient]);
+
   const { data: ressources = [] } = useQuery({
     queryKey: ["ressources", CURRENT_MONTH],
     queryFn: () => base44.entities.FormationRessource.filter({ mois_cycle: CURRENT_MONTH }),
