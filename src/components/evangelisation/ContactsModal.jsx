@@ -15,7 +15,7 @@ const STATUT_COLORS = {
 };
 const STATUT_LABELS = { nouveau: "Nouveau", en_suivi: "En suivi", venu: "Venu(e)", inactif: "Inactif" };
 
-const EMPTY_FORM = { prenom: "", nom: "", age: "", telephone: "", instagram: "", invite_fij: false, invite_ejp: false, notes: "" };
+const EMPTY_FORM = { prenom: "", nom: "", genre: "", age: "", telephone: "", instagram: "", invite_fij: false, invite_ejp: false, notes: "" };
 
 const inputStyle = {
   display: "block",
@@ -143,6 +143,14 @@ export default function ContactsModal({ action, user, onClose }) {
                     <input style={inputStyle} placeholder="Dupont" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} />
                   </div>
                   <div>
+                    <label style={labelStyle}>Genre</label>
+                    <select style={inputStyle} value={form.genre} onChange={(e) => setForm({ ...form, genre: e.target.value })}>
+                      <option value="" style={{ background: "#0f1117" }}>— Non précisé</option>
+                      <option value="homme" style={{ background: "#0f1117" }}>👨 Homme</option>
+                      <option value="femme" style={{ background: "#0f1117" }}>👩 Femme</option>
+                    </select>
+                  </div>
+                  <div>
                     <label style={labelStyle}>Âge</label>
                     <input type="number" style={{ ...inputStyle, colorScheme: "dark" }} placeholder="22" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
                   </div>
@@ -204,6 +212,7 @@ export default function ContactsModal({ action, user, onClose }) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-semibold text-white">{c.prenom} {c.nom || ""}</p>
+                    {c.genre && <span className="text-xs text-zinc-500">{c.genre === "homme" ? "👨" : "👩"}</span>}
                     {c.age && <span className="text-xs text-zinc-600">{c.age} ans</span>}
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${STATUT_COLORS[c.statut_suivi]}`}>
                       {STATUT_LABELS[c.statut_suivi]}

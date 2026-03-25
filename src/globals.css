@@ -82,9 +82,6 @@
   button, [role="button"], a[href], input[type="checkbox"], input[type="radio"] {
     min-height: 2.75rem; /* 44px */
     min-width: 2.75rem; /* 44px */
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   /* Maintain visual consistency while respecting touch targets */

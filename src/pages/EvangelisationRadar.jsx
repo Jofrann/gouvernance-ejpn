@@ -132,7 +132,7 @@ export default function EvangelisationRadarPage() {
     }));
   };
 
-  const upcoming = actions.filter((a) => a.statut === "planifie" || a.statut === "en_cours");
+  const upcoming = actions.filter((a) => ["planifie", "en_cours", "termine", "annule"].includes(a.statut));
   const past = actions.filter((a) => a.statut === "termine" && a.debrief_complete);
   const allTermine = actions.filter((a) => a.statut === "termine");
 
