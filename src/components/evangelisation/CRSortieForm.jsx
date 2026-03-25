@@ -12,6 +12,30 @@ const FIELDS = [
   { key: "prieres_salut",       emoji: "😇", label: "Prières du salut" },
 ];
 
+const fieldStyle = {
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.10)",
+  borderRadius: "0.75rem",
+  color: "rgba(255,255,255,0.9)",
+  padding: "0.625rem 0.875rem",
+  fontSize: "0.875rem",
+  width: "100%",
+  outline: "none",
+  colorScheme: "dark",
+  textAlign: "center",
+  fontWeight: "900",
+  fontSize: "1.125rem",
+};
+
+const textareaStyle = {
+  ...fieldStyle,
+  textAlign: "left",
+  fontWeight: "400",
+  fontSize: "0.875rem",
+  height: "5rem",
+  resize: "none",
+};
+
 export default function CRSortieForm({ action, existingCR, user, onSaved }) {
   const [form, setForm] = useState({
     personnes_sorties: 0,
@@ -54,7 +78,6 @@ export default function CRSortieForm({ action, existingCR, user, onSaved }) {
     } else {
       await base44.entities.CRSortie.create(payload);
     }
-    // Also mark action as debrief_complete when submitted
     if (statut === "soumis") {
       await base44.entities.ActionEvangelisation.update(action.id, {
         debrief_complete: true,
@@ -89,14 +112,14 @@ export default function CRSortieForm({ action, existingCR, user, onSaved }) {
       <div className="grid grid-cols-2 gap-3">
         {FIELDS.map(({ key, emoji, label }) => (
           <div key={key}>
-            <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">
+            <label style={{ display: "block", fontSize: "0.625rem", fontWeight: 700, color: "rgba(113,128,150,0.9)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.375rem" }}>
               {emoji} {label}
             </label>
             <input
               type="number"
               min="0"
               disabled={isReadOnly}
-              className="input-glass text-center font-black text-lg disabled:opacity-50"
+              style={{ ...fieldStyle, opacity: isReadOnly ? 0.5 : 1 }}
               value={form[key]}
               onChange={(e) => setForm({ ...form, [key]: parseInt(e.target.value) || 0 })}
             />
@@ -105,10 +128,12 @@ export default function CRSortieForm({ action, existingCR, user, onSaved }) {
       </div>
 
       <div>
-        <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">📝 Observations</label>
+        <label style={{ display: "block", fontSize: "0.625rem", fontWeight: 700, color: "rgba(113,128,150,0.9)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.375rem" }}>
+          📝 Observations
+        </label>
         <textarea
           disabled={isReadOnly}
-          className="input-glass h-20 resize-none text-sm disabled:opacity-50"
+          style={{ ...textareaStyle, opacity: isReadOnly ? 0.5 : 1 }}
           placeholder="Contexte, points positifs, difficultés rencontrées..."
           value={form.observations}
           onChange={(e) => setForm({ ...form, observations: e.target.value })}
@@ -119,11 +144,7 @@ export default function CRSortieForm({ action, existingCR, user, onSaved }) {
         <div className="flex gap-2 pt-2">
           <button
             className="flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all disabled:opacity-50"
-            style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.09)",
-              color: "rgba(255,255,255,0.65)",
-            }}
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(255,255,255,0.65)" }}
             onClick={() => handleSave("brouillon")}
             disabled={saving}
           >
@@ -131,12 +152,7 @@ export default function CRSortieForm({ action, existingCR, user, onSaved }) {
           </button>
           <button
             className="flex-1 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
-            style={{
-              background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))",
-              border: "1px solid rgba(99,155,255,0.35)",
-              color: "#fff",
-              boxShadow: "0 0 20px rgba(59,130,246,0.2)",
-            }}
+            style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))", border: "1px solid rgba(99,155,255,0.35)", color: "#fff", boxShadow: "0 0 20px rgba(59,130,246,0.2)" }}
             onClick={() => handleSave("soumis")}
             disabled={saving}
           >

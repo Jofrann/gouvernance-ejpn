@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { X, Plus, Phone, Instagram, UserCheck, UserX, Trash2 } from "lucide-react";
+import { X, Plus, Phone, Instagram, UserCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
@@ -16,6 +16,29 @@ const STATUT_COLORS = {
 const STATUT_LABELS = { nouveau: "Nouveau", en_suivi: "En suivi", venu: "Venu(e)", inactif: "Inactif" };
 
 const EMPTY_FORM = { prenom: "", nom: "", age: "", telephone: "", instagram: "", invite_fij: false, invite_ejp: false, notes: "" };
+
+const inputStyle = {
+  display: "block",
+  width: "100%",
+  background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  borderRadius: "0.625rem",
+  color: "rgba(255,255,255,0.92)",
+  padding: "0.5rem 0.75rem",
+  fontSize: "0.8125rem",
+  outline: "none",
+  colorScheme: "dark",
+};
+
+const labelStyle = {
+  display: "block",
+  fontSize: "0.625rem",
+  fontWeight: 700,
+  color: "rgba(113,128,150,0.9)",
+  textTransform: "uppercase",
+  letterSpacing: "0.1em",
+  marginBottom: "0.375rem",
+};
 
 export default function ContactsModal({ action, user, onClose }) {
   const queryClient = useQueryClient();
@@ -64,10 +87,9 @@ export default function ContactsModal({ action, user, onClose }) {
         transition={{ duration: 0.22 }}
         className="w-full max-w-lg rounded-2xl overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, rgba(255,255,255,0.065) 0%, rgba(255,255,255,0.02) 100%)",
+          background: "#0f1117",
           border: "1px solid rgba(255,255,255,0.09)",
-          backdropFilter: "blur(36px)",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)",
+          boxShadow: "0 24px 80px rgba(0,0,0,0.7)",
           maxHeight: "90vh",
           overflowY: "auto",
         }}
@@ -81,12 +103,7 @@ export default function ContactsModal({ action, user, onClose }) {
           <div className="flex items-center gap-2">
             <button
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
-              style={{
-                background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))",
-                border: "1px solid rgba(99,155,255,0.35)",
-                color: "#fff",
-                boxShadow: "0 0 16px rgba(59,130,246,0.2)",
-              }}
+              style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))", border: "1px solid rgba(99,155,255,0.35)", color: "#fff", boxShadow: "0 0 16px rgba(59,130,246,0.2)" }}
               onClick={() => setShowForm(!showForm)}
             >
               <Plus className="w-3.5 h-3.5" /> Ajouter
@@ -111,24 +128,24 @@ export default function ContactsModal({ action, user, onClose }) {
               <div className="px-5 py-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Prénom *</label>
-                    <input className="input-glass text-sm text-white" placeholder="Jean" value={form.prenom} onChange={(e) => setForm({ ...form, prenom: e.target.value })} />
+                    <label style={labelStyle}>Prénom *</label>
+                    <input style={inputStyle} placeholder="Jean" value={form.prenom} onChange={(e) => setForm({ ...form, prenom: e.target.value })} />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Nom</label>
-                    <input className="input-glass text-sm text-white" placeholder="Dupont" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} />
+                    <label style={labelStyle}>Nom</label>
+                    <input style={inputStyle} placeholder="Dupont" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Âge</label>
-                    <input type="number" className="input-glass text-sm text-white" style={{ colorScheme: "dark" }} placeholder="22" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
+                    <label style={labelStyle}>Âge</label>
+                    <input type="number" style={{ ...inputStyle, colorScheme: "dark" }} placeholder="22" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">📱 Téléphone</label>
-                    <input className="input-glass text-sm text-white" placeholder="06..." value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
+                    <label style={labelStyle}>📱 Téléphone</label>
+                    <input style={inputStyle} placeholder="06..." value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
                   </div>
                   <div className="col-span-2">
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">📸 Instagram</label>
-                    <input className="input-glass text-sm text-white" placeholder="@username" value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} />
+                    <label style={labelStyle}>📸 Instagram</label>
+                    <input style={inputStyle} placeholder="@username" value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} />
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -142,17 +159,17 @@ export default function ContactsModal({ action, user, onClose }) {
                   </label>
                 </div>
                 <div>
-                  <label className="text-xs text-zinc-500">Notes</label>
-                  <textarea className="input-glass mt-1 h-16 resize-none text-white" placeholder="Observations..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+                  <label style={labelStyle}>Notes</label>
+                  <textarea
+                    style={{ ...inputStyle, height: "4rem", resize: "none" }}
+                    placeholder="Observations..."
+                    value={form.notes}
+                    onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                  />
                 </div>
                 <button
                   className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))",
-                    border: "1px solid rgba(99,155,255,0.35)",
-                    color: "#fff",
-                    boxShadow: "0 0 20px rgba(59,130,246,0.2)",
-                  }}
+                  style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))", border: "1px solid rgba(99,155,255,0.35)", color: "#fff", boxShadow: "0 0 20px rgba(59,130,246,0.2)" }}
                   onClick={handleAdd}
                   disabled={saving}
                 >

@@ -23,6 +23,29 @@ const TYPE_COLORS = {
 
 const EMPTY_NEW = { titre: "", type_action: "rue", date_action: "", heure_debut: "", notes_debrief: "" };
 
+const INPUT_S = {
+  display: "block",
+  width: "100%",
+  background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  borderRadius: "0.625rem",
+  color: "rgba(255,255,255,0.92)",
+  padding: "0.5rem 0.75rem",
+  fontSize: "0.8125rem",
+  outline: "none",
+  colorScheme: "dark",
+};
+
+const LABEL_S = {
+  display: "block",
+  fontSize: "0.625rem",
+  fontWeight: 700,
+  color: "rgba(113,128,150,0.9)",
+  textTransform: "uppercase",
+  letterSpacing: "0.1em",
+  marginBottom: "0.375rem",
+};
+
 export default function EvangelisationDebriefPage() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
@@ -123,18 +146,18 @@ export default function EvangelisationDebriefPage() {
               <p className="text-sm font-semibold text-white">📍 Nouvelle sortie</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="sm:col-span-2">
-                  <label className="text-xs text-zinc-500">Titre *</label>
-                  <input className="input-glass mt-1 text-white" placeholder="Ex: Sortie rue Nation" value={newForm.titre} onChange={(e) => setNewForm({ ...newForm, titre: e.target.value })} />
+                  <label style={LABEL_S}>Titre *</label>
+                  <input style={INPUT_S} placeholder="Ex: Sortie rue Nation" value={newForm.titre} onChange={(e) => setNewForm({ ...newForm, titre: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs text-zinc-500">Type</label>
-                  <select className="input-glass mt-1 text-white" style={{ colorScheme: "dark" }} value={newForm.type_action} onChange={(e) => setNewForm({ ...newForm, type_action: e.target.value })}>
-                    {Object.entries(TYPE_LABELS).map(([k, v]) => <option key={k} value={k} style={{ background: "#1a1d2a" }}>{v}</option>)}
+                  <label style={LABEL_S}>Type</label>
+                  <select style={INPUT_S} value={newForm.type_action} onChange={(e) => setNewForm({ ...newForm, type_action: e.target.value })}>
+                    {Object.entries(TYPE_LABELS).map(([k, v]) => <option key={k} value={k} style={{ background: "#0f1117" }}>{v}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-zinc-500">Date *</label>
-                  <input type="date" className="input-glass mt-1 text-white" style={{ colorScheme: "dark" }} value={newForm.date_action} onChange={(e) => setNewForm({ ...newForm, date_action: e.target.value })} />
+                  <label style={LABEL_S}>Date *</label>
+                  <input type="date" style={INPUT_S} value={newForm.date_action} onChange={(e) => setNewForm({ ...newForm, date_action: e.target.value })} />
                 </div>
               </div>
               <div className="flex gap-2">
@@ -338,34 +361,32 @@ export default function EvangelisationDebriefPage() {
               {tab === "edit" && editForm && (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Titre *</label>
-                    <input className="input-glass text-sm text-white" placeholder="Ex: Sortie rue Nation" value={editForm.titre} onChange={(e) => setEditForm({ ...editForm, titre: e.target.value })} />
+                    <label style={LABEL_S}>Titre *</label>
+                    <input style={INPUT_S} placeholder="Ex: Sortie rue Nation" value={editForm.titre} onChange={(e) => setEditForm({ ...editForm, titre: e.target.value })} />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Type</label>
-                      <select className="input-glass text-sm text-white" style={{ colorScheme: "dark" }} value={editForm.type_action} onChange={(e) => setEditForm({ ...editForm, type_action: e.target.value })}>
-                        {Object.entries(TYPE_LABELS).map(([k, v]) => <option key={k} value={k} style={{ background: "#1a1d2a" }}>{v}</option>)}
+                      <label style={LABEL_S}>Type</label>
+                      <select style={INPUT_S} value={editForm.type_action} onChange={(e) => setEditForm({ ...editForm, type_action: e.target.value })}>
+                        {Object.entries(TYPE_LABELS).map(([k, v]) => <option key={k} value={k} style={{ background: "#0f1117" }}>{v}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
-                        <CalendarClock className="w-3 h-3" /> Date *
-                      </label>
-                      <input type="date" className="input-glass text-sm text-white" style={{ colorScheme: "dark" }} value={editForm.date_action} onChange={(e) => setEditForm({ ...editForm, date_action: e.target.value })} />
+                      <label style={LABEL_S} className="flex items-center gap-1"><CalendarClock className="w-3 h-3" /> Date *</label>
+                      <input type="date" style={INPUT_S} value={editForm.date_action} onChange={(e) => setEditForm({ ...editForm, date_action: e.target.value })} />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Heure début</label>
-                      <input type="time" className="input-glass text-sm text-white" style={{ colorScheme: "dark" }} value={editForm.heure_debut} onChange={(e) => setEditForm({ ...editForm, heure_debut: e.target.value })} />
+                      <label style={LABEL_S}>Heure début</label>
+                      <input type="time" style={INPUT_S} value={editForm.heure_debut} onChange={(e) => setEditForm({ ...editForm, heure_debut: e.target.value })} />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Heure fin</label>
-                      <input type="time" className="input-glass text-sm text-white" style={{ colorScheme: "dark" }} value={editForm.heure_fin} onChange={(e) => setEditForm({ ...editForm, heure_fin: e.target.value })} />
+                      <label style={LABEL_S}>Heure fin</label>
+                      <input type="time" style={INPUT_S} value={editForm.heure_fin} onChange={(e) => setEditForm({ ...editForm, heure_fin: e.target.value })} />
                     </div>
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Notes</label>
-                    <textarea className="input-glass text-sm text-white h-20 resize-none" placeholder="Informations complémentaires..." value={editForm.notes_debrief} onChange={(e) => setEditForm({ ...editForm, notes_debrief: e.target.value })} />
+                    <label style={LABEL_S}>Notes</label>
+                    <textarea style={{ ...INPUT_S, height: "5rem", resize: "none" }} placeholder="Informations complémentaires..." value={editForm.notes_debrief} onChange={(e) => setEditForm({ ...editForm, notes_debrief: e.target.value })} />
                   </div>
 
                   {/* Décalage rapide */}
