@@ -255,7 +255,11 @@ export default function EvangelisationRadarPage() {
                   const badge = getYieldBadge(action);
                   const ratio = action.temps_investi_heures > 0 ? (action.conversions / action.temps_investi_heures).toFixed(2) : "—";
                   return (
-                    <div key={action.id} className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.05] hover:border-white/[0.1] hover:bg-white/[0.02] transition-all">
+                    <div
+                      key={action.id}
+                      className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.05] hover:border-white/[0.14] hover:bg-white/[0.03] transition-all cursor-pointer group"
+                      onClick={() => { setSelectedBriefing(action); setBriefingMode("view"); setConfirmDelete(false); }}
+                    >
                       <span className={cn("w-7 h-7 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0",
                         i === 0 ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" :
                           i === 1 ? "bg-zinc-500/20 text-zinc-400 border border-zinc-500/30" :
@@ -264,7 +268,7 @@ export default function EvangelisationRadarPage() {
                         {i + 1}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-zinc-300 truncate">{action.titre}</p>
+                        <p className="text-sm font-medium text-zinc-300 group-hover:text-white truncate">{action.titre}</p>
                         <p className="text-[10px] text-zinc-500">
                           {format(new Date(action.date_action), "d MMM", { locale: fr })} · {action.personnes_touchees} touchées · {action.conversions} acceptations
                         </p>
@@ -272,6 +276,7 @@ export default function EvangelisationRadarPage() {
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <span className="text-xs font-black text-blue-400">{ratio} acc/h</span>
                         {badge && <Badge className={cn("text-[10px] border", badge.cls)}>{badge.label}</Badge>}
+                        <span className="text-[10px] text-zinc-600 opacity-0 group-hover:opacity-100 transition-all">···</span>
                       </div>
                     </div>
                   );
