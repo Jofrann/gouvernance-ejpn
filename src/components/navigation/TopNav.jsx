@@ -120,9 +120,9 @@ const NAVIGATION = {
         label: "Évangélisation",
         icon: Globe,
         items: [
-          { label: "🚀 Opérations & Débriefs", page: "EvangelisationOperations", icon: Calendar },
-          { label: "💬 Vivier & Suivi Digital", page: "EvangelisationNurturing", icon: MessageSquare },
-          { label: "📊 Radar & ROI", page: "EvangelisationDashboard", icon: Flame },
+          { label: "Agenda & Actions", page: "EvangelisationRadar", icon: Calendar },
+          { label: "Debrief", page: "EvangelisationDebrief", icon: MessageSquare },
+          { label: "Analyse des Résultats", page: "EvangelisationAnalyse", icon: Flame },
         ],
       },
       communication: {
