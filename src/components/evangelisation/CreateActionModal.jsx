@@ -3,8 +3,25 @@ import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { X, Loader2 } from "lucide-react";
 
-export default function CreateActionModal({ onClose, onCreated }) {
-  const [form, setForm] = useState({
+export default function CreateActionModal({ onClose, onCreated, editAction = null }) {
+  const isEdit = !!editAction;
+
+  const toLocalDatetime = (val) => {
+    if (!val) return "";
+    try {
+      const d = new Date(val);
+      const pad = n => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    } catch { return ""; }
+  };
+
+  const [form, setForm] = useState(isEdit ? {
+    titre: editAction.titre || "",
+    date_action: toLocalDatetime(editAction.date_action),
+    type_action: editAction.type_action || "Terrain",
+    lieu: editAction.lieu || "",
+    statut: editAction.statut || "Planifiée",
+  } : {
     titre: "",
     date_action: "",
     type_action: "Terrain",
@@ -16,7 +33,11 @@ export default function CreateActionModal({ onClose, onCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await base44.entities.ActionEvangelisation.create(form);
+    if (isEdit) {
+      await base44.entities.ActionEvangelisation.update(editAction.id, form);
+    } else {
+      await base44.entities.ActionEvangelisation.create(form);
+    }
     setLoading(false);
     onCreated();
   };
@@ -32,7 +53,7 @@ export default function CreateActionModal({ onClose, onCreated }) {
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-white">Nouvelle Action</h2>
+          <h2 className="text-base font-bold text-white">{isEdit ? "Modifier l'action" : "Nouvelle Action"}</h2>
           <button onClick={onClose} className="text-zinc-600 hover:text-zinc-300">
             <X className="w-5 h-5" />
           </button>
@@ -60,6 +81,7 @@ export default function CreateActionModal({ onClose, onCreated }) {
                 value={form.statut} onChange={e => setForm({ ...form, statut: e.target.value })}>
                 <option value="Planifiée">Planifiée</option>
                 <option value="En cours">En cours</option>
+                <option value="Terminée">Terminée</option>
               </select>
             </div>
           </div>
@@ -78,7 +100,7 @@ export default function CreateActionModal({ onClose, onCreated }) {
 
           <button type="submit" disabled={loading}
             className="btn-glow-blue w-full py-2.5 flex items-center justify-center gap-2">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Créer l'action"}
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : isEdit ? "Enregistrer les modifications" : "Créer l'action"}
           </button>
         </form>
       </motion.div>
