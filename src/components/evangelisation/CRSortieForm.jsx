@@ -89,12 +89,14 @@ export default function CRSortieForm({ action, existingCR, user, onSaved }) {
       <div className="grid grid-cols-2 gap-3">
         {FIELDS.map(({ key, emoji, label }) => (
           <div key={key}>
-            <label className="text-xs text-zinc-500 font-medium">{emoji} {label}</label>
+            <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">
+              {emoji} {label}
+            </label>
             <input
               type="number"
               min="0"
               disabled={isReadOnly}
-              className="input-glass mt-1 text-center font-bold"
+              className="input-glass text-center font-black text-lg disabled:opacity-50"
               value={form[key]}
               onChange={(e) => setForm({ ...form, [key]: parseInt(e.target.value) || 0 })}
             />
@@ -103,10 +105,10 @@ export default function CRSortieForm({ action, existingCR, user, onSaved }) {
       </div>
 
       <div>
-        <label className="text-xs text-zinc-500 font-medium">📝 Observations</label>
+        <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">📝 Observations</label>
         <textarea
           disabled={isReadOnly}
-          className="input-glass mt-1 h-20 resize-none"
+          className="input-glass h-20 resize-none text-sm disabled:opacity-50"
           placeholder="Contexte, points positifs, difficultés rencontrées..."
           value={form.observations}
           onChange={(e) => setForm({ ...form, observations: e.target.value })}
@@ -116,18 +118,29 @@ export default function CRSortieForm({ action, existingCR, user, onSaved }) {
       {!isReadOnly && (
         <div className="flex gap-2 pt-2">
           <button
-            className="btn-ghost-glass flex-1 py-2 text-xs"
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all disabled:opacity-50"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.09)",
+              color: "rgba(255,255,255,0.65)",
+            }}
             onClick={() => handleSave("brouillon")}
             disabled={saving}
           >
             Sauvegarder brouillon
           </button>
           <button
-            className="btn-glow-blue flex-1 py-2 flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+            style={{
+              background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))",
+              border: "1px solid rgba(99,155,255,0.35)",
+              color: "#fff",
+              boxShadow: "0 0 20px rgba(59,130,246,0.2)",
+            }}
             onClick={() => handleSave("soumis")}
             disabled={saving}
           >
-            <CheckCircle2 className="w-4 h-4" /> Soumettre le CR
+            <CheckCircle2 className="w-4 h-4" /> {saving ? "Envoi..." : "Soumettre le CR"}
           </button>
         </div>
       )}

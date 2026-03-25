@@ -54,26 +54,47 @@ export default function ContactsModal({ action, user, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}>
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(12px)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
       <motion.div
-        initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 40 }}
-        className="w-full max-w-lg rounded-2xl border border-white/10 overflow-hidden"
-        style={{ background: "#0d1018", maxHeight: "90vh", overflowY: "auto" }}
+        initial={{ opacity: 0, y: 40, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 40, scale: 0.97 }}
+        transition={{ duration: 0.22 }}
+        className="w-full max-w-lg rounded-2xl overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, rgba(255,255,255,0.065) 0%, rgba(255,255,255,0.02) 100%)",
+          border: "1px solid rgba(255,255,255,0.09)",
+          backdropFilter: "blur(36px)",
+          boxShadow: "0 24px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)",
+          maxHeight: "90vh",
+          overflowY: "auto",
+        }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-white/[0.07]">
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
           <div>
-            <p className="text-sm font-bold text-white">📋 Contacts — {action.titre}</p>
+            <p className="text-[10px] font-bold text-orange-400/80 uppercase tracking-widest mb-0.5">Contacts · {action.titre}</p>
             <p className="text-xs text-zinc-500">{format(new Date(action.date_action), "d MMMM yyyy", { locale: fr })}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
-              className="btn-glow-blue px-3 py-1.5 flex items-center gap-1.5 text-xs"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
+              style={{
+                background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))",
+                border: "1px solid rgba(99,155,255,0.35)",
+                color: "#fff",
+                boxShadow: "0 0 16px rgba(59,130,246,0.2)",
+              }}
               onClick={() => setShowForm(!showForm)}
             >
               <Plus className="w-3.5 h-3.5" /> Ajouter
             </button>
-            <button onClick={onClose} className="p-2 text-zinc-500 hover:text-white transition-colors">
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-xl flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 transition-all"
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -84,29 +105,30 @@ export default function ContactsModal({ action, user, onClose }) {
           {showForm && (
             <motion.div
               initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-              className="border-b border-white/[0.07] overflow-hidden"
+              className="overflow-hidden"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
             >
-              <div className="p-5 space-y-3">
+              <div className="px-5 py-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-zinc-500">Prénom *</label>
-                    <input className="input-glass mt-1" placeholder="Jean" value={form.prenom} onChange={(e) => setForm({ ...form, prenom: e.target.value })} />
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Prénom *</label>
+                    <input className="input-glass text-sm" placeholder="Jean" value={form.prenom} onChange={(e) => setForm({ ...form, prenom: e.target.value })} />
                   </div>
                   <div>
-                    <label className="text-xs text-zinc-500">Nom</label>
-                    <input className="input-glass mt-1" placeholder="Dupont" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} />
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Nom</label>
+                    <input className="input-glass text-sm" placeholder="Dupont" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} />
                   </div>
                   <div>
-                    <label className="text-xs text-zinc-500">Âge</label>
-                    <input type="number" className="input-glass mt-1" placeholder="22" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Âge</label>
+                    <input type="number" className="input-glass text-sm" placeholder="22" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
                   </div>
                   <div>
-                    <label className="text-xs text-zinc-500">📱 Téléphone</label>
-                    <input className="input-glass mt-1" placeholder="06..." value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">📱 Téléphone</label>
+                    <input className="input-glass text-sm" placeholder="06..." value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
                   </div>
                   <div className="col-span-2">
-                    <label className="text-xs text-zinc-500">📸 Instagram</label>
-                    <input className="input-glass mt-1" placeholder="@username" value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} />
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">📸 Instagram</label>
+                    <input className="input-glass text-sm" placeholder="@username" value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} />
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -123,8 +145,18 @@ export default function ContactsModal({ action, user, onClose }) {
                   <label className="text-xs text-zinc-500">Notes</label>
                   <textarea className="input-glass mt-1 h-16 resize-none" placeholder="Observations..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
                 </div>
-                <button className="btn-glow-blue w-full py-2.5 flex items-center justify-center gap-2" onClick={handleAdd} disabled={saving}>
-                  <UserCheck className="w-4 h-4" /> Enregistrer le contact
+                <button
+                  className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))",
+                    border: "1px solid rgba(99,155,255,0.35)",
+                    color: "#fff",
+                    boxShadow: "0 0 20px rgba(59,130,246,0.2)",
+                  }}
+                  onClick={handleAdd}
+                  disabled={saving}
+                >
+                  <UserCheck className="w-4 h-4" /> {saving ? "Enregistrement..." : "Enregistrer le contact"}
                 </button>
               </div>
             </motion.div>
@@ -132,13 +164,17 @@ export default function ContactsModal({ action, user, onClose }) {
         </AnimatePresence>
 
         {/* Contact list */}
-        <div className="p-5 space-y-3">
+        <div className="px-5 py-4 space-y-2">
           {contacts.length === 0 ? (
             <div className="text-center py-10 text-zinc-600 text-sm">Aucun contact enregistré pour cette sortie</div>
           ) : (
             contacts.map((c) => (
-              <div key={c.id} className="rounded-xl border border-white/[0.07] p-3 flex items-start gap-3 hover:border-white/[0.14] transition-all">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+              <div
+                key={c.id}
+                className="rounded-xl p-3 flex items-start gap-3 transition-all"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+              >
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white text-sm font-black flex-shrink-0">
                   {c.prenom?.[0]?.toUpperCase() || "?"}
                 </div>
                 <div className="flex-1 min-w-0">
