@@ -157,21 +157,39 @@
 
   /* --- Inputs --- */
   .input-glass {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.10);
     border-radius: 0.75rem;
-    color: rgba(255,255,255,0.9);
+    color: rgba(255,255,255,0.9) !important;
+    -webkit-text-fill-color: rgba(255,255,255,0.9) !important;
     padding: 0.625rem 0.875rem;
     font-size: 0.8125rem;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     outline: none;
     width: 100%;
+    color-scheme: dark;
+    appearance: none;
+    -webkit-appearance: none;
   }
-  .input-glass::placeholder { color: #475569; }
+  .input-glass::placeholder {
+    color: rgba(113,128,150,0.7) !important;
+    -webkit-text-fill-color: rgba(113,128,150,0.7) !important;
+  }
   .input-glass:focus {
-    border-color: rgba(59,130,246,0.4);
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    border-color: rgba(59,130,246,0.45);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    background: rgba(255,255,255,0.06) !important;
   }
+  .input-glass:-webkit-autofill,
+  .input-glass:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px rgba(15,17,23,1) inset !important;
+    -webkit-text-fill-color: rgba(255,255,255,0.9) !important;
+  }
+  /* Restore pointer for select */
+  select.input-glass { cursor: pointer; }
+  /* Number input arrows dark */
+  .input-glass[type="number"]::-webkit-inner-spin-button,
+  .input-glass[type="number"]::-webkit-outer-spin-button { filter: invert(1) opacity(0.4); }
 
   /* --- Badges --- */
   .badge-health-high {
