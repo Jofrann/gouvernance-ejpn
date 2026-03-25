@@ -124,11 +124,12 @@ export default function EvangelisationRadarPage() {
 
   const upcoming = actions.filter((a) => a.statut === "planifie" || a.statut === "en_cours");
   const past = actions.filter((a) => a.statut === "termine" && a.debrief_complete);
+  const allTermine = actions.filter((a) => a.statut === "termine");
 
-  // Stats
-  const totalPersonnes = past.reduce((s, a) => s + (a.personnes_touchees || 0), 0);
-  const totalConversions = past.reduce((s, a) => s + (a.conversions || 0), 0);
-  const totalHeures = past.reduce((s, a) => s + (a.temps_investi_heures || 0), 0);
+  // Stats — based on all terminated actions (with or without debrief)
+  const totalPersonnes = allTermine.reduce((s, a) => s + (a.personnes_touchees || 0), 0);
+  const totalConversions = allTermine.reduce((s, a) => s + (a.conversions || 0), 0);
+  const totalHeures = allTermine.reduce((s, a) => s + (a.temps_investi_heures || 0), 0);
 
   const terrainActions = upcoming.filter((a) => ["rue", "campus", "porte_a_porte", "evenement"].includes(a.type_action));
   const digitalActions = upcoming.filter((a) => a.type_action === "zoom");
@@ -144,7 +145,7 @@ export default function EvangelisationRadarPage() {
           <h1 className="text-2xl font-light text-white tracking-tight">Plan <span className="font-black">Terrain & Digital</span></h1>
           <p className="text-sm text-zinc-500 mt-0.5 font-light">Fiches de mission · Classement rendement · Suivi des âmes</p>
         </div>
-        <button onClick={() => setShowNew(true)} className="bg-slate-400 px-4 py-2 btn-glow-blue flex items-center gap-2 h-9">
+        <button onClick={() => setShowNew(true)} className="btn-glow-blue px-4 py-2 flex items-center gap-2 h-9">
           <Plus className="w-4 h-4" /> Planifier une Action
         </button>
       </motion.div>
