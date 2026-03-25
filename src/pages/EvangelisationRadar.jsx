@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Calendar, Clock, Users, Target, FileText, Globe, Wifi, TrendingUp, CheckCircle2, Zap } from "lucide-react";
+import { Plus, Calendar, Clock, Users, Target, FileText, Globe, Wifi, TrendingUp, CheckCircle2, Zap, Pencil, Trash2, Save, CalendarClock, X } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -54,6 +54,10 @@ export default function EvangelisationRadarPage() {
   const queryClient = useQueryClient();
   const [showNew, setShowNew] = useState(false);
   const [selectedBriefing, setSelectedBriefing] = useState(null);
+  const [briefingMode, setBriefingMode] = useState("view"); // "view" | "edit"
+  const [editForm, setEditForm] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
   const [planFilter, setPlanFilter] = useState("tous");
   const [form, setForm] = useState(EMPTY_FORM);
 
@@ -65,6 +69,39 @@ export default function EvangelisationRadarPage() {
     queryKey: ["familles"],
     queryFn: () => base44.entities.FamilleImpact.list(),
   });
+
+  const deleteAction = useMutation({
+    mutationFn: (id) => base44.entities.ActionEvangelisation.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["actions"] });
+      toast.success("Sortie supprimée");
+      setSelectedBriefing(null);
+      setConfirmDelete(false);
+    },
+  });
+
+  const handleUpdateAction = async () => {
+    if (!editForm.titre.trim() || !editForm.date_action) { toast.error("Titre et date requis"); return; }
+    setSavingEdit(true);
+    await base44.entities.ActionEvangelisation.update(selectedBriefing.id, editForm);
+    queryClient.invalidateQueries({ queryKey: ["actions"] });
+    setSelectedBriefing({ ...selectedBriefing, ...editForm });
+    toast.success("Sortie mise à jour !");
+    setBriefingMode("view");
+    setSavingEdit(false);
+  };
+
+  const openBriefingEdit = (action) => {
+    setEditForm({
+      titre: action.titre,
+      type_action: action.type_action,
+      date_action: action.date_action,
+      heure_debut: action.heure_debut || "",
+      heure_fin: action.heure_fin || "",
+      fi_assignees: action.fi_assignees || [],
+    });
+    setBriefingMode("edit");
+  };
 
   const createAction = useMutation({
     mutationFn: (data) => base44.entities.ActionEvangelisation.create({ ...data, statut: "planifie", personnes_touchees: 0, conversions: 0, temps_investi_heures: 0, debrief_complete: false }),
@@ -307,51 +344,193 @@ export default function EvangelisationRadarPage() {
       </Dialog>
 
       {/* Briefing Dialog */}
-      <Dialog open={!!selectedBriefing} onOpenChange={() => setSelectedBriefing(null)}>
-        <DialogContent className="bg-[#0f1117] border border-white/10 text-white max-w-md">
+      <Dialog open={!!selectedBriefing} onOpenChange={() => { setSelectedBriefing(null); setBriefingMode("view"); setConfirmDelete(false); }}>
+        <DialogContent className="bg-[#0f1117] border border-white/10 text-white max-w-md overflow-y-auto max-h-[90vh]">
           {selectedBriefing && (
             <>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2"><FileText className="w-4 h-4 text-cyan-400" /> Fiche de Mission</DialogTitle>
+                <DialogTitle className="flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-cyan-400" />
+                    {briefingMode === "edit" ? "Modifier la sortie" : "Fiche de Mission"}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {briefingMode === "view" && (
+                      <>
+                        <button
+                          onClick={() => openBriefingEdit(selectedBriefing)}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
+                          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)" }}
+                        >
+                          <Pencil className="w-3 h-3" /> Modifier
+                        </button>
+                        <button
+                          onClick={() => setConfirmDelete(true)}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
+                          style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171" }}
+                        >
+                          <Trash2 className="w-3 h-3" /> Supprimer
+                        </button>
+                      </>
+                    )}
+                    {briefingMode === "edit" && (
+                      <button onClick={() => setBriefingMode("view")} className="text-zinc-500 hover:text-white transition-colors">
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-2">
-                <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5">
-                  <h3 className="text-lg font-bold text-white">{selectedBriefing.titre}</h3>
-                  <Badge className="mt-1.5 bg-cyan-500/10 text-cyan-400 border-cyan-500/20 text-[10px]">{selectedBriefing.type_action?.toUpperCase()}</Badge>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl border border-white/[0.07] bg-white/[0.02]">
-                    <p className="text-[10px] text-zinc-500 uppercase">Date</p>
-                    <p className="text-sm font-medium text-zinc-200 mt-0.5">
-                      {format(new Date(selectedBriefing.date_action), "EEEE d MMMM", { locale: fr })}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-xl border border-white/[0.07] bg-white/[0.02]">
-                    <p className="text-[10px] text-zinc-500 uppercase">Horaire</p>
-                    <p className="text-sm font-medium text-zinc-200 mt-0.5">
-                      {selectedBriefing.heure_debut || "—"} → {selectedBriefing.heure_fin || "—"}
-                    </p>
+
+              {/* Confirm delete */}
+              {confirmDelete && (
+                <div className="rounded-xl p-3 mb-2" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)" }}>
+                  <p className="text-xs text-red-300 font-semibold mb-2">⚠️ Supprimer "{selectedBriefing.titre}" définitivement ?</p>
+                  <div className="flex gap-2">
+                    <button className="flex-1 py-1.5 rounded-lg text-xs font-medium bg-white/5 border border-white/10 text-zinc-400 hover:text-white transition-all" onClick={() => setConfirmDelete(false)}>Annuler</button>
+                    <button
+                      className="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                      style={{ background: "rgba(239,68,68,0.25)", border: "1px solid rgba(239,68,68,0.4)", color: "#f87171" }}
+                      onClick={() => deleteAction.mutate(selectedBriefing.id)}
+                      disabled={deleteAction.isPending}
+                    >
+                      {deleteAction.isPending ? "Suppression..." : "Oui, supprimer"}
+                    </button>
                   </div>
                 </div>
-                {selectedBriefing.fi_assignees?.length > 0 && (
+              )}
+
+              {/* VIEW MODE */}
+              {briefingMode === "view" && (
+                <div className="space-y-4 py-2">
+                  <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5">
+                    <h3 className="text-lg font-bold text-white">{selectedBriefing.titre}</h3>
+                    <Badge className="mt-1.5 bg-cyan-500/10 text-cyan-400 border-cyan-500/20 text-[10px]">{selectedBriefing.type_action?.toUpperCase()}</Badge>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 rounded-xl border border-white/[0.07] bg-white/[0.02]">
+                      <p className="text-[10px] text-zinc-500 uppercase">Date</p>
+                      <p className="text-sm font-medium text-zinc-200 mt-0.5">
+                        {format(new Date(selectedBriefing.date_action), "EEEE d MMMM", { locale: fr })}
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-xl border border-white/[0.07] bg-white/[0.02]">
+                      <p className="text-[10px] text-zinc-500 uppercase">Horaire</p>
+                      <p className="text-sm font-medium text-zinc-200 mt-0.5">
+                        {selectedBriefing.heure_debut || "—"} → {selectedBriefing.heure_fin || "—"}
+                      </p>
+                    </div>
+                  </div>
+                  {selectedBriefing.fi_assignees?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold text-zinc-500 uppercase mb-2">FI Mobilisées</p>
+                      <div className="space-y-1.5">
+                        {familles.filter(fi => selectedBriefing.fi_assignees.includes(fi.id)).map(fi => (
+                          <div key={fi.id} className="flex items-center gap-2 p-2 rounded-lg border border-white/[0.07] bg-white/[0.02]">
+                            <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                            <span className="text-sm font-medium text-zinc-300">{fi.name}</span>
+                            <span className="text-xs text-zinc-600">· {fi.campus}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-3 rounded-xl border border-blue-500/20 bg-blue-500/5">
+                    <p className="text-xs font-bold text-blue-400 uppercase tracking-wider">Objectif</p>
+                    <p className="text-sm text-zinc-300 mt-1 leading-relaxed">Toucher un maximum de personnes. Présenter clairement la vision EJPN. Relever les contacts intéressés.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* EDIT MODE */}
+              {briefingMode === "edit" && editForm && (
+                <div className="space-y-4 py-2">
                   <div>
-                    <p className="text-xs font-semibold text-zinc-500 uppercase mb-2">FI Mobilisées</p>
-                    <div className="space-y-1.5">
-                      {familles.filter(fi => selectedBriefing.fi_assignees.includes(fi.id)).map(fi => (
-                        <div key={fi.id} className="flex items-center gap-2 p-2 rounded-lg border border-white/[0.07] bg-white/[0.02]">
-                          <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                          <span className="text-sm font-medium text-zinc-300">{fi.name}</span>
-                          <span className="text-xs text-zinc-600">· {fi.campus}</span>
-                        </div>
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Titre *</label>
+                    <Input value={editForm.titre} onChange={e => setEditForm(f => ({ ...f, titre: e.target.value }))} className="bg-white/5 border-white/10 text-white" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Type</label>
+                      <Select value={editForm.type_action} onValueChange={v => setEditForm(f => ({ ...f, type_action: v }))}>
+                        <SelectTrigger className="bg-white/5 border-white/10 text-white"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="rue">🚶 Rue</SelectItem>
+                          <SelectItem value="campus">🎓 Campus</SelectItem>
+                          <SelectItem value="porte_a_porte">🚪 Porte-à-porte</SelectItem>
+                          <SelectItem value="evenement">🎉 Événement</SelectItem>
+                          <SelectItem value="zoom">💻 Zoom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">
+                        <span className="flex items-center gap-1"><CalendarClock className="w-3 h-3" /> Date *</span>
+                      </label>
+                      <Input type="date" value={editForm.date_action} onChange={e => setEditForm(f => ({ ...f, date_action: e.target.value }))} className="bg-white/5 border-white/10 text-white" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Heure début</label>
+                      <Input type="time" value={editForm.heure_debut} onChange={e => setEditForm(f => ({ ...f, heure_debut: e.target.value }))} className="bg-white/5 border-white/10 text-white" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Heure fin</label>
+                      <Input type="time" value={editForm.heure_fin} onChange={e => setEditForm(f => ({ ...f, heure_fin: e.target.value }))} className="bg-white/5 border-white/10 text-white" />
+                    </div>
+                  </div>
+
+                  {/* Décalage rapide */}
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">Décaler la date de</label>
+                    <div className="flex gap-2">
+                      {[1, 3, 7, 14].map(days => {
+                        const d = new Date(editForm.date_action);
+                        d.setDate(d.getDate() + days);
+                        return (
+                          <button key={days} onClick={() => setEditForm(f => ({ ...f, date_action: d.toISOString().split("T")[0] }))}
+                            className="flex-1 py-1.5 rounded-lg text-xs font-bold transition-all"
+                            style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.25)", color: "#a5b4fc" }}>
+                            +{days}j
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* FI */}
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">FI mobilisées</label>
+                    <div className="space-y-1.5 max-h-28 overflow-y-auto">
+                      {familles.map(fi => (
+                        <label key={fi.id} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+                          <Checkbox
+                            checked={editForm.fi_assignees.includes(fi.id)}
+                            onCheckedChange={() => setEditForm(f => ({
+                              ...f,
+                              fi_assignees: f.fi_assignees.includes(fi.id)
+                                ? f.fi_assignees.filter(id => id !== fi.id)
+                                : [...f.fi_assignees, fi.id]
+                            }))}
+                          />
+                          <span className="text-sm text-zinc-300">{fi.name}</span>
+                          <span className="text-xs text-zinc-600">{fi.campus}</span>
+                        </label>
                       ))}
                     </div>
                   </div>
-                )}
-                <div className="p-3 rounded-xl border border-blue-500/20 bg-blue-500/5">
-                  <p className="text-xs font-bold text-blue-400 uppercase tracking-wider">Objectif</p>
-                  <p className="text-sm text-zinc-300 mt-1 leading-relaxed">Toucher un maximum de personnes. Présenter clairement la vision EJPN. Relever les contacts intéressés.</p>
+
+                  <DialogFooter>
+                    <Button variant="ghost" onClick={() => setBriefingMode("view")} className="text-zinc-400 hover:text-white">Annuler</Button>
+                    <Button
+                      onClick={handleUpdateAction}
+                      disabled={savingEdit}
+                      className="bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-2"
+                    >
+                      <Save className="w-4 h-4" /> {savingEdit ? "Sauvegarde..." : "Enregistrer"}
+                    </Button>
+                  </DialogFooter>
                 </div>
-              </div>
+              )}
             </>
           )}
         </DialogContent>
