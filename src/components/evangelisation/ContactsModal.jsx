@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { X, Plus, Phone, Instagram, UserCheck, Trash2 } from "lucide-react";
@@ -50,6 +50,13 @@ export default function ContactsModal({ action, user, onClose }) {
     queryKey: ["contacts-action", action.id],
     queryFn: () => base44.entities.ContactEvang.filter({ action_id: action.id }, "-created_date", 100),
   });
+
+  useEffect(() => {
+    const unsub = base44.entities.ContactEvang.subscribe(() =>
+      queryClient.invalidateQueries({ queryKey: ["contacts-action", action.id] })
+    );
+    return () => unsub();
+  }, [queryClient, action.id]);
 
   const handleAdd = async () => {
     if (!form.prenom.trim()) { toast.error("Le prénom est requis"); return; }

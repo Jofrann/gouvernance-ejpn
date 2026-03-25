@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
@@ -69,6 +69,16 @@ export default function EvangelisationRadarPage() {
     queryKey: ["familles"],
     queryFn: () => base44.entities.FamilleImpact.list()
   });
+
+  useEffect(() => {
+    const unsub = base44.entities.ActionEvangelisation.subscribe(() =>
+      queryClient.invalidateQueries({ queryKey: ["actions"] })
+    );
+    const unsub2 = base44.entities.FamilleImpact.subscribe(() =>
+      queryClient.invalidateQueries({ queryKey: ["familles"] })
+    );
+    return () => { unsub(); unsub2(); };
+  }, [queryClient]);
 
   const deleteAction = useMutation({
     mutationFn: (id) => base44.entities.ActionEvangelisation.delete(id),
