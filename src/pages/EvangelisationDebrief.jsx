@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Plus, Calendar, Users, FileText, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Plus, Calendar, Users, FileText, AlertTriangle, CheckCircle2, Pencil, Trash2, CalendarClock, X, Save } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,10 @@ export default function EvangelisationDebriefPage() {
   const [showContacts, setShowContacts] = useState(null); // action for contacts modal
   const [showNewForm, setShowNewForm] = useState(false);
   const [newForm, setNewForm] = useState(EMPTY_NEW);
-  const [tab, setTab] = useState("cr"); // cr | contacts
+  const [tab, setTab] = useState("cr"); // cr | contacts | edit
+  const [editForm, setEditForm] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
@@ -65,6 +68,31 @@ export default function EvangelisationDebriefPage() {
     await base44.entities.ActionEvangelisation.delete(id);
     queryClient.invalidateQueries({ queryKey: ["actions-debrief"] });
     toast.success("Sortie supprimée");
+    setSelectedAction(null);
+    setConfirmDelete(false);
+  };
+
+  const handleUpdateAction = async () => {
+    if (!editForm.titre.trim() || !editForm.date_action) { toast.error("Titre et date requis"); return; }
+    setSaving(true);
+    await base44.entities.ActionEvangelisation.update(selectedAction.id, editForm);
+    queryClient.invalidateQueries({ queryKey: ["actions-debrief"] });
+    setSelectedAction({ ...selectedAction, ...editForm });
+    toast.success("Sortie mise à jour !");
+    setTab("cr");
+    setSaving(false);
+  };
+
+  const openEdit = (action) => {
+    setEditForm({
+      titre: action.titre,
+      type_action: action.type_action,
+      date_action: action.date_action,
+      heure_debut: action.heure_debut || "",
+      heure_fin: action.heure_fin || "",
+      notes_debrief: action.notes_debrief || "",
+    });
+    setTab("edit");
   };
 
   const pending = actions.filter(a => !getCRForAction(a.id) || getCRForAction(a.id)?.statut === "brouillon");
@@ -216,7 +244,7 @@ export default function EvangelisationDebriefPage() {
       </div>
 
       {/* Detail Sheet */}
-      <Sheet open={!!selectedAction} onOpenChange={() => setSelectedAction(null)}>
+      <Sheet open={!!selectedAction} onOpenChange={() => { setSelectedAction(null); setConfirmDelete(false); setTab("cr"); }}>
         <SheetContent className="w-full sm:max-w-lg overflow-y-auto bg-[#0d1018] border-white/10 text-white">
           {selectedAction && (
             <>
@@ -227,10 +255,54 @@ export default function EvangelisationDebriefPage() {
                 </p>
               </SheetHeader>
 
+              {/* Actions rapides */}
+              <div className="flex gap-2 mt-4 mb-1">
+                <button
+                  onClick={() => openEdit(selectedAction)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(255,255,255,0.7)" }}
+                >
+                  <Pencil className="w-3.5 h-3.5" /> Modifier
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "rgba(248,113,113,0.9)" }}
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Supprimer
+                </button>
+              </div>
+
+              {/* Confirm delete */}
+              <AnimatePresence>
+                {confirmDelete && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden mb-2"
+                  >
+                    <div className="rounded-xl p-3 mt-1" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)" }}>
+                      <p className="text-xs text-red-300 font-semibold mb-2">⚠️ Confirmer la suppression de "{selectedAction.titre}" ?</p>
+                      <div className="flex gap-2">
+                        <button
+                          className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-all"
+                          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(255,255,255,0.6)" }}
+                          onClick={() => setConfirmDelete(false)}
+                        >Annuler</button>
+                        <button
+                          className="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                          style={{ background: "rgba(239,68,68,0.25)", border: "1px solid rgba(239,68,68,0.4)", color: "#f87171" }}
+                          onClick={() => handleDeleteAction(selectedAction.id)}
+                        >Oui, supprimer</button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {/* Tabs */}
-              <div className="flex gap-1 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06] mt-4 mb-5">
-                {[{ key: "cr", label: "📋 Compte-rendu" }, { key: "contacts", label: "👥 Contacts" }].map(t => (
-                  <button key={t.key} onClick={() => setTab(t.key)}
+              <div className="flex gap-1 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06] mt-3 mb-5">
+                {[{ key: "cr", label: "📋 Compte-rendu" }, { key: "contacts", label: "👥 Contacts" }, { key: "edit", label: "✏️ Modifier" }].map(t => (
+                  <button key={t.key} onClick={() => { setTab(t.key); if (t.key === "edit") openEdit(selectedAction); }}
                     className={cn("flex-1 py-2 rounded-lg text-xs font-medium transition-all",
                       tab === t.key ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300")}>
                     {t.label}
@@ -253,21 +325,88 @@ export default function EvangelisationDebriefPage() {
               {tab === "contacts" && (
                 <div className="space-y-3">
                   <p className="text-xs text-zinc-500">Gérez les contacts pris lors de cette sortie directement ici.</p>
-                  <button className="btn-glow-blue w-full py-2.5 flex items-center justify-center gap-2" onClick={() => { setSelectedAction(null); setShowContacts(selectedAction); }}>
+                  <button
+                    className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2"
+                    style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))", border: "1px solid rgba(99,155,255,0.35)", color: "#fff", boxShadow: "0 0 20px rgba(59,130,246,0.2)" }}
+                    onClick={() => { setSelectedAction(null); setShowContacts(selectedAction); }}
+                  >
                     <Users className="w-4 h-4" /> Ouvrir la liste des contacts
                   </button>
                 </div>
               )}
 
-              {/* Delete */}
-              <div className="mt-8 pt-4 border-t border-white/[0.05]">
-                <button
-                  className="w-full py-2 text-xs text-red-500/60 hover:text-red-400 transition-colors"
-                  onClick={() => { handleDeleteAction(selectedAction.id); setSelectedAction(null); }}
-                >
-                  Supprimer cette sortie
-                </button>
-              </div>
+              {tab === "edit" && editForm && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Titre *</label>
+                    <input className="input-glass text-sm" placeholder="Ex: Sortie rue Nation" value={editForm.titre} onChange={(e) => setEditForm({ ...editForm, titre: e.target.value })} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Type</label>
+                      <select className="input-glass text-sm" value={editForm.type_action} onChange={(e) => setEditForm({ ...editForm, type_action: e.target.value })}>
+                        {Object.entries(TYPE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
+                        <CalendarClock className="w-3 h-3" /> Date *
+                      </label>
+                      <input type="date" className="input-glass text-sm" value={editForm.date_action} onChange={(e) => setEditForm({ ...editForm, date_action: e.target.value })} />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Heure début</label>
+                      <input type="time" className="input-glass text-sm" value={editForm.heure_debut} onChange={(e) => setEditForm({ ...editForm, heure_debut: e.target.value })} />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Heure fin</label>
+                      <input type="time" className="input-glass text-sm" value={editForm.heure_fin} onChange={(e) => setEditForm({ ...editForm, heure_fin: e.target.value })} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Notes</label>
+                    <textarea className="input-glass text-sm h-20 resize-none" placeholder="Informations complémentaires..." value={editForm.notes_debrief} onChange={(e) => setEditForm({ ...editForm, notes_debrief: e.target.value })} />
+                  </div>
+
+                  {/* Décalage rapide */}
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">Décaler de</label>
+                    <div className="flex gap-2 flex-wrap">
+                      {[1, 3, 7, 14].map(days => {
+                        const newDate = new Date(editForm.date_action);
+                        newDate.setDate(newDate.getDate() + days);
+                        const formatted = newDate.toISOString().split("T")[0];
+                        return (
+                          <button
+                            key={days}
+                            onClick={() => setEditForm({ ...editForm, date_action: formatted })}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                            style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.25)", color: "#a5b4fc" }}
+                          >
+                            +{days}j
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      className="flex-1 py-2.5 rounded-xl text-xs font-medium transition-all"
+                      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(255,255,255,0.6)" }}
+                      onClick={() => setTab("cr")}
+                    >Annuler</button>
+                    <button
+                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+                      style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(99,102,241,0.85))", border: "1px solid rgba(99,155,255,0.35)", color: "#fff", boxShadow: "0 0 20px rgba(59,130,246,0.2)" }}
+                      onClick={handleUpdateAction}
+                      disabled={saving}
+                    >
+                      <Save className="w-4 h-4" /> {saving ? "Sauvegarde..." : "Enregistrer"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </SheetContent>
