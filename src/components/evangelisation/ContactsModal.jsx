@@ -112,23 +112,23 @@ export default function ContactsModal({ action, user, onClose }) {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Prénom *</label>
-                    <input className="input-glass text-sm" placeholder="Jean" value={form.prenom} onChange={(e) => setForm({ ...form, prenom: e.target.value })} />
+                    <input className="input-glass text-sm text-white" placeholder="Jean" value={form.prenom} onChange={(e) => setForm({ ...form, prenom: e.target.value })} />
                   </div>
                   <div>
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Nom</label>
-                    <input className="input-glass text-sm" placeholder="Dupont" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} />
+                    <input className="input-glass text-sm text-white" placeholder="Dupont" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} />
                   </div>
                   <div>
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">Âge</label>
-                    <input type="number" className="input-glass text-sm" placeholder="22" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
+                    <input type="number" className="input-glass text-sm text-white" style={{ colorScheme: "dark" }} placeholder="22" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
                   </div>
                   <div>
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">📱 Téléphone</label>
-                    <input className="input-glass text-sm" placeholder="06..." value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
+                    <input className="input-glass text-sm text-white" placeholder="06..." value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
                   </div>
                   <div className="col-span-2">
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1.5">📸 Instagram</label>
-                    <input className="input-glass text-sm" placeholder="@username" value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} />
+                    <input className="input-glass text-sm text-white" placeholder="@username" value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} />
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -143,7 +143,7 @@ export default function ContactsModal({ action, user, onClose }) {
                 </div>
                 <div>
                   <label className="text-xs text-zinc-500">Notes</label>
-                  <textarea className="input-glass mt-1 h-16 resize-none" placeholder="Observations..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+                  <textarea className="input-glass mt-1 h-16 resize-none text-white" placeholder="Observations..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
                 </div>
                 <button
                   className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
